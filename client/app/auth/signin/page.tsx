@@ -1,12 +1,17 @@
-import React from 'react'
 import { Wallet } from '../wallet'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { HandleSignMessage } from './handleSignMessage';
 
 const page = () => {
+   
   return (
     <div>
-        <Wallet/>
+        <Wallet>
+        <HandleSignMessage/>
+        </Wallet>
     </div>
   )
 }
+
 
 export default page

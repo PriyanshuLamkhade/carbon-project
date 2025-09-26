@@ -1,5 +1,6 @@
-"use client"
-import React, { useMemo } from "react";
+'use client'
+
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ConnectionProvider,
   WalletProvider,
@@ -10,26 +11,55 @@ import {
   WalletDisconnectButton,
   WalletMultiButton,
 } from "@solana/wallet-adapter-react-ui";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { clusterApiUrl } from "@solana/web3.js";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
-
-export function Wallet() {
+export function Wallet({ children }: { children: React.ReactNode }) {
   const network = WalletAdapterNetwork.Devnet;
 
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
 
+  const wallets = useMemo(
+    () => [
+      new PhantomWalletAdapter(),
+      // Add more wallets if needed
+    ],
+    []
+  );
+
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
+  if (!isClient) {
+    return null; 
+  }
+
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={[]} autoConnect>
+      <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
-          <div style={{ display: "flex",gap:5 }}>
-            <WalletMultiButton />
-            <WalletDisconnectButton />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "25px",
+              flexWrap: "wrap",
+              justifyContent: "space-around",
+              padding: 20,
+            }}
+          >
+            <div style={{ display: "flex", gap: "20px" }}>
+              <WalletMultiButton />
+              <WalletDisconnectButton />
+            </div>
+            {children}
           </div>
         </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
   );
 }
-

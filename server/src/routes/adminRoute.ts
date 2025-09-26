@@ -15,3 +15,4 @@ adminRouter.post('verifyDataForm',(req,res)=>{
 adminRouter.post('confirmSubmission',(req,res)=>{
     
 })
+export default adminRouter;

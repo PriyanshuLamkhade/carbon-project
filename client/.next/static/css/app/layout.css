@@ -73,6 +73,8 @@
 @layer theme, base, components, utilities;
 @layer theme {
   :root, :host {
+    --color-blue-600: oklch(54.6% 0.245 262.881);
+    --spacing: 0.25rem;
     --default-font-family: var(--font-geist-sans);
     --default-mono-font-family: var(--font-geist-mono);
   }
@@ -228,6 +230,12 @@
 @layer utilities {
   .flex {
     display: flex;
+  }
+  .bg-blue-600 {
+    background-color: var(--color-blue-600);
+  }
+  .p-2 {
+    padding: calc(var(--spacing) * 2);
   }
   .antialiased {
     -webkit-font-smoothing: antialiased;
