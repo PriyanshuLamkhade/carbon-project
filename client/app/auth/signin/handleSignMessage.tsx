@@ -1,10 +1,11 @@
 "use client";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import bs58 from "bs58";
+import { useState } from "react";
 
 export function HandleSignMessage() {
   const { publicKey, signMessage } = useWallet();
-  
+  const [visibleForm,setVisibleForm] = useState<Boolean>(false)
 
   async function getNonce() {
     
@@ -25,22 +26,20 @@ export function HandleSignMessage() {
     
     console.log(signedMessage)
 
-    // const verifyRes = await fetch("http://localhost:4000/api/auth/verify", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({
-    //     wallet: publicKey.toString(),
-    //     signature: bs58.encode(signedMessage),
-    //     nonce,
-    //   }),
-    //   credentials: "include",
-    // });
-    // const data = await verifyRes.json();
-    // if (data.success) {
-    //   console.log("✅ Authenticated!");
-    // } else {
-    //   console.error("❌ Verification failed");
-    // }
+    const verifyRes = await fetch("http://localhost:4000/users/auth/verify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        wallet: publicKey.toString(),
+        signature: bs58.encode(signedMessage),
+        nonce,
+      }),
+      credentials: "include",
+    });
+    const data = await verifyRes.json();
+    if(data.message === "Verified"){
+      setVisibleForm(true)
+    }
   }
 
   return (
@@ -48,6 +47,16 @@ export function HandleSignMessage() {
       <button className="bg-blue-600 p-2" onClick={getNonce}>
         Sign message
       </button>
+      {visibleForm &&  <form action="submit">
+        <label >Name:</label>
+        <input type="text" placeholder="Enter Name" />
+        <label >Email:</label>
+        <input type="text" placeholder="Enter Email" />
+        <label >Phone No:</label>
+        <input type="text" placeholder="Enter number" />
+        <label >something:</label>
+        <input type="text" placeholder="Enter something" />
+      </form>}
     </div>  
   );
 }
