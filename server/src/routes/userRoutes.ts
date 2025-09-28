@@ -67,6 +67,7 @@ userRouter.post("/auth/verify",async  (req, res) => {
       })
       res.json({message:"new user"})
     }else{
+      //exsisting user
       res.json({message:"exsisting user"})
     }
 
