@@ -16,7 +16,7 @@ const sizeStyles ={
 
 const varientStyles ={
     "primary":"bg-cyan-300  text-black",
-    "secondary":"bg-gray-200  text-white"
+    "secondary":"bg-gray-200  text-black"
 }
 
 const Button = (props: buttonProps) => {
@@ -24,7 +24,9 @@ const Button = (props: buttonProps) => {
     <div>
       <button
         className={`${varientStyles[props.varient]} ${sizeStyles[props.size]}
-          transition-all border border-slate-800  rounded-2xl cursor-pointer  hover:-translate-y-1  `}
+           opacity-90
+          transition-all border border-slate-800 font-extrabold text-md rounded-2xl cursor-pointer  hover:-translate-y-1  `}
+          onClick={props.onClick}
       >
         {props.text}
       </button>

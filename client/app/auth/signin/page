@@ -1,4 +1,4 @@
-import { Wallet } from '../wallet'
+import { Wallet } from '../wallet.tsx'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { HandleSignMessage } from './handleSignMessage';
 
