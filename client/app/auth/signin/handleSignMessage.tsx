@@ -17,7 +17,11 @@ export function HandleSignMessage() {
       console.log(signMessage)
       return;
     }
-    const nonceRes = await fetch("http://localhost:4000/users/auth/nonce");
+    const nonceRes = await fetch("http://localhost:4000/users/auth/nonce",{
+      method:"POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({wallet:publicKey.toString() })
+    });
     const { nonce } = await nonceRes.json();
 
     const message = `Please sign this message to verify ownership.\nNonce: ${nonce}`;
@@ -37,7 +41,7 @@ export function HandleSignMessage() {
       credentials: "include",
     });
     const data = await verifyRes.json();
-    if(data.message === "Verified"){
+    if(data.message === "new user"){
       setVisibleForm(true)
     }
   }
