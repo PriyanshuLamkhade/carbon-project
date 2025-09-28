@@ -31,4 +31,5 @@ const Button = (props: buttonProps) => {
     </div>
   );
 };
-
+
+export default Button;
