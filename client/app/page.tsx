@@ -3,6 +3,7 @@ import { Navbar } from "./components/navbar";
 import Button from "./components/ui/Button";
 
 export default function Home() {
+ 
   return (
     <div>
       <div className="fixed top-0 left-0 w-full z-10">
@@ -24,7 +25,7 @@ export default function Home() {
           <h1>With Blockchain Transparency</h1>
         </div>
         <br />
-        <Button text="Get Started" varient="primary" size="md" />
+        <Button text="Get Started" varient="primary" size="md"  onClick(()=>{navigate("/signin")})/>
       </div>
 
       <div></div>
