@@ -2,6 +2,10 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 import jwt from 'jsonwebtoken'
 import cors from 'cors'
+import {PrismaClient } from "@prisma/client"
+
+export const db = new PrismaClient();
+
 const app = express();
 
 app.use(cookieParser())
