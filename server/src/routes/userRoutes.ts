@@ -4,6 +4,9 @@ import cookieParser from "cookie-parser";
 import { PublicKey } from "@solana/web3.js";
 import { ed25519 } from "@noble/curves/ed25519";
 import jwt from 'jsonwebtoken'
+import 'dotenv/config';
+
+
 const app = express();
 app.use(cookieParser());
 app.use(express.json())
@@ -65,12 +68,15 @@ userRouter.post("/auth/verify",async  (req, res) => {
       await db.users.insertOne({
         wallet: wallet
       })
-      res.json({message:"new user"})
-    }else{
-      //exsisting user
-      res.json({message:"exsisting user"})
+      
     }
+    const getUser = await db.users.findOne({
+      wallet:wallet
+    })
 
+    const userId =  getUser._id
+    const token = jwt.sign({userId}, process.env.JWT_SECRET)
+  
 
   } catch (error) {
     console.error("Verification error:", error);
@@ -83,6 +89,10 @@ userRouter.get("/data", (req, res) => {});
 
 userRouter.post("/userForm", (req, res) => {});
 export default userRouter;
+
+function env(arg0: string) {
+  throw new Error("Function not implemented.");
+}
 //   {
 //   "userId": "12345",
 //   "wallet": "Gabc123...",

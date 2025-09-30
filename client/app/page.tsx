@@ -4,40 +4,11 @@ import Button from "./components/ui/Button";
 import { useRouter } from "next/navigation"; 
 import Cards from "./components/ui/Cards";
 import { ShieldCheck, UserPlus, Workflow } from "lucide-react";
-import { motion } from "framer-motion";
-import AboutPage from "./components/About";
-import Features from "./components/Features";
+
+
 
 export default function Home() {
   const router = useRouter();
-
-  // Animation variants for hero texts
-  const heroTextVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: { delay: i * 0.3, duration: 0.6, ease: "easeOut" }
-    })
-  };
-
-  // Animation variant for the button
-  const buttonVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { opacity: 1, scale: 1, transition: { delay: 0.9, duration: 0.5 } },
-    hover: { scale: 1.05, transition: { duration: 0.3 } }
-  };
-
-  // Animation variants for cards
-  const cardVariants = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: { 
-      opacity: 1, 
-      scale: 1, 
-      transition: { duration: 0.5, ease: "easeOut" } 
-    },
-    hover: { scale: 1.05, boxShadow: "0 8px 15px rgba(0,0,0,0.2)", transition: { duration: 0.3 } }
-  };
 
   return (
     <div>
@@ -49,7 +20,7 @@ export default function Home() {
         id="heroSection"
         className="w-full h-[90vh] bg-cover bg-center flex flex-col justify-center items-center text-center"
         style={{
-          backgroundImage: 'url("/1.jpg")',
+          backgroundImage: 'url("")',
         }}
       >
         <div
@@ -58,26 +29,11 @@ export default function Home() {
           before:w-32 before:h-1.5 before:rounded-full before:bg-gradient-to-r "
           style={{ textShadow: "2px 2px 6px rgba(0,0,0,0.7)" }}
         >
-          {/* Animate each heading line with stagger */}
-          {[ "Track And Trade Blue Carbon", "With Blockchain Transparency" ].map((text, i) => (
-            <motion.h1
-              key={text}
-              custom={i}
-              initial="hidden"
-              animate="visible"
-              variants={heroTextVariants}
-            >
-              {text}
-            </motion.h1>
-          ))}
+          Track And Trade Blue Carbon
+          With Blockchain Transparency
         </div>
         <br />
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          whileHover="hover"
-          variants={buttonVariants}
-        >
+        
           <Button
             text="Get Started"
             varient="primary"
@@ -86,7 +42,7 @@ export default function Home() {
               router.push("/auth/signin");
             }}
           />
-        </motion.div>
+        
       </div>
 
       <div id="cards" className="flex justify-evenly flex-wrap mt-10 mb-10 gap-6 px-6">
@@ -116,15 +72,7 @@ export default function Home() {
             icon: <UserPlus size={35} />,
           },
         ].map(({ title, number, subtext, body, icon }) => (
-          <motion.div
-            key={number}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: false, amount: 0.3 }}
-            variants={cardVariants}
-            whileHover="hover"
-            className="w-full sm:w-[320px]"
-          >
+          
             <Cards
               title={title}
               number={number}
@@ -132,11 +80,10 @@ export default function Home() {
               body={body}
               icon={icon}
             />
-          </motion.div>
+          
         ))}
       </div>
-      <AboutPage/>
-      <Features/>
+     
     </div>
   );
 }

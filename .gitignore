@@ -1,4 +1,23 @@
-**/node_modules/
+
 .env
-dist/
+
 *.log
+# node dependencies
+node_modules/
+
+# Build output
+dist/
+.next/
+out/
+
+# Ignore compiled JS
+*.js
+*.js.map
+*.d.ts
+
+# System files
+.DS_Store
+
+
+.env.local
+.env.*.local
