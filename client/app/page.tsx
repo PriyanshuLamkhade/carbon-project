@@ -3,7 +3,7 @@ import { Navbar } from "./components/navbar";
 import Button from "./components/ui/Button";
 import { useRouter } from "next/navigation"; 
 import Cards from "./components/ui/Cards";
-import { ShieldCheck, UserPlus, Workflow } from "lucide-react";
+import { Key, ShieldCheck, UserPlus, Workflow } from "lucide-react";
 
 
 
@@ -48,6 +48,7 @@ export default function Home() {
       <div id="cards" className="flex justify-evenly flex-wrap mt-10 mb-10 gap-6 px-6">
         {[
           {
+            Key:1,
             title: "How it Works",
             number: 1,
             subtext: "From field to blockchain",
@@ -56,6 +57,7 @@ export default function Home() {
             icon: <Workflow size={35}/>,
           },
           {
+            Key:2,
             title: "Verified Impact",
             number: 2,
             subtext: "Trust through transparency",
@@ -64,6 +66,7 @@ export default function Home() {
             icon: <ShieldCheck size={35}/>,
           },
           {
+            Key:3,
             title: "Get Involved",
             number: 3,
             subtext: "Empowering communities & organizations",
@@ -71,9 +74,10 @@ export default function Home() {
               "Join as a community, NGO, or buyer — register projects, verify sites, or purchase trusted carbon credits.",
             icon: <UserPlus size={35} />,
           },
-        ].map(({ title, number, subtext, body, icon }) => (
+        ].map(({Key, title, number, subtext, body, icon }) => (
           
             <Cards
+            key={Key}
               title={title}
               number={number}
               subtext={subtext}

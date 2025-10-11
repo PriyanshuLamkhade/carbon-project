@@ -42,16 +42,7 @@ export function Wallet({ children }: { children: React.ReactNode }) {
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "25px",
-              flexWrap: "wrap",
-              justifyContent: "space-around",
-              padding: 20,
-            }}
-          >
+          <div>
             <div style={{ display: "flex", gap: "20px" }}>
               <WalletMultiButton />
               <WalletDisconnectButton />
