@@ -7,3 +7,77 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Nonce {
+  pubkey    String   @unique
+  nonce     String
+  createdAt DateTime @default(now())
+}
+
+model User {
+  userId       Int       @id @default(autoincrement())
+  name         String
+  surname      String
+  phonenumber  String
+  organisation String
+  pubkey       String    @unique
+  createdAt    DateTime  @default(now())
+  role         Role      @default(USER)
+  history      History[]
+}
+
+model History {
+  historyId      Int           @id @default(autoincrement())
+  user           User          @relation(fields: [userId], references: [userId])
+  userId         Int
+  carbonId       Carbon?
+  submissionId   Submission?
+  verificationId Verification?
+  status         Status
+  timestamp      DateTime      @default(now())
+}
+
+model Carbon {
+  carbonId      Int  @id @default(autoincrement())
+  carbonCleaned Int?
+  tokensIssued  Int?
+  //txHash String?
+
+  history   History @relation(fields: [historyId], references: [historyId])
+  historyId Int     @unique
+}
+
+model Submission {
+  submissionId   Int      @id @default(autoincrement())
+  //images
+  location       String
+  geoTag         Json?
+  description    String?
+  areaclaim      Int
+  history        History  @relation(fields: [historyId], references: [historyId])
+  historyId      Int      @unique
+  submissionDate DateTime @default(now())
+}
+
+model Verification {
+  verificationId   Int      @id @default(autoincrement())
+  actualArea       Int
+  location         String
+  //verifiedImages
+  history          History  @relation(fields: [historyId], references: [historyId])
+  historyId        Int      @unique
+  verifiedBy       String?
+  verificationDate DateTime @default(now())
+}
+
+enum Role {
+  USER
+  NCCR
+}
+
+enum Status {
+  PENDING
+  INPROGRESS
+  APPROVED
+  REJECTED
+}

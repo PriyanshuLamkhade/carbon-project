@@ -22,7 +22,8 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "prisma": "^6.16.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/bs58": "^4.0.4",
