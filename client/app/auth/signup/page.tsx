@@ -1,5 +1,4 @@
 import { Wallet } from "../wallet";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { SignUpForm } from "./handleSignMessage";
 
 const page = () => {
