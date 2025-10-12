@@ -16,7 +16,7 @@ const sizeStyles ={
 }
 
 const varientStyles ={
-    "primary":"   bg-green-700 border-green-500 text-black",
+    "primary":"   bg-green-700 border-green-500 text-white",
     "secondary":" bg-black text-white border-slate-800"
 }
 

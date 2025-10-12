@@ -8,9 +8,9 @@ import { db } from "../index.js";
 import { z } from "zod";
 import "dotenv/config";
 import { userMiddleware } from "../middleware/users.js";
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET is not defined in the environment variables");
+const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
+if (!JWT_USER_SECRET) {
+  throw new Error("JWT_USER_SECRET is not defined in the environment variables");
 }
 
 const app = express();
@@ -96,7 +96,7 @@ userRouter.post("/auth/signup", async (req, res) => {
 
   await db.nonce.delete({ where: { pubkey: pubkey } });
 
-  const token = jwt.sign({ userId: newUser.userId }, JWT_SECRET, {
+  const token = jwt.sign({ userId: newUser.userId }, JWT_USER_SECRET, {
     expiresIn: "24h",
   });
   return res.cookie("token", token).json({ message: "Signup successful" });
@@ -104,12 +104,12 @@ userRouter.post("/auth/signup", async (req, res) => {
 
 // Signin route
 userRouter.post("/auth/signin", async (req, res) => {
-  const { pubkey, signature, nonce } = req.body;
+  const {name, pubkey, signature, nonce } = req.body;
 
   if (!pubkey || !signature || !nonce)
     return res.status(400).json({ message: "Missing fields" });
 
-  const user = await db.user.findUnique({ where: { pubkey: pubkey } });
+  const user = await db.user.findUnique({ where: { pubkey: pubkey,name } });
   if (!user) return res.status(404).json({ message: "User not found" });
 
   const isValid = await verifySignature(pubkey, signature, nonce);
@@ -117,7 +117,7 @@ userRouter.post("/auth/signin", async (req, res) => {
 
   await db.nonce.delete({ where: { pubkey: pubkey } });
 
-  const token = jwt.sign({ userId: user.userId }, JWT_SECRET, {
+  const token = jwt.sign({ userId: user.userId }, JWT_USER_SECRET, {
     expiresIn: "24h",
   });
   return res.cookie("token", token).json({ message: "Signin successful" });

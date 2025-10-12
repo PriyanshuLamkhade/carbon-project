@@ -17,7 +17,7 @@ export const Navbar = () => {
 
   return (
     <div
-      className={`transition-all duration-500 ease-in-out hidden sm:flex py-6 text-sm md:text px-4 md:px-8 rounded-full translate-y-4
+      className={`transition-all duration-500 ease-in-out hidden sm:flex py-5 text-sm md:text px-4 md:px-8 rounded-full translate-y-4
         ${
           scrolled
             ? "w-[90vw] mx-auto border border-[#c0bebe] bg-gradient-to-br from-white/30 to-black/20 backdrop-blur-[30px] items-baseline justify-between"
@@ -27,12 +27,12 @@ export const Navbar = () => {
       style={{}}
     >
       {/* Logo */}
-      <h1 className="text-2xl font-extrabold flex-shrink-0">LayerZero</h1>
+      <h1 className="text-white text-3xl font-extrabold flex-shrink-0">LayerZero</h1>
 
       {/* Menu + Buttons */}
       <div className={`flex items-center  text-white text-xl font-bold ${scrolled ? "gap-25 " : "gap-10"}`}>
         {["Home", "About", "Features", "FAQ"].map((item) => (
-          <h4 key={item} className="cursor-pointer hover:underline">
+          <h4 key={item} className=" cursor-pointer hover:underline">
             {item}
           </h4>
         ))}

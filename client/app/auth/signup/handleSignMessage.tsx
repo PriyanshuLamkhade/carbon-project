@@ -3,19 +3,22 @@ import Button from "@/app/components/ui/Button";
 import InputBox from "@/app/components/ui/InputBox";
 import { useWallet } from "@solana/wallet-adapter-react";
 import bs58 from "bs58";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export function SignUpForm() {
   const [signedMessage, setSignedMessage] = useState<Uint8Array >();
   const [nonce, setNonce] = useState<string >();
-
   const { publicKey, signMessage } = useWallet();
+  const router = useRouter()
   const nameRef = useRef<HTMLInputElement>(null);
   const surnameRef = useRef<HTMLInputElement>(null);
   const phoneNumberRef = useRef<HTMLInputElement>(null);
   const organisationRef = useRef<HTMLInputElement>(null);
 
+  
   return (
+   
     <div className="flex flex-col gap-10 mt-5">
       <Button
         text="Get Nonce"
@@ -51,6 +54,12 @@ export function SignUpForm() {
             submitForm();
           }}
         />
+        <br />
+        <h3 className="text-blue-700 cursor-pointer hover:text-blue-900"
+        onClick={()=>{
+          router.push("/auth/signin")
+        }}
+        >Already have a account?</h3>
         </span>
       </div>
     </div>

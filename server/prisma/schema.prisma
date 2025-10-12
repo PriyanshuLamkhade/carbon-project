@@ -1,7 +1,6 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
-
 
 datasource db {
   provider = "postgresql"
@@ -27,14 +26,14 @@ model User {
 }
 
 model History {
-  historyId      Int           @id @default(autoincrement())
-  user           User          @relation(fields: [userId], references: [userId])
-  userId         Int
-  carbonId       Carbon?
-  submissionId   Submission?
-  verificationId Verification?
-  status         Status
-  timestamp      DateTime      @default(now())
+  historyId    Int           @id @default(autoincrement())
+  user         User          @relation(fields: [userId], references: [userId])
+  userId       Int
+  carbon       Carbon?
+  submission   Submission?
+  verification Verification?
+  status       Status
+  timestamp    DateTime      @default(now())
 }
 
 model Carbon {
