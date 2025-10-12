@@ -16,34 +16,62 @@ export default function Home() {
         <Navbar />
       </div>
 
-      <div
-        id="heroSection"
-        className="w-full h-[90vh] bg-cover bg-center flex flex-col justify-center items-center text-center"
-        style={{
-          backgroundImage: 'url("")',
+      
+<div
+  id="heroSection"
+  className="relative w-full h-[100vh] flex bg-fixed bg-center bg-cover"
+  style={{
+    backgroundImage: 'url("/Mangroves_at_sunset.jpg")',
+  }}
+>
+  {/* Optional: subtle dark overlay */}
+  <div className=" absolute inset-0 bg-black/40 z-0" />
+
+  {/* Left Glass Panel */}
+  <div className="relative z-5 w-full md:w-[50%] h-full flex items-center px-8 md:px-16 bg-white/10 backdrop-blur-md border-r border-white/20">
+    <div className="space-y-8 w-full">
+      <h1
+  className="text-4xl md:text-5xl font-extrabold leading-tight text-transparent bg-clip-text text0str"
+  style={{
+    backgroundImage: 'url("/Mangroves_at_sunset.jpg")',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center center', // changed to center to sync with hero
+    backgroundAttachment: 'fixed',       // important: fixed like hero background
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    
+    
+  }}
+>
+  Track And Trade Blue Carbon <br />
+  With Blockchain Transparency
+</h1>
+
+      <Button
+        text="Get Started"
+        variant="primary"
+        size="lg"
+        onClick={() => {
+          router.push("/auth/signin");
         }}
-      >
-        <div
-          className="text-4xl font-extrabold text-center mb-12 text-white relative inline-block pb-3
-          before:block before:absolute before:bottom-0 before:left-1/2 before:-translate-x-1/2
-          before:w-32 before:h-1.5 before:rounded-full before:bg-gradient-to-r "
-          style={{ textShadow: "2px 2px 6px rgba(0,0,0,0.7)" }}
-        >
-          Track And Trade Blue Carbon
-          With Blockchain Transparency
-        </div>
-        <br />
-        
-          <Button
-            text="Get Started"
-            varient="primary"
-            size="md"
-            onClick={() => {
-              router.push("/auth/signin");
-            }}
-          />
-        
-      </div>
+      />
+    </div>
+  </div>
+
+  {/* Right side remains empty, shows background */}
+  <div className="hidden md:block w-[50%]" />
+</div>
+
+
+
+
+
+
+
+
+
+
+
 
       <div id="cards" className="flex justify-evenly flex-wrap mt-10 mb-10 gap-6 px-6">
         {[

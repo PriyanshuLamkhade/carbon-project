@@ -4,9 +4,10 @@ import cookieParser from "cookie-parser";
 import { PublicKey } from "@solana/web3.js";
 import { ed25519 } from "@noble/curves/ed25519";
 import jwt from 'jsonwebtoken'
-import 'dotenv/config';
 import { db } from "../index.js";
 import { z } from "zod";
+import 'dotenv/config';
+import { userMiddleware } from "../middleware/users.js";
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
   throw new Error("JWT_SECRET is not defined in the environment variables");
@@ -121,7 +122,7 @@ userRouter.post("/auth/signin", async (req, res) => {
 
 
 
-userRouter.get("/history", (req, res) => {});
+userRouter.get("/history",userMiddleware, (req, res) => {});
 
 userRouter.get("/data", (req, res) => {});
 
@@ -131,55 +132,3 @@ export default userRouter;
 function env(arg0: string) {
   throw new Error("Function not implemented.");
 }
-//   {
-//   "userId": "12345",
-//   "pubkey": "Gabc123...",
-//   "role": "ngo"
-//   }
-
-// userRouter.post("/auth/verify",async  (req, res) => {
-//   const { pubkey, signature, nonce } = req.body;
-
-//   if (!pubkey || !signature || !nonce) {
-//     return res.status(400).json({ message: "Missing fields" });
-//   }
-
-//   const message = new TextEncoder().encode(`Please sign this message to verify ownership.\nNonce: ${nonce}`); //donot change this
-
-//   try {
-//     const pubKey = new PublicKey(pubkey).toBytes(); // Convert base58 to Uint8Array
-//     const sigUint8 = bs58.decode(signature); // Decode signature from base58
-//     const storedNonce = await db.nonce.findUnique({ pubkey });
-//     if (!storedNonce || storedNonce.nonce !== nonce) {
-//       return res.status(400).json({ message: "Invalid or expired nonce" });
-//     }
-//     const verified = ed25519.verify(sigUint8, message, pubKey);
-
-//     if (!verified) {
-//       return res.status(401).json({ message: "Message signature invalid!" });
-//     }
-
-//     const nonceRecord = await db.users.findUnique({
-//       pubkey: pubkey
-//     });
-
-//     if(!nonceRecord){
-//       //new user
-//       await db.users.insertOne({
-//         pubkey: pubkey
-//       })
-      
-//     }
-//     const getUser = await db.users.findUnique({
-//       pubkey:pubkey
-//     })
-
-//     const userId =  getUser._id
-//     const token = jwt.sign({userId}, JWT_SECRET!, { expiresIn: "24h" })
-//     res.cookie("token",token  )
-
-//   } catch (error) {
-//     console.error("Verification error:", error);
-//     return res.status(500).json({ message: "Internal server error" });
-//   }
-// });

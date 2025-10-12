@@ -3,9 +3,10 @@ import React from "react";
 interface buttonProps {
   
   text: string;
-  varient: "primary" | "secondary";
+  variant: "primary" | "secondary";
   size: "sm" | "md" | "lg";
   onClick?: ()=>void;
+  className?: string
 }
 const sizeStyles ={
     "sm":"px-4 py-1.5",
@@ -15,17 +16,17 @@ const sizeStyles ={
 }
 
 const varientStyles ={
-    "primary":"bg-cyan-300  text-black",
-    "secondary":"bg-gray-200  text-black"
+    "primary":"   bg-green-700 border-green-500 text-black",
+    "secondary":" bg-black text-white border-slate-800"
 }
 
 const Button = (props: buttonProps) => {
   return (
     <div>
       <button
-        className={`${varientStyles[props.varient]} ${sizeStyles[props.size]}
-           opacity-90
-          transition-all border border-slate-800 font-extrabold text-md rounded-2xl cursor-pointer  hover:-translate-y-1  `}
+        className={`${varientStyles[props.variant]} ${sizeStyles[props.size]} ${props.className}
+          transition-all duration-300 border    font-extrabold text-base rounded-2xl cursor-pointer hover:-translate-y-1 px-4 py-2
+          `}
           onClick={props.onClick}
       >
         {props.text}

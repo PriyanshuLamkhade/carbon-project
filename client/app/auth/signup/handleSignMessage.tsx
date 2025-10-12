@@ -19,15 +19,15 @@ export function SignUpForm() {
     <div className="flex flex-col gap-10 mt-5">
       <Button
         text="Get Nonce"
-        varient="secondary"
+        variant="secondary"
         size="md"
         onClick={() => {
           getNonce();
         }}
       />
-      <div className="flex flex-col">
-        <h1 className="font-extrabold text-2xl">Second Step:</h1>
-        <br />
+      <div className="flex flex-col gap-2">
+       
+     
         <label>Name:</label>
         <InputBox reference={nameRef} placeholder="Enter Your Name" />
 
@@ -41,14 +41,17 @@ export function SignUpForm() {
           reference={organisationRef}
           placeholder="Enter Organisation Name"
         />
-        <Button
+        <span className="relative">
+
+        <Button className={"mt-4"}
           text="Submit"
-          varient="primary"
+          variant="primary"
           size="md"
           onClick={() => {
             submitForm();
           }}
         />
+        </span>
       </div>
     </div>
   );

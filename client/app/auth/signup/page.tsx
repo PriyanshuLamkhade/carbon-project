@@ -3,9 +3,8 @@ import { SignUpForm } from "./handleSignMessage";
 
 const page = () => {
   return (
-    <div className=" h-screen w-full items-center">
-     <h1 className="font-extrabold text-2xl">First Step:</h1>
-      
+    <div className=" h-screen w-full items-center flex flex-col justify-center bg-amber-200">
+     
       <Wallet>
         
         <SignUpForm />
