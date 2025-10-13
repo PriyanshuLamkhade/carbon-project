@@ -122,8 +122,26 @@ userRouter.post("/auth/signin", async (req, res) => {
   const token = jwt.sign({ userId: user.userId }, JWT_USER_SECRET, {
     expiresIn: "24h",
   });
-  return res.cookie("token", token).json({ message: "Signin successful" });
+ res.cookie("token", token, {
+  httpOnly: true,          // Required for security
+  secure: false,           // false for localhost (true only on HTTPS)
+  sameSite: "lax",         // "lax" is fine for same-origin-ish setup
+  // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
+  path: "/" 
+}).json({ message: "Signin successful" });
 });
+
+userRouter.get("/userDetails",userMiddleware,async (req,res)=>{
+ try {
+   const userId = req.userId;
+   
+   const details = await db.user.findUnique({where:{userId:userId}})
+   res.json({ userDetails: details });
+ 
+ } catch (error) {
+  res.json({error})
+ }
+})
 
 userRouter.post("/userForm", userMiddleware, async (req, res) => {
   //add image geotag submission later

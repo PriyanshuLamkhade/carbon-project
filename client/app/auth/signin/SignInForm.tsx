@@ -33,7 +33,10 @@ const SignInForm = () => {
       <Button
         size="md"
         variant="primary"
-        onClick={() => {signIn()}}
+        onClick={() => {
+          signIn()
+          router.push("/form")
+        }}
         text="Submit"
         className="mt-5 mb-5"
       />
@@ -57,6 +60,8 @@ const SignInForm = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pubkey: publicKey.toString() }),
+        credentials: 'include'
+
       });
       const json = await nonceRes.json();
       setNonce(json.nonce);
@@ -80,6 +85,7 @@ async function signIn(){
           signature: signedMessage ? bs58.encode(signedMessage) : null,
           nonce,
         }),
+        credentials: 'include'
       });
      }
      return siginRes

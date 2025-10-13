@@ -7,13 +7,13 @@ import {PrismaClient } from "@prisma/client"
 export const db = new PrismaClient();
 
 const app = express();
-
-app.use(cookieParser())
-app.use(express.json())
 app.use(cors({
   credentials:true,
   origin:"http://localhost:3000"
 }))
+
+app.use(cookieParser())
+app.use(express.json())
 
 import userRoutes from './routes/userRoutes.js';
 import adminRoutes from './routes/adminRoute.js'; 
