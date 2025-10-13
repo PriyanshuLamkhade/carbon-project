@@ -10,7 +10,9 @@ import "dotenv/config";
 import { userMiddleware } from "../middleware/users.js";
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 if (!JWT_USER_SECRET) {
-  throw new Error("JWT_USER_SECRET is not defined in the environment variables");
+  throw new Error(
+    "JWT_USER_SECRET is not defined in the environment variables"
+  );
 }
 
 const app = express();
@@ -104,12 +106,12 @@ userRouter.post("/auth/signup", async (req, res) => {
 
 // Signin route
 userRouter.post("/auth/signin", async (req, res) => {
-  const {name, pubkey, signature, nonce } = req.body;
+  const { name, pubkey, signature, nonce } = req.body;
 
   if (!pubkey || !signature || !nonce)
     return res.status(400).json({ message: "Missing fields" });
 
-  const user = await db.user.findUnique({ where: { pubkey: pubkey,name } });
+  const user = await db.user.findUnique({ where: { pubkey: pubkey, name } });
   if (!user) return res.status(404).json({ message: "User not found" });
 
   const isValid = await verifySignature(pubkey, signature, nonce);
@@ -126,7 +128,21 @@ userRouter.post("/auth/signin", async (req, res) => {
 userRouter.post("/userForm", userMiddleware, async (req, res) => {
   //add image geotag submission later
   try {
-    const { location, description, areaclaim } = req.body;
+    const {
+      location,
+      description,
+      areaclaim,
+      species1,
+      speacies1_count,
+      species2,
+      speacies2_count,
+      species3,
+      speacies3_count,
+      plantationDate,
+      CommunityInvolvementLevel,
+      MGNREGAPersonDays,
+      trained,
+    } = req.body;
     const userId = req.userId;
 
     if (!userId) {
@@ -151,41 +167,53 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
         location,
         description,
         areaclaim,
+        species1,
+        speacies1_count,
+        species2: species2 || null,
+        speacies2_count: speacies2_count || null,
+        species3: species3 || null,
+        speacies3_count: speacies3_count || null,
+        plantationDate,
+        CommunityInvolvementLevel,
+        MGNREGAPersonDays,
+        trained,
         history: { connect: { historyId: history.historyId } },
       },
     });
-    res.json({ message: "Submission Completed", submission });
+    res.json({
+      message: "Submission Completed",
+      submissionId: submission.submissionId,
+    });
   } catch (error) {
     res.json(error);
   }
 });
 
 userRouter.get("/allhistory", userMiddleware, async (req, res) => {
-   try {
+  try {
     const userId = req.userId;
-   if (!userId) {
+    if (!userId) {
       return res
         .status(401)
         .json({ message: "Unauthorized: No user ID found" });
     }
- 
+
     const histories = await db.history.findMany({
-      where:{
-        userId:userId
+      where: {
+        userId: userId,
       },
       include: {
-carbon: true,
-submission: true,
-verification: true
-},
-      orderBy:{
-        timestamp:'desc'
-      }
-    })
+        carbon: true,
+        submission: true,
+        verification: true,
+      },
+      orderBy: {
+        timestamp: "desc",
+      },
+    });
     return res.status(200).json({ histories });
-    
   } catch (error) {
-     return res.status(500).json({ message: "Failed to fetch history", error });
+    return res.status(500).json({ message: "Failed to fetch history", error });
   }
 });
 

@@ -47,15 +47,25 @@ model Carbon {
 }
 
 model Submission {
-  submissionId   Int      @id @default(autoincrement())
+  submissionId              Int      @id @default(autoincrement())
   //images
-  location       String
-  geoTag         Json?
-  description    String?
-  areaclaim      Int
-  history        History  @relation(fields: [historyId], references: [historyId])
-  historyId      Int      @unique
-  submissionDate DateTime @default(now())
+  location                  String
+  geoTag                    Json?
+  description               String?
+  areaclaim                 Int
+  species1                  String
+  speacies1_count           Int
+  species2                  String?
+  speacies2_count           Int?
+  species3                  String?
+  speacies3_count           Int?
+  plantationDate            String
+  CommunityInvolvementLevel Level
+  MGNREGAPersonDays         Int
+  trained                   Boolean
+  history                   History  @relation(fields: [historyId], references: [historyId])
+  historyId                 Int      @unique
+  submissionDate            DateTime @default(now())
 }
 
 model Verification {
@@ -79,4 +89,10 @@ enum Status {
   INPROGRESS
   APPROVED
   REJECTED
+}
+
+enum Level {
+  Low
+  Medium
+  High
 }
