@@ -101,7 +101,14 @@ userRouter.post("/auth/signup", async (req, res) => {
   const token = jwt.sign({ userId: newUser.userId }, JWT_USER_SECRET, {
     expiresIn: "24h",
   });
-  return res.cookie("token", token).json({ message: "Signup successful" });
+  res.cookie("token", token, {
+  httpOnly: true,          // Required for security
+  secure: false,           // false for localhost (true only on HTTPS)
+  sameSite: "lax",         // "lax" is fine for same-origin-ish setup
+  // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
+  path: "/" 
+}).json({ message: "Signup successful" });
+
 });
 
 // Signin route
@@ -151,11 +158,11 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
       description,
       areaclaim,
       species1,
-      speacies1_count,
+      species1_count,
       species2,
-      speacies2_count,
+      species2_count,
       species3,
-      speacies3_count,
+      species3_count,
       plantationDate,
       CommunityInvolvementLevel,
       MGNREGAPersonDays,
@@ -186,11 +193,11 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
         description,
         areaclaim,
         species1,
-        speacies1_count,
+        species1_count,
         species2: species2 || null,
-        speacies2_count: speacies2_count || null,
+        species2_count: species2_count || null,
         species3: species3 || null,
-        speacies3_count: speacies3_count || null,
+        species3_count: species3_count || null,
         plantationDate,
         CommunityInvolvementLevel,
         MGNREGAPersonDays,
