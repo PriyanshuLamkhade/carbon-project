@@ -15,6 +15,18 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Smooth scroll handler
+  const handleScrollTo = (id: string) => {
+    if (id === "Home") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      const element = document.getElementById(id.toLowerCase());
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   return (
     <div
       className={` transition-all duration-500 delay-75 ease-in-out hidden sm:flex py-5 text-sm md:text px-4 md:px-8 rounded-full m-4
@@ -24,22 +36,29 @@ export const Navbar = () => {
             : " px-4 justify-between items-baseline bg-transparent border-none backdrop-blur-0"
         }
       `}
-
     >
       {/* Logo */}
-      <h1 className="text-white md:text-3xl font-extrabold flex-shrink-0 mr-2">LayerZero</h1>
+      <h1 className="text-white md:text-3xl font-extrabold flex-shrink-0 mr-2 cursor-pointer" onClick={() => handleScrollTo("Home")}>
+        LayerZero
+      </h1>
 
       {/* Menu + Buttons */}
       <div className={` flex items-center gap-7  text-white md:text-xl font-bold  `}>
         {["Home", "About", "Features", "FAQ"].map((item) => (
-          <h4 key={item} className={ `cursor-pointer hover:underline p-1 ${!scrolled && "backdrop-blur-[1px] p-1 " } `}>
+          <button
+            key={item}
+            onClick={() => handleScrollTo(item)}
+            className={`cursor-pointer hover:underline p-1 bg-transparent border-none text-white ${
+              !scrolled ? "backdrop-blur-[1px]" : ""
+            }`}
+            type="button"
+          >
             {item}
-          </h4>
+          </button>
         ))}
-        
 
         <Button
-          text="Login"
+          text="Sign in"
           variant="primary"
           size="sm"
           onClick={() => {
@@ -48,14 +67,13 @@ export const Navbar = () => {
         />
 
         <Button
-          text="DashBoard"
+          text="Sign up"
           variant="secondary"
           size="sm"
           onClick={() => {
             router.push("/auth/signup");
           }}
         />
-        
       </div>
     </div>
   );

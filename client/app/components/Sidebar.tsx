@@ -9,12 +9,12 @@ import {
 } from 'lucide-react'
 import React from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { SideIcons } from './ui/SideIcons'
 
 const Sidebar = () => {
   const pathname = usePathname()
-
+const router = useRouter()
   const links = [
     { href: '/dashboard/home', text: 'Home', icon: <HomeIcon size="20px" /> },
     { href: '/dashboard/submissions', text: 'My Submissions', icon: <User size="20px" /> },
@@ -43,8 +43,11 @@ const Sidebar = () => {
       </div>
 
       <button className="bg-red-500  ml-2 px-6 py-2  mt-10 self-start md:mx-8 hover:bg-red-400 cursor-pointer 
-      transition-all duration-300 border    font-extrabold text-base rounded-2xl  hover:-translate-y-1 
-      ">
+      transition-all duration-300 border    font-extrabold text-base rounded-2xl  hover:-translate-y-1"
+      onClick={()=>{
+        document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        router.push("/")
+      }}>
         Log Out
       </button>
     </div>

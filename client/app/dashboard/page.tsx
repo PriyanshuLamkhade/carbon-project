@@ -5,10 +5,7 @@ async function DashBoard() {
 
   return (
     <>
-      <div className=' '>
-        <SidebarComponent/>
-      </div>
-
+      Nothing Here+
     </>)
 }
 

@@ -1,6 +1,8 @@
+'use client'
 import TableComponent from "@/app/components/TableComponent";
 import Button from "@/app/components/ui/Button";
 import Cards from "@/app/components/ui/Cards";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 const page = () => {
@@ -48,7 +50,7 @@ const cardData = [
     body: "Submissions",
   },
 ];
-
+const router = useRouter()
 
 
   return (
@@ -59,7 +61,7 @@ const cardData = [
         <h1 className="text-3xl font-bold ">Welcome, {"x"}!</h1> 
         <h2 className="text-xl">Keep Making Imapact!</h2>
         </div>
-       <Button size="md" variant="primary" text={"New Submission"}/>
+       <Button size="md" variant="primary" text={"New Submission"} onClick={()=>router.push("/form")}/>
       </div>
        {/* smplify later */}
       <div id="cards" className="flex flex-wrap justify-between py-3 gap-2">

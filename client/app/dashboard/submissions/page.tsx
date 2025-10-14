@@ -3,6 +3,7 @@ import TableWithActions from '@/app/components/TableWithActionsProps';
 
 import Button from '@/app/components/ui/Button'
 import InputBox from '@/app/components/ui/InputBox';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 
 const page = () => {
@@ -13,16 +14,16 @@ const page = () => {
   { userId: 104, location: 'London', status: 'Rejected' },
 ];
 const [statusFilter, setStatusFilter] = useState('all');
-
+const router = useRouter()
   return (
-    <div>
+    <div className='space-y-6 text-gray-700'>
       <div id="top" className="flex justify-between items-center flex-wrap  py-1 mb-10">
         <div>
 
         <h1 className="text-3xl font-bold ">Submissions</h1> 
         
         </div>
-       <Button size="md" variant="primary" text={"New Submission"}/>
+       <Button size="md" variant="primary" text={"New Submission"} onClick={()=>router.push("/form")}/>
       </div>
       <div id='filter' className='flex flex-wrap my-4 gap-2'>
         <InputBox placeholder='Search UserId...'/>

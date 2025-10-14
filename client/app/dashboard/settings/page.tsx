@@ -5,7 +5,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div>
+    <div className='space-y-6 text-gray-700'>
        <div id="top" className="flex justify-between items-center flex-wrap  py-1 mb-10">
         <div>
 
