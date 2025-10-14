@@ -1,17 +1,15 @@
 import React from 'react'
+import SidebarComponent from '../components/Sidebar'
 
 async function DashBoard() {
-    //  await fetch("http://localhost:4000/users/auth/signin", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify({
-        // credentials: "include"
-    //     }),
-    //   });
-  return (
-    <div>Dashboard</div>
 
-  )
+  return (
+    <>
+      <div className=' '>
+        <SidebarComponent/>
+      </div>
+
+    </>)
 }
 
 export default DashBoard

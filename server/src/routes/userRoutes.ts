@@ -228,6 +228,7 @@ userRouter.get("/allhistory", userMiddleware, async (req, res) => {
         userId: userId,
       },
       include: {
+        
         carbon: true,
         submission: true,
         verification: true,
@@ -236,7 +237,7 @@ userRouter.get("/allhistory", userMiddleware, async (req, res) => {
         timestamp: "desc",
       },
     });
-    return res.status(200).json({ histories });
+    return res.status(200).json({ histories:histories });
   } catch (error) {
     return res.status(500).json({ message: "Failed to fetch history", error });
   }

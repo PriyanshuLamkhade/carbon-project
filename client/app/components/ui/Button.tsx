@@ -25,7 +25,7 @@ const Button = (props: buttonProps) => {
     <div>
       <button
         className={`${varientStyles[props.variant]} ${sizeStyles[props.size]} ${props.className}
-          transition-all duration-300 border    font-extrabold text-base rounded-2xl ṣ hover:-translate-y-1 cursor-pointer
+          transition-all duration-300 border    font-extrabold text-base rounded-2xl  hover:-translate-y-1 cursor-pointer
           `}
           onClick={props.onClick}
       >
