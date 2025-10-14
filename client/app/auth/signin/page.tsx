@@ -1,16 +1,26 @@
-import React from 'react'
-import { Wallet } from '../wallet'
-import SignInForm from './SignInForm'
+'use client';
 
-const page = () => {
+import dynamic from 'next/dynamic';
+
+// Lazy-load Wallet and SignInForm, client-side only
+const Wallet = dynamic(() => import('../wallet').then(mod => mod.Wallet), {
+  ssr: false,
+  loading: () => <div>Loading Wallet...</div>,
+});
+
+const SignInForm = dynamic(() => import('./SignInForm'), {
+  ssr: false,
+  loading: () => <div>Loading Form...</div>,
+});
+
+const Page = () => {
   return (
-     <div className=" h-screen w-full items-center flex flex-col justify-center bg-amber-200">
-        
-        <Wallet>
-            <SignInForm />
-        </Wallet>
+    <div className="h-screen w-full items-center flex flex-col justify-center bg-amber-200">
+      <Wallet>
+        <SignInForm />
+      </Wallet>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default Page;

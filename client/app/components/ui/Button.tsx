@@ -16,7 +16,7 @@ const sizeStyles ={
 }
 
 const varientStyles ={
-    "primary":"   bg-green-700 border-green-500 text-white",
+    "primary":"   bg-green-500 border-green-600 text-white",
     "secondary":" bg-black text-white border-slate-800"
 }
 
@@ -25,7 +25,7 @@ const Button = (props: buttonProps) => {
     <div>
       <button
         className={`${varientStyles[props.variant]} ${sizeStyles[props.size]} ${props.className}
-          transition-all duration-300 border    font-extrabold text-base rounded-2xl cursor-pointer hover:-translate-y-1 px-4 py-2
+          transition-all duration-300 border    font-extrabold text-base rounded-2xl ṣ hover:-translate-y-1 cursor-pointer
           `}
           onClick={props.onClick}
       >

@@ -7,7 +7,7 @@ interface CardProps {
 }
 const Cards = (props: CardProps) => {
   return (
-    <div className="w-80 h-80 bg-white rounded-xl shadow-[0px_0px_15px_rgba(0,0,0,0.09)] p-9 space-y-3 relative overflow-hidden">
+    <div className="transition-all duration-500 delay-75 w-80 h-80 bg-white rounded-xl shadow-[0px_0px_15px_rgba(0,0,0,0.09)] p-9 space-y-3 relative overflow-hidden hover:-translate-2">
       <div className="w-24 h-32 bg-violet-500 rounded-full absolute -right-6 -top-8">
         <p className="absolute bottom-10 left-7 text-white text-2xl">{props.number}</p>
       </div>

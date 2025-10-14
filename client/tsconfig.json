@@ -1,8 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -19,9 +22,24 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
-    }
+      "@/*": [
+        "./*"
+      ]
+    },
+    "allowJs": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/auth/signup/handleSignMessage.tsx", "app/auth/wallet.tsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "app/auth/signup/handleSignMessage.tsx",
+    "app/auth/wallet.tsx",
+    "app/auth/signin/page.tsx",
+    "app/auth/wallet",
+    "app/auth/signin/SignInForm.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
