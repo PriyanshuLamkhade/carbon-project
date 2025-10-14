@@ -9,7 +9,7 @@ import bs58 from "bs58";
 
 const SignInForm = () => {
   const [signedMessage, setSignedMessage] = useState<Uint8Array>();
-  const [response,setResponse] = useState()
+  const [response, setResponse] = useState();
   const [nonce, setNonce] = useState<string>();
   const { publicKey, signMessage } = useWallet();
   const nameRef = useRef<HTMLInputElement>(null);
@@ -33,9 +33,14 @@ const SignInForm = () => {
       <Button
         size="md"
         variant="primary"
-        onClick={() => {
-          signIn()
-          router.push("/form")
+        onClick={async () => {
+          const res = await signIn();
+          if (res && res.ok) {
+            router.push("/dashboard/home");
+          } else {
+            console.error("Sign-in failed");
+            
+          }
         }}
         text="Submit"
         className="mt-5 mb-5"
@@ -60,8 +65,7 @@ const SignInForm = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pubkey: publicKey.toString() }),
-        credentials: 'include'
-
+        credentials: "include",
       });
       const json = await nonceRes.json();
       setNonce(json.nonce);
@@ -72,11 +76,12 @@ const SignInForm = () => {
     }
   }
 
-async function signIn(){
-    let siginRes
-    const name = nameRef.current?.value;
-     if (publicKey) {
-       siginRes = await fetch("http://localhost:4000/users/auth/signin", {
+  async function signIn() {
+    try {
+      const name = nameRef.current?.value;
+      if (!publicKey) return null;
+
+      const signInRes = await fetch("http://localhost:4000/users/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -85,11 +90,15 @@ async function signIn(){
           signature: signedMessage ? bs58.encode(signedMessage) : null,
           nonce,
         }),
-        credentials: 'include'
+        credentials: "include",
       });
-     }
-     return siginRes
-}
+
+      return signInRes;
+    } catch (err) {
+      console.error("Error during sign-in:", err);
+      return null;
+    }
+  }
 };
 
 export default SignInForm;
