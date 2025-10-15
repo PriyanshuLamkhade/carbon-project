@@ -82,6 +82,7 @@ model Verification {
 enum Role {
   USER
   NCCR
+  ADMIN
 }
 
 enum Status {
