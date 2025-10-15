@@ -4,7 +4,7 @@ import InputBox from "@/app/components/ui/InputBox";
 import { useWallet } from "@solana/wallet-adapter-react";
 import bs58 from "bs58";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import {  useRef, useState } from "react";
 
 export function SignUpForm() {
   const [signedMessage, setSignedMessage] = useState<Uint8Array>();

@@ -1,6 +1,8 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+// import { Wallet } from '../wallet';
+// import SignInForm from './SignInForm';
 
 // Lazy-load Wallet and SignInForm, client-side only
 const Wallet = dynamic(() => import('../wallet').then(mod => mod.Wallet), {
