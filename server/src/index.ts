@@ -16,10 +16,13 @@ app.use(cookieParser())
 app.use(express.json())
 
 import userRoutes from './routes/userRoutes.js';
-import adminRoutes from './routes/adminRoute.js'; 
+import adminRoutes from './routes/adminRoute.js';
+import authRoutes from './routes/authRoutes.js';
+import { authenticateToken, requireRole } from './middleware/auth.js';
 
-app.use('/users', userRoutes); 
-app.use('/admin', adminRoutes); 
+app.use('/auth', authRoutes);
+app.use('/users', authenticateToken, userRoutes);
+app.use('/admin', authenticateToken, requireRole(['ADMIN']), adminRoutes);
 
 
 // Server start
