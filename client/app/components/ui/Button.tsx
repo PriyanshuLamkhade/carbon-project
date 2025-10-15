@@ -3,7 +3,7 @@ import React from "react";
 interface buttonProps {
   
   text: string;
-  variant: "primary" | "secondary";
+  variant: "primary" | "secondary"|"third";
   size: "sm" | "md" | "lg";
   onClick?: ()=>void;
   className?: string
@@ -17,7 +17,8 @@ const sizeStyles ={
 
 const varientStyles ={
     "primary":"   bg-green-500 border-green-600 text-white",
-    "secondary":" bg-black text-white border-slate-800"
+    "secondary":" bg-black text-white border-slate-800",
+    "third":" bg-blue-500 text-white border-slate-800",
 }
 
 const Button = (props: buttonProps) => {
