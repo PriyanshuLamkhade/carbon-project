@@ -1,37 +1,45 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import InputBox from "../components/ui/InputBox";
-import Button from "../components/ui/Button";
+import InputBox from "../../components/ui/InputBox";
+import Button from "../../components/ui/Button";
 import { useRouter } from "next/navigation";
 
+import MapPicker from "@/app/components/InitMap";
+
 function Form() {
+  const [location, setLocation] = useState<{
+    lat: number;
+    lon: number;
+    address: string;
+  } | null>(null);
+
   const router = useRouter();
   const [userDetails, setUserDetails] = useState({
     organisation: "",
     name: "",
   });
-  
-  useEffect(() => {
-    async function callDetails() {
-      const response = await fetch("http://localhost:4000/users/userDetails", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
 
-      if (response.ok) {
-        const data = await response.json();
-        setUserDetails({
-          organisation: data.userDetails.organisation || "",
-          name: data.userDetails.name || "",
-        });
-      } else {
-        console.error("Failed to fetch user details", response.status);
-      }
-    }
+  // useEffect(() => {
+  //   async function callDetails() {
+  //     const response = await fetch("http://localhost:4000/users/userDetails", {
+  //       method: "GET",
+  //       headers: { "Content-Type": "application/json" },
+  //       credentials: "include",
+  //     });
 
-    callDetails();
-  }, []);
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       setUserDetails({
+  //         organisation: data.userDetails.organisation || "",
+  //         name: data.userDetails.name || "",
+  //       });
+  //     } else {
+  //       console.error("Failed to fetch user details", response.status);
+  //     }
+  //   }
+
+  //   callDetails();
+  // }, []);
 
   //  BASIC DETAILS refs
   const locationRef = useRef<HTMLInputElement>(null);
@@ -51,7 +59,8 @@ function Form() {
   // select values can be accessed via state or directly via DOM if needed
 
   return (
-    <div className="max-w-4xl mx-auto my-10 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl shadow-2xl p-10">
+    <div className="max-w-4xl mx-auto my-10 bg-linear-to-br from-green-50 to-green-100 rounded-2xl shadow-2xl p-10">
+      
       <form>
         <div className="border-b border-gray-300 text-center pb-6 mb-8">
           <h1 className="text-4xl font-extrabold text-gray-700">
@@ -60,48 +69,73 @@ function Form() {
         </div>
 
         {/* PERSONAL DETAILS */}
-         <section className="space-y-6 border-b mb-8 pb-8" id="Personal_Details" >
-        <h2 className="text-2xl font-semibold text-gray-700">Personal Details :</h2>
-        <br />
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div>
-            <label htmlFor="name" className="block text-gray-600 font-medium mb-1">
-              Name:
-            </label>
-            <InputBox
-              className="ml-2"
-              placeholder={userDetails.name}
-              isDisabled={true}
-              
-            />
+        <section className="space-y-6 border-b mb-8 pb-8" id="Personal_Details">
+          <h2 className="text-2xl font-semibold text-gray-700">
+            Personal Details :
+          </h2>
+          <br />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-gray-600 font-medium mb-1"
+              >
+                Name:
+              </label>
+              <InputBox
+                className="ml-2"
+                placeholder={userDetails.name}
+                isDisabled={true}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="organization"
+                className="block text-gray-600 font-medium mb-1"
+              >
+                Organization:
+              </label>
+              <InputBox
+                className="ml-2"
+                placeholder={userDetails.organisation}
+                isDisabled={true}
+              />
+            </div>
           </div>
-          <div>
-            <label htmlFor="organization" className="block text-gray-600 font-medium mb-1">
-              Organization:
-            </label>
-            <InputBox
-              className="ml-2"
-              placeholder={userDetails.organisation}
-              isDisabled={true}
-              
-            />
-          </div>
-         
-        </div>
-      </section>
+        </section>
 
         {/* BASIC DETAILS */}
         <section
           id="Basic-Details"
-          className="border-b border-gray-300 pb-6 mb-8"
+          className="border-b border-gray-300 pb-6 mb-3"
         >
           <h2 className="text-3xl font-bold text-gray-700 mb-6">
             Basic Details :
           </h2>
           <div className="flex flex-col gap-6">
+            <div>
+        <h1>Select a Location</h1>
+        <MapPicker setLocation={setLocation} />
+       
+          <div style={{ marginTop: "1rem" }}>
+            <p>
+              <strong>Latitude:</strong> {location?.lat.toFixed(6)}
+            </p>
+            <p>
+              <strong>Longitude:</strong> {location?.lon.toFixed(6)}
+            </p>
+            
+          </div>
+      
+      </div>
             <label className="flex flex-col gap-1 text-gray-600 text-lg">
               Location:
-              <InputBox placeholder="Location" reference={locationRef} className="w-full" />
+              <InputBox
+                placeholder={location?.address ?? "Select location on map"}
+                reference={locationRef}
+                className="w-full"
+                isDisabled={true}
+              />
             </label>
 
             <label className="flex flex-col gap-1 text-gray-600 text-lg">
@@ -113,23 +147,22 @@ function Form() {
                 className="w-full"
               />
             </label>
-
-            <label className="flex flex-col gap-1 text-gray-600 text-lg">
-              Description:
-              <textarea
-                rows={3}
-                cols={30}
-                ref={descriptionRef}
-                className="bg-white  focus:outline-none
-        focus:ring-2 focus:ring-blue-500 focus:border-transparent p-3 rounded-lg resize-none"
-              ></textarea>
-            </label>
           </div>
+          <br />
+          <label className="flex flex-col gap-1 text-gray-600 text-lg">
+            Description:
+            <textarea
+              rows={3}
+              cols={30}
+              ref={descriptionRef}
+              className="bg-white  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent p-3 rounded-lg resize-none"
+            ></textarea>
+          </label>
         </section>
 
         {/* PLANTATION DETAILS */}
         <section
-          className="space-y-6 bg-gradient-to-br from-green-100 to-green-200 p-6 rounded-xl shadow-inner"
+          className="space-y-6 bg-linear-to-br from-green-100 to-green-200 p-6 rounded-xl shadow-inner"
           id="Plantation-Details"
         >
           <h2 className="text-2xl font-semibold text-gray-700 mb-4">
@@ -137,8 +170,14 @@ function Form() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
-              <label className="block text-gray-600 font-medium mb-1">Species 1:</label>
-              <InputBox placeholder="Name" reference={species1Ref} className="w-full" />
+              <label className="block text-gray-600 font-medium mb-1">
+                Species 1:
+              </label>
+              <InputBox
+                placeholder="Name"
+                reference={species1Ref}
+                className="w-full"
+              />
               <InputBox
                 placeholder="Total Trees"
                 type="number"
@@ -148,8 +187,14 @@ function Form() {
             </div>
 
             <div>
-              <label className="block text-gray-600 font-medium mb-1">Species 2:</label>
-              <InputBox placeholder="Name" reference={species2Ref} className="w-full" />
+              <label className="block text-gray-600 font-medium mb-1">
+                Species 2:
+              </label>
+              <InputBox
+                placeholder="Name"
+                reference={species2Ref}
+                className="w-full"
+              />
               <InputBox
                 placeholder="Total Trees"
                 type="number"
@@ -159,8 +204,14 @@ function Form() {
             </div>
 
             <div>
-              <label className="block text-gray-600 font-medium mb-1">Species 3:</label>
-              <InputBox placeholder="Name" reference={species3Ref} className="w-full" />
+              <label className="block text-gray-600 font-medium mb-1">
+                Species 3:
+              </label>
+              <InputBox
+                placeholder="Name"
+                reference={species3Ref}
+                className="w-full"
+              />
               <InputBox
                 placeholder="Total Trees"
                 type="number"
@@ -170,8 +221,14 @@ function Form() {
             </div>
 
             <div>
-              <label className="block text-gray-600 font-medium mb-1">Plantation Date:</label>
-              <InputBox type="date" reference={plantationDateRef} className="w-full" />
+              <label className="block text-gray-600 font-medium mb-1">
+                Plantation Date:
+              </label>
+              <InputBox
+                type="date"
+                reference={plantationDateRef}
+                className="w-full"
+              />
             </div>
 
             <div>
@@ -190,12 +247,20 @@ function Form() {
             </div>
 
             <div>
-              <label className="block text-gray-600 font-medium mb-1">MGNREGA Person Days:</label>
-              <InputBox type="number" reference={mgnregaRef} className="w-full" />
+              <label className="block text-gray-600 font-medium mb-1">
+                MGNREGA Person Days:
+              </label>
+              <InputBox
+                type="number"
+                reference={mgnregaRef}
+                className="w-full"
+              />
             </div>
 
             <div>
-              <label className="block text-gray-600 font-medium mb-1">Trained:</label>
+              <label className="block text-gray-600 font-medium mb-1">
+                Trained:
+              </label>
               <select
                 id="trained"
                 className="bg-white  focus:outline-none
@@ -209,7 +274,6 @@ function Form() {
         </section>
 
         <Button
-        
           text="Submit"
           size="lg"
           variant="third"
@@ -240,9 +304,9 @@ function Form() {
       species3_count: species3CountRef.current?.valueAsNumber,
       plantationDate: plantationDateRef.current?.value,
       MGNREGAPersonDays: mgnregaRef.current?.valueAsNumber,
-      CommunityInvolvementLevel: (document.getElementById(
-        "level"
-      ) as HTMLSelectElement)?.value,
+      CommunityInvolvementLevel: (
+        document.getElementById("level") as HTMLSelectElement
+      )?.value,
       trained: (document.getElementById("trained") as HTMLSelectElement)?.value,
     };
 
@@ -265,6 +329,3 @@ function Form() {
 }
 
 export default Form;
-
-
-
