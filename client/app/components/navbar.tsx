@@ -62,7 +62,7 @@ export const Navbar = () => {
           variant="primary"
           size="sm"
           onClick={() => {
-            router.push("/auth/signin");
+            router.push("/signin");
           }}
         />
 
@@ -71,7 +71,7 @@ export const Navbar = () => {
           variant="secondary"
           size="sm"
           onClick={() => {
-            router.push("/auth/signup");
+            router.push("/signup");
           }}
         />
       </div>

@@ -29,7 +29,7 @@ const InputBox = ({
         w-full max-w-md 
         px-4 py-2
         text-sm sm:text-base
-        text-gray-800 dark:text-white
+        text-gray-800 
         placeholder-gray-400 
         bg-white 
         border border-gray-300 

@@ -18,7 +18,7 @@ const SignInForm = () => {
     <div className="mt-10 gap-3">
       <Button
         className="mb-5"
-        text="Get Nonce"
+        text="Verify Wallet"
         variant="secondary"
         size="md"
         onClick={() => {
@@ -48,7 +48,7 @@ const SignInForm = () => {
       <h3
         className="text-blue-700 cursor-pointer hover:text-blue-900"
         onClick={() => {
-          router.push("/auth/signup");
+          router.push("/signup");
         }}
       >
         Don't have a account?

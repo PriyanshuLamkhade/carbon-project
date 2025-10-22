@@ -14,7 +14,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "plugins": [
       {
@@ -33,11 +33,13 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/auth/signup/handleSignMessage.tsx",
-    "app/auth/wallet.tsx",
-    "app/auth/signin/page.tsx",
-    "app/auth/wallet",
-    "app/auth/signin/SignInForm.tsx"
+    "app/(auth)/signup/handleSignMessage.tsx",
+    "app/(auth)/wallet.tsx",
+    "app/(auth)/signin/page.tsx",
+    "app/(auth)/wallet",
+    "app/(auth)/signin/SignInForm.tsx",
+    ".next\\dev/types/**/*.ts",
+    ".next\\dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

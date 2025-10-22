@@ -19,7 +19,7 @@ export function SignUpForm() {
   return (
     <div className="flex flex-col gap-10 mt-5">
       <Button
-        text="Get Nonce"
+        text="Verify Wallet"
         variant="secondary"
         size="md"
         onClick={() => {
@@ -60,7 +60,7 @@ export function SignUpForm() {
           <h3
             className="text-blue-700 cursor-pointer hover:text-blue-900"
             onClick={() => {
-              router.push("/auth/signin");
+              router.push("/signin");
             }}
           >
             Already have a account?

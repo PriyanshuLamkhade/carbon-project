@@ -19,7 +19,7 @@ const Homepage = () => {
    
          <div
            id="heroSection"
-           className="relative w-full h-[100vh] flex bg-fixed bg-center bg-cover"
+           className="relative w-full h-screen flex bg-fixed bg-center bg-cover"
            style={{
              backgroundImage: 'url("/Mangroves_at_sunset.jpg")',
            }}
@@ -44,7 +44,7 @@ const Homepage = () => {
                  variant="primary"
                  size="lg"
                  onClick={() => {
-                   router.push("/auth/signup");
+                   router.push("/signup");
                  }}
                  
                />
@@ -97,7 +97,7 @@ const Homepage = () => {
          </div>
            
            {/* aboutsection */}
-          <section id="about" className="px-6 md:px-20 py-32 bg-gradient-to-br from-green-50 via-white to-blue-50 min-h-[90vh] ">
+          <section id="about" className="px-6 md:px-20 py-32 bg-linear-to-br from-green-50 via-white to-blue-50 min-h-[90vh] ">
   <div className="max-w-6xl mx-auto text-center">
     <h2 className="text-4xl font-bold text-gray-800 mb-8">🌍 About Layer Zero</h2>
     <p className="text-gray-700 text-lg leading-relaxed max-w-3xl mx-auto">
@@ -150,7 +150,7 @@ const Homepage = () => {
 
 
 {/* faq */}
-<section id="faq" className="px-6 md:px-20 py-32 bg-gradient-to-r from-white via-blue-50 to-white min-h-[80vh]">
+<section id="faq" className="px-6 md:px-20 py-32 bg-linear-to-r from-white via-blue-50 to-white min-h-[80vh]">
   <div className="max-w-5xl mx-auto">
     <h2 className="text-4xl font-bold text-gray-800 text-center mb-12">❓ Frequently Asked Questions</h2>
     <div className="space-y-6 text-gray-700 text-lg">
