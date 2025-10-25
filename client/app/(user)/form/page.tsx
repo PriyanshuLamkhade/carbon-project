@@ -19,30 +19,32 @@ function Form() {
     name: "",
   });
 
-  // useEffect(() => {
-  //   async function callDetails() {
-  //     const response = await fetch("http://localhost:4000/users/userDetails", {
-  //       method: "GET",
-  //       headers: { "Content-Type": "application/json" },
-  //       credentials: "include",
-  //     });
+  useEffect(() => {
+    async function callDetails() {
+      const response = await fetch("http://localhost:4000/users/userDetails", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
 
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       setUserDetails({
-  //         organisation: data.userDetails.organisation || "",
-  //         name: data.userDetails.name || "",
-  //       });
-  //     } else {
-  //       console.error("Failed to fetch user details", response.status);
-  //     }
-  //   }
+      if (response.ok) {
+        const data = await response.json();
+        setUserDetails({
+          organisation: data.userDetails.organisation || "",
+          name: data.userDetails.name || "",
+        });
+      } else {
+        console.error("Failed to fetch user details", response.status);
+      }
+    }
 
-  //   callDetails();
-  // }, []);
+    callDetails();
+  }, []);
 
   //  BASIC DETAILS refs
   const locationRef = useRef<HTMLInputElement>(null);
+  const latitudeRef = useRef<HTMLInputElement>(null);
+  const longitudeRef = useRef<HTMLInputElement>(null);
   const areaClaimRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
@@ -60,7 +62,6 @@ function Form() {
 
   return (
     <div className="max-w-4xl mx-auto my-10 bg-linear-to-br from-green-50 to-green-100 rounded-2xl shadow-2xl p-10">
-      
       <form>
         <div className="border-b border-gray-300 text-center pb-6 mb-8">
           <h1 className="text-4xl font-extrabold text-gray-700">
@@ -114,30 +115,53 @@ function Form() {
           </h2>
           <div className="flex flex-col gap-6">
             <div>
-        <h1>Select a Location</h1>
-        <MapPicker setLocation={setLocation} />
-       
-          <div style={{ marginTop: "1rem" }}>
-            <p>
-              <strong>Latitude:</strong> {location?.lat.toFixed(6)}
-            </p>
-            <p>
-              <strong>Longitude:</strong> {location?.lon.toFixed(6)}
-            </p>
-            
-          </div>
-      
-      </div>
+              <h1>Select a Location</h1>
+              <MapPicker setLocation={setLocation} />
+
+              <div className="flex gap-2 mt-3 ">
+                <label className="flex flex-col gap-1 text-gray-600 text-lg">
+                  Latitude:
+                  <InputBox
+                    placeholder={
+                      location?.lat.toFixed(6) ?? "Select location on map"
+                    }
+                    reference={latitudeRef}
+                    className="w-full"
+                    isDisabled={true}
+                  />
+                </label>
+
+                <label className="flex flex-col gap-1 text-gray-600 text-lg">
+                  Longitude:
+                  <InputBox
+                    placeholder={
+                      location?.lon.toFixed(6) ?? "Select location on map"
+                    }
+                    reference={longitudeRef}
+                    className="w-full"
+                    isDisabled={true}
+                  />
+                </label>
+              </div>
+            </div>
             <label className="flex flex-col gap-1 text-gray-600 text-lg">
               Location:
               <InputBox
                 placeholder={location?.address ?? "Select location on map"}
                 reference={locationRef}
-                className="w-full"
+                className="min-w-full"
                 isDisabled={true}
               />
             </label>
-
+            <label className="flex flex-col gap-1 text-gray-600 text-lg">
+              Description:
+              <textarea
+                rows={3}
+                cols={30}
+                ref={descriptionRef}
+                className="bg-white  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent p-3 rounded-lg resize-none"
+              ></textarea>
+            </label>
             <label className="flex flex-col gap-1 text-gray-600 text-lg">
               Area Claim:
               <InputBox
@@ -149,15 +173,6 @@ function Form() {
             </label>
           </div>
           <br />
-          <label className="flex flex-col gap-1 text-gray-600 text-lg">
-            Description:
-            <textarea
-              rows={3}
-              cols={30}
-              ref={descriptionRef}
-              className="bg-white  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent p-3 rounded-lg resize-none"
-            ></textarea>
-          </label>
         </section>
 
         {/* PLANTATION DETAILS */}

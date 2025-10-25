@@ -2,8 +2,8 @@
 import React from 'react';
 
 interface RowData {
-  userId: string | number;
-  location: string;
+  historyId: number;
+  submission: {location: string};
   status: string;
 }
 
@@ -34,7 +34,7 @@ const TableWithActions: React.FC<TableWithActionsProps> = ({ rows, onEdit, onDel
     <table className="shadow-[0px_0px_15px_rgba(0,0,0,0.09)] w-full border-collapse">
       <thead>
         <tr>
-          <th className={headerStyle}>User Id</th>
+          <th className={`${headerStyle} pr-1`}>Submission Id</th>
           <th className={headerStyle}>Location</th>
           <th className={headerStyle}>Status</th>
           <th className={headerStyle}>Action</th>
@@ -43,8 +43,8 @@ const TableWithActions: React.FC<TableWithActionsProps> = ({ rows, onEdit, onDel
       <tbody>
         {rows.map((row, index) => (
           <tr key={index} className={index % 2 === 0 ? evenRowStyle : oddRowStyle}>
-            <td className={cellStyle}>{row.userId}</td>
-            <td className={cellStyle}>{row.location}</td>
+            <td className={cellStyle}>{row.historyId}</td>
+            <td className={cellStyle}>{row.submission.location}</td>
             <td className={cellStyle}>
               <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusClass(row.status)}`}>
                 {row.status}

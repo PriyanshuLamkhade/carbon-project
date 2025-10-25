@@ -227,14 +227,10 @@ userRouter.get("/allhistory", userMiddleware, async (req, res) => {
       where: {
         userId: userId,
       },
-      include: {
-        
-        carbon: true,
-        submission: true,
-        verification: true,
+      include: {submission:{select:{location:true}},
       },
       orderBy: {
-        timestamp: "desc",
+        timestamp: "asc",
       },
     });
     return res.status(200).json({ histories:histories });

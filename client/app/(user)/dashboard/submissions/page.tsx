@@ -4,15 +4,34 @@ import TableWithActions from '@/app/components/TableWithActionsProps';
 import Button from '@/app/components/ui/Button'
 import InputBox from '@/app/components/ui/InputBox';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react'
-
+import React, { useEffect, useState } from 'react'
+interface Submission {
+  historyId: number;
+  submission: {location: string};
+  status: string;
+}
 const page = () => {
-  const data = [
-  { userId: 101, location: 'New York', status: 'Active' },
-  { userId: 102, location: 'Berlin', status: 'Pending' },
-  { userId: 103, location: 'Tokyo', status: 'Inactive' },
-  { userId: 104, location: 'London', status: 'Rejected' },
-];
+ let [data, setData] = useState<Submission[]>([]);
+
+useEffect(()=>{
+  async function getUserSubmission(){
+  const response =  await fetch("http://localhost:4000/users/allhistory", {
+        method: "get",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setData(data.histories);
+        console.log(data.histories)
+      } else {
+        console.error("Failed to fetch user details", response.status);
+      }
+}
+getUserSubmission()
+},[])
+
 const [statusFilter, setStatusFilter] = useState('all');
 const router = useRouter()
   return (
