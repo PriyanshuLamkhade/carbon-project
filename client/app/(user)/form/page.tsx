@@ -40,6 +40,13 @@ function Form() {
 
     callDetails();
   }, []);
+  useEffect(() => {
+  if (location) {
+    if (latitudeRef.current) latitudeRef.current.value = location.lat.toFixed(6);
+    if (longitudeRef.current) longitudeRef.current.value = location.lon.toFixed(6);
+    if (locationRef.current) locationRef.current.value = location.address;
+  }
+}, [location]);
 
   //  BASIC DETAILS refs
   const locationRef = useRef<HTMLInputElement>(null);
@@ -293,12 +300,14 @@ function Form() {
           size="lg"
           variant="third"
           className="mt-8 mx-auto block w-[100%] border-0"
-          onClick={async () => {
+          onClick={async (e) => {
+            e.preventDefault(); 
             const res = await submitForm();
-            if (res && res.ok) {
+            if (res?.ok) {
+              
               router.push("/dashboard/home");
             } else {
-              console.error("Form submission failed.");
+              console.error("Form submission failed");
             }
           }}
         />
@@ -309,6 +318,8 @@ function Form() {
   async function submitForm() {
     const payload = {
       location: locationRef.current?.value,
+      longitude: longitudeRef.current?.valueAsNumber,
+      latitude: latitudeRef.current?.valueAsNumber,
       areaclaim: areaClaimRef.current?.valueAsNumber,
       description: descriptionRef.current?.value,
       species1: species1Ref.current?.value,

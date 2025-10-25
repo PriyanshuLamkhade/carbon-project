@@ -5,7 +5,7 @@ interface buttonProps {
   text: string;
   variant: "primary" | "secondary"|"third";
   size: "sm" | "md" | "lg";
-  onClick?: ()=>void;
+  onClick?: (e:any)=>void;
   className?: string
 }
 const sizeStyles ={

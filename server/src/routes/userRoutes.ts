@@ -155,6 +155,8 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
   try {
     const {
       location,
+      longitude,
+      latitude,
       description,
       areaclaim,
       species1,
@@ -190,6 +192,8 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
     const submission = await db.submission.create({
       data: {
         location,
+        longitude,
+        latitude,
         description,
         areaclaim,
         species1,

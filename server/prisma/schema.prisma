@@ -50,15 +50,17 @@ model Submission {
   submissionId              Int      @id @default(autoincrement())
   //images
   location                  String
+  longitude                 Float?
+  latitude                  Float?
   geoTag                    Json?
   description               String?
   areaclaim                 Int
   species1                  String
-  species1_count           Int
+  species1_count            Int
   species2                  String?
-  species2_count           Int?
+  species2_count            Int?
   species3                  String?
-  species3_count           Int?
+  species3_count            Int?
   plantationDate            String
   CommunityInvolvementLevel Level
   MGNREGAPersonDays         Int
