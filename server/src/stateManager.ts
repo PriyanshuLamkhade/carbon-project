@@ -1,7 +1,7 @@
 // users = {
-//   "user123": WebSocketConnection,
-//   "user456": WebSocketConnection,
-//   "user789": WebSocketConnection
+//   "user123": set{WebSocketConnection},
+//   "user456": set{WebSocketConnection},
+//   "user789": set{WebSocketConnection}
 // }
 // admins = {
 //     ws,ws,ws
@@ -26,6 +26,23 @@ export class stateManger {
     console.log("Made a instance");
     return stateManger.instance;
   }
+  addUser(userId: number, ws: WebSocket):void{
+
+  }
+
+
+
 }
 
 export const instance = stateManger.getInstance();
+
+
+// addUser(userId: number, ws: WebSocket)
+
+// removeUser(userId: number, ws: WebSocket)
+
+// addAdmin(ws: WebSocket)
+
+// removeAdmin(ws: WebSocket)
+
+// broadcastToAdmins(message: object)

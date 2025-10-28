@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic';
 
 const Page = () => {
   return (
-    <div className="h-screen w-full items-center flex flex-col justify-center bg-amber-200">
+    <div className="h-screen w-full items-center flex flex-col justify-center text-white bg-gray-800">
       <Wallet>
         <SignUpForm />
       </Wallet>

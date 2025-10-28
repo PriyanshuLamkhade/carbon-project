@@ -41,12 +41,14 @@ function Form() {
     callDetails();
   }, []);
   useEffect(() => {
-  if (location) {
-    if (latitudeRef.current) latitudeRef.current.value = location.lat.toFixed(6);
-    if (longitudeRef.current) longitudeRef.current.value = location.lon.toFixed(6);
-    if (locationRef.current) locationRef.current.value = location.address;
-  }
-}, [location]);
+    if (location) {
+      if (latitudeRef.current)
+        latitudeRef.current.value = location.lat.toFixed(6);
+      if (longitudeRef.current)
+        longitudeRef.current.value = location.lon.toFixed(6);
+      if (locationRef.current) locationRef.current.value = location.address;
+    }
+  }, [location]);
 
   //  BASIC DETAILS refs
   const locationRef = useRef<HTMLInputElement>(null);
@@ -132,9 +134,9 @@ function Form() {
                     placeholder={
                       location?.lat.toFixed(6) ?? "Select location on map"
                     }
-                    reference={latitudeRef}
+                    ref={latitudeRef}
                     className="w-full"
-                    isDisabled={true}
+                    readonly={true}
                   />
                 </label>
 
@@ -144,9 +146,9 @@ function Form() {
                     placeholder={
                       location?.lon.toFixed(6) ?? "Select location on map"
                     }
-                    reference={longitudeRef}
+                    ref={longitudeRef}
                     className="w-full"
-                    isDisabled={true}
+                    readonly={true}
                   />
                 </label>
               </div>
@@ -155,9 +157,9 @@ function Form() {
               Location:
               <InputBox
                 placeholder={location?.address ?? "Select location on map"}
-                reference={locationRef}
+                ref={locationRef}
                 className="min-w-full"
-                isDisabled={true}
+                readonly={true}
               />
             </label>
             <label className="flex flex-col gap-1 text-gray-600 text-lg">
@@ -174,7 +176,7 @@ function Form() {
               <InputBox
                 placeholder="in Hectare"
                 type="number"
-                reference={areaClaimRef}
+                ref={areaClaimRef}
                 className="w-full"
               />
             </label>
@@ -197,13 +199,13 @@ function Form() {
               </label>
               <InputBox
                 placeholder="Name"
-                reference={species1Ref}
+                ref={species1Ref}
                 className="w-full"
               />
               <InputBox
                 placeholder="Total Trees"
                 type="number"
-                reference={species1CountRef}
+                ref={species1CountRef}
                 className="w-full mt-2"
               />
             </div>
@@ -214,13 +216,13 @@ function Form() {
               </label>
               <InputBox
                 placeholder="Name"
-                reference={species2Ref}
+                ref={species2Ref}
                 className="w-full"
               />
               <InputBox
                 placeholder="Total Trees"
                 type="number"
-                reference={species2CountRef}
+                ref={species2CountRef}
                 className="w-full mt-2"
               />
             </div>
@@ -231,13 +233,13 @@ function Form() {
               </label>
               <InputBox
                 placeholder="Name"
-                reference={species3Ref}
+                ref={species3Ref}
                 className="w-full"
               />
               <InputBox
                 placeholder="Total Trees"
                 type="number"
-                reference={species3CountRef}
+                ref={species3CountRef}
                 className="w-full mt-2"
               />
             </div>
@@ -248,7 +250,7 @@ function Form() {
               </label>
               <InputBox
                 type="date"
-                reference={plantationDateRef}
+                ref={plantationDateRef}
                 className="w-full"
               />
             </div>
@@ -272,11 +274,7 @@ function Form() {
               <label className="block text-gray-600 font-medium mb-1">
                 MGNREGA Person Days:
               </label>
-              <InputBox
-                type="number"
-                reference={mgnregaRef}
-                className="w-full"
-              />
+              <InputBox type="number" ref={mgnregaRef} className="w-full" />
             </div>
 
             <div>
@@ -301,10 +299,9 @@ function Form() {
           variant="third"
           className="mt-8 mx-auto block w-[100%] border-0"
           onClick={async (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             const res = await submitForm();
             if (res?.ok) {
-              
               router.push("/dashboard/home");
             } else {
               console.error("Form submission failed");
@@ -318,8 +315,8 @@ function Form() {
   async function submitForm() {
     const payload = {
       location: locationRef.current?.value,
-      longitude: longitudeRef.current?.valueAsNumber,
-      latitude: latitudeRef.current?.valueAsNumber,
+      latitude: location?.lat,
+      longitude: location?.lon,
       areaclaim: areaClaimRef.current?.valueAsNumber,
       description: descriptionRef.current?.value,
       species1: species1Ref.current?.value,
@@ -338,19 +335,19 @@ function Form() {
 
     console.log("Form submission payload:", payload);
 
-    try {
-      const formRes = await fetch("http://localhost:4000/users/userForm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        credentials: "include",
-      });
+      try {
+        const formRes = await fetch("http://localhost:4000/users/userForm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          credentials: "include",
+        });
 
-      return formRes;
-    } catch (error) {
-      console.error("Error during form submission:", error);
-      return null;
-    }
+        return formRes;
+      } catch (error) {
+        console.error("Error during form submission:", error);
+        return null;
+      }
   }
 }
 

@@ -13,6 +13,14 @@ model Nonce {
   createdAt DateTime @default(now())
 }
 
+// model Admin {
+//   adminId     Int    @id @default(autoincrement())
+//   name        String
+//   surname     String
+//   email       String
+//   phonenumber String
+// }
+
 model User {
   userId       Int       @id @default(autoincrement())
   name         String

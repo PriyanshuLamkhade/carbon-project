@@ -6,7 +6,7 @@ import SignInForm from './SignInForm';
 
 const Page = () => {
   return (
-    <div className="h-screen w-full items-center flex flex-col justify-center bg-amber-200">
+    <div className="h-screen w-full items-center flex flex-col text-white justify-center bg-gray-800">
       <Wallet>
         <SignInForm />
       </Wallet>

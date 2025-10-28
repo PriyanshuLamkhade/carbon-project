@@ -1,4 +1,5 @@
 "use client"
+import PreviewPopup from '@/app/components/PreviewPopup';
 import TableWithActions from '@/app/components/TableWithActionsProps';
 
 import Button from '@/app/components/ui/Button'
@@ -12,7 +13,8 @@ interface Submission {
 }
 const page = () => {
  let [data, setData] = useState<Submission[]>([]);
-
+const [previewData, setPreviewData] = useState(null);
+  const [visible, setVisible] = useState(false);
 useEffect(()=>{
   async function getUserSubmission(){
   const response =  await fetch("http://localhost:4000/users/allhistory", {
@@ -60,7 +62,12 @@ const router = useRouter()
 
       </div>
       <div id='main' className=''>
-          <TableWithActions rows={data}/>
+          <TableWithActions rows={data} setPreviewData={setPreviewData} setVisible={setVisible} />
+          <PreviewPopup
+        visible={visible}
+        onClose={() => setVisible(false)}
+        data={previewData}
+      />
       </div>
     </div>
   )

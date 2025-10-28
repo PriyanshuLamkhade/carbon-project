@@ -141,9 +141,11 @@ userRouter.post("/auth/signin", async (req, res) => {
 userRouter.get("/userDetails",userMiddleware,async (req,res)=>{
  try {
    const userId = req.userId;
-   
-   const details = await db.user.findUnique({where:{userId:userId}})
-   res.json({ userDetails: details });
+   if(userId ){
+
+     const details = await db.user.findUnique({where:{userId:userId}})
+     res.json({ userDetails: details });
+   }
  
  } catch (error) {
   res.json({error})
@@ -243,8 +245,30 @@ userRouter.get("/allhistory", userMiddleware, async (req, res) => {
   }
 });
 
-export default userRouter;
+userRouter.post("/previewData",userMiddleware, async (req,res)=>{
+   try {
+    const userId = req.userId;
+    const {historyId} = req.body
+     if (!userId) {
+       return res
+         .status(401)
+         .json({ message: "Unauthorized: No user ID found" });
+     }
+     const previewData = await db.history.findUnique({
+       where: {
+         historyId
+       },
+       include:{
+         carbon:true,
+         submission:true
+       },
+     })
+     return res.status(200).json({ previewData:previewData });
+     
+   } catch (error) {
+     return res.status(500).json({ message: "Failed to fetch previews", error });
+   }
+})
 
-function env(arg0: string) {
-  throw new Error("Function not implemented.");
-}
+
+export default userRouter;
