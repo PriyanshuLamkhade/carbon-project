@@ -101,14 +101,15 @@ userRouter.post("/auth/signup", async (req, res) => {
   const token = jwt.sign({ userId: newUser.userId }, JWT_USER_SECRET, {
     expiresIn: "24h",
   });
-  res.cookie("token", token, {
-  httpOnly: true,          // Required for security
-  secure: false,           // false for localhost (true only on HTTPS)
-  sameSite: "lax",         // "lax" is fine for same-origin-ish setup
-  // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
-  path: "/" 
-}).json({ message: "Signup successful" });
-
+  res
+    .cookie("token", token, {
+      httpOnly: true, // Required for security
+      secure: false, // false for localhost (true only on HTTPS)
+      sameSite: "lax", // "lax" is fine for same-origin-ish setup
+      // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
+      path: "/",
+    })
+    .json({ message: "Signup successful" });
 });
 
 // Signin route
@@ -129,28 +130,28 @@ userRouter.post("/auth/signin", async (req, res) => {
   const token = jwt.sign({ userId: user.userId }, JWT_USER_SECRET, {
     expiresIn: "24h",
   });
- res.cookie("token", token, {
-  httpOnly: true,          // Required for security
-  secure: false,           // false for localhost (true only on HTTPS)
-  sameSite: "lax",         // "lax" is fine for same-origin-ish setup
-  // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
-  path: "/" 
-}).json({ message: "Signin successful" });
+  res
+    .cookie("token", token, {
+      httpOnly: true, // Required for security
+      secure: false, // false for localhost (true only on HTTPS)
+      sameSite: "lax", // "lax" is fine for same-origin-ish setup
+      // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
+      path: "/",
+    })
+    .json({ message: "Signin successful" });
 });
 
-userRouter.get("/userDetails",userMiddleware,async (req,res)=>{
- try {
-   const userId = req.userId;
-   if(userId ){
-
-     const details = await db.user.findUnique({where:{userId:userId}})
-     res.json({ userDetails: details });
-   }
- 
- } catch (error) {
-  res.json({error})
- }
-})
+userRouter.get("/userDetails", userMiddleware, async (req, res) => {
+  try {
+    const userId = req.userId;
+    if (userId) {
+      const details = await db.user.findUnique({ where: { userId: userId } });
+      res.json({ userDetails: details });
+    }
+  } catch (error) {
+    res.json({ error });
+  }
+});
 
 userRouter.post("/userForm", userMiddleware, async (req, res) => {
   //add image geotag submission later
@@ -233,42 +234,70 @@ userRouter.get("/allhistory", userMiddleware, async (req, res) => {
       where: {
         userId: userId,
       },
-      include: {submission:{select:{location:true}},
-      },
+      include: { submission: { select: { location: true } } },
       orderBy: {
         timestamp: "asc",
       },
     });
-    return res.status(200).json({ histories:histories });
+    return res.status(200).json({ histories: histories });
   } catch (error) {
     return res.status(500).json({ message: "Failed to fetch history", error });
   }
 });
 
-userRouter.post("/previewData",userMiddleware, async (req,res)=>{
-   try {
+userRouter.post("/previewData", userMiddleware, async (req, res) => {
+  try {
     const userId = req.userId;
-    const {historyId} = req.body
-     if (!userId) {
-       return res
-         .status(401)
-         .json({ message: "Unauthorized: No user ID found" });
-     }
-     const previewData = await db.history.findUnique({
-       where: {
-         historyId
-       },
-       include:{
-         carbon:true,
-         submission:true
-       },
-     })
-     return res.status(200).json({ previewData:previewData });
-     
-   } catch (error) {
-     return res.status(500).json({ message: "Failed to fetch previews", error });
-   }
-})
+    const { historyId } = req.body;
+    if (!userId) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: No user ID found" });
+    }
+    const previewData = await db.history.findUnique({
+      where: {
+        historyId,
+      },
+      include: {
+        carbon: true,
+        submission: true,
+      },
+    });
+    return res.status(200).json({ previewData: previewData });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to fetch previews", error });
+  }
+});
+userRouter.delete("/deleteSubmission", userMiddleware, async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { historyId } = req.body;
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized: No user ID found" });
+    }
+
+    const data = await db.history.findUnique({ where: { historyId } });
+
+    if (!data) {
+      return res.status(404).json({ message: "Record not found" });
+    }
+
+    if (data.userId !== userId) {
+      return res.status(403).json({ message: "Forbidden: Not your record" });
+    }
+
+    if (data.status !== "PENDING") {
+      return res.status(400).json({ message: "Only records with status 'INPROGRESS' can be deleted" });
+    }
+
+    await db.history.delete({ where: { historyId } });
+
+    return res.status(200).json({ message: "Record deleted" });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to delete record", error });
+  }
+});
 
 
 export default userRouter;

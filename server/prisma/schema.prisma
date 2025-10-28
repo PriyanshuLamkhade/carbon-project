@@ -13,13 +13,13 @@ model Nonce {
   createdAt DateTime @default(now())
 }
 
-// model Admin {
-//   adminId     Int    @id @default(autoincrement())
-//   name        String
-//   surname     String
-//   email       String
-//   phonenumber String
-// }
+model Admin {
+  adminId     Int    @id @default(autoincrement())
+  name        String
+  surname     String
+  email       String
+  phonenumber String
+}
 
 model User {
   userId       Int       @id @default(autoincrement())
@@ -35,7 +35,7 @@ model User {
 
 model History {
   historyId    Int           @id @default(autoincrement())
-  user         User          @relation(fields: [userId], references: [userId])
+  user         User          @relation(fields: [userId], references: [userId],onDelete: Cascade)
   userId       Int
   carbon       Carbon?
   submission   Submission?
@@ -50,7 +50,7 @@ model Carbon {
   tokensIssued  Int?
   //txHash String?
 
-  history   History @relation(fields: [historyId], references: [historyId])
+  history   History @relation(fields: [historyId], references: [historyId],onDelete: Cascade)
   historyId Int     @unique
 }
 
@@ -73,7 +73,7 @@ model Submission {
   CommunityInvolvementLevel Level
   MGNREGAPersonDays         Int
   trained                   String
-  history                   History  @relation(fields: [historyId], references: [historyId])
+  history                   History  @relation(fields: [historyId], references: [historyId],onDelete: Cascade)
   historyId                 Int      @unique
   submissionDate            DateTime @default(now())
 }
@@ -83,7 +83,7 @@ model Verification {
   actualArea       Int
   location         String
   //verifiedImages
-  history          History  @relation(fields: [historyId], references: [historyId])
+  history          History  @relation(fields: [historyId], references: [historyId],onDelete: Cascade)
   historyId        Int      @unique
   verifiedBy       String?
   verificationDate DateTime @default(now())

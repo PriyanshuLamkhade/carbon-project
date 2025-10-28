@@ -84,6 +84,23 @@ const TableWithActions: React.FC<TableWithActionsProps> = ({ rows,setPreviewData
                 >
                   Preview
                 </button>
+                <button
+                  onClick={async () => {
+                    const res = await fetch(
+                      "http://localhost:4000/users/deleteSubmission",
+                      {
+                        method: "delete",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ historyId: row.historyId }),
+                        credentials: "include",
+                      }
+                    );
+                    window.location.reload()
+                  }}
+                  className="text-red-600 hover:underline font-medium cursor-pointer"
+                >
+                  Delete
+                </button>
                 
               </div>
             </td>
