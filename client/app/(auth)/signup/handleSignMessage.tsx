@@ -28,16 +28,16 @@ export function SignUpForm() {
       />
       <div className="flex flex-col gap-2">
         <label>Name:</label>
-        <InputBox reference={nameRef} placeholder="Enter Your Name" />
+        <InputBox ref={nameRef} placeholder="Enter Your Name" />
 
         <label>Surname:</label>
-        <InputBox reference={surnameRef} placeholder="Enter Your Surname" />
+        <InputBox ref={surnameRef} placeholder="Enter Your Surname" />
 
         <label>PhoneNumber:</label>
-        <InputBox reference={phoneNumberRef} placeholder="Enter Phone Number" />
+        <InputBox ref={phoneNumberRef} placeholder="Enter Phone Number" />
         <label>Organisation:</label>
         <InputBox
-          reference={organisationRef}
+          ref={organisationRef}
           placeholder="Enter Organisation Name"
         />
         <span className="relative">
@@ -49,7 +49,7 @@ export function SignUpForm() {
             onClick={async () => {
               const res = await submitForm();
               if (res && res.ok) {
-                router.push("/dashboard/home");
+                router.push("/user/dashboard/home");
               } else {
                 console.error("Signup failed");
               
@@ -57,14 +57,14 @@ export function SignUpForm() {
             }}
           />
           <br />
-          <h3
+          <span
             className="text-blue-700 cursor-pointer hover:text-blue-900"
             onClick={() => {
               router.push("/signin");
             }}
           >
             Already have a account?
-          </h3>
+          </span>
         </span>
       </div>
     </div>

@@ -12,15 +12,15 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { SideIcons } from './ui/SideIcons'
 
-const Sidebar = () => {
+const AdminSidebar = () => {
   const pathname = usePathname()
 const router = useRouter()
   const links = [
-    { href: '/dashboard/home', text: 'Home', icon: <HomeIcon size="20px" /> },
-    { href: '/dashboard/submissions', text: 'My Submissions', icon: <User size="20px" /> },
-    { href: '/dashboard/areas', text: 'Verified Areas', icon: <VerifiedIcon size="20px" /> },
-    { href: '/dashboard/carbonTokens', text: 'Carbon Tokens', icon: <CoinsIcon size="20px" /> },
-    { href: '/dashboard/settings', text: 'Settings', icon: <Settings size="20px"  /> },
+    { href: '/admin/dashboard/home', text: 'Home', icon: <HomeIcon size="20px" /> },
+    { href: '/admin/dashboard/submissions', text: 'My Submissions', icon: <User size="20px" /> },
+    { href: '/admin/dashboard/areas', text: 'Verified Areas', icon: <VerifiedIcon size="20px" /> },
+    { href: '/admin/dashboard/carbonTokens', text: 'Carbon Tokens', icon: <CoinsIcon size="20px" /> },
+    { href: '/admin/dashboard/settings', text: 'Settings', icon: <Settings size="20px"  /> },
   ]
 
   return (
@@ -54,4 +54,4 @@ const router = useRouter()
   )
 }
 
-export default Sidebar
+export default AdminSidebar

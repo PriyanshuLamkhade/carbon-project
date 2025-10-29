@@ -9,7 +9,6 @@ import bs58 from "bs58";
 
 const SignInForm = () => {
   const [signedMessage, setSignedMessage] = useState<Uint8Array>();
-  const [response, setResponse] = useState();
   const [nonce, setNonce] = useState<string>();
   const { publicKey, signMessage } = useWallet();
   const nameRef = useRef<HTMLInputElement>(null);
@@ -27,7 +26,7 @@ const SignInForm = () => {
       />
       <label>Name:</label>
       <br />
-      <InputBox reference={nameRef} placeholder="Enter Your Name" />
+      <InputBox ref={nameRef} placeholder="Enter Your Name" />
       <br />
 
       <Button
@@ -36,7 +35,7 @@ const SignInForm = () => {
         onClick={async () => {
           const res = await signIn();
           if (res && res.ok) {
-            router.push("/dashboard/home");
+            router.push("/user/dashboard/home");
           } else {
             console.error("Sign-in failed");
             
@@ -45,14 +44,22 @@ const SignInForm = () => {
         text="Submit"
         className="mt-5 mb-5"
       />
-      <h3
-        className="text-blue-700 cursor-pointer hover:text-blue-900"
+      <span
+        className="text-blue-700 cursor-pointer hover:text-blue-900 mr-3"
         onClick={() => {
           router.push("/signup");
         }}
       >
         Don't have a account?
-      </h3>
+      </span>
+       <span
+        className="text-blue-700 cursor-pointer hover:text-blue-900"
+        onClick={() => {
+          router.push("/admin/signin");
+        }}
+      >
+        Signin as admin
+      </span>
     </div>
   );
   async function getNonce() {

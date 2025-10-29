@@ -302,7 +302,7 @@ function Form() {
             e.preventDefault();
             const res = await submitForm();
             if (res?.ok) {
-              router.push("/dashboard/home");
+              router.push("/user/dashboard/home");
             } else {
               console.error("Form submission failed");
             }
