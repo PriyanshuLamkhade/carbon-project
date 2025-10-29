@@ -64,7 +64,7 @@ const router = useRouter()
        <Button size="md" variant="primary" text={"New Submission"} onClick={()=>router.push("/form")}/>
       </div>
        {/* smplify later */}
-      <div id="cards" className="flex flex-wrap justify-between py-3 gap-2">
+      <div id="cards" className="flex flex-wrap justify-evenly py-3 gap-2">
   {cardData.map((card, idx) => (
     <Cards
       key={idx}

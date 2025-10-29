@@ -7,16 +7,16 @@ if (!JWT_ADMIN_SECRET) {
   throw new Error("JWT_ADMIN_SECRET is not defined in the environment variables");
 }
 
-// Extend Express Request type to include userId
+// Extend Express Request type to include adminId
 declare global {
   namespace Express {
     interface Request {
-      userId?: number;
+      adminId?: number;
     }
   }
 }
 
-export const userMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const adminMiddleware = (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.cookies.token;
 
@@ -24,13 +24,13 @@ export const userMiddleware = (req: Request, res: Response, next: NextFunction) 
       return res.status(401).json({ message: "Token is missing" });
     }
 
-    const decoded = jwt.verify(token, JWT_ADMIN_SECRET) as JwtPayload & { userId: number };
+    const decoded = jwt.verify(token, JWT_ADMIN_SECRET) as JwtPayload & { adminId: number };
 
-    if (!decoded.userId || typeof decoded.userId !== 'number') {
+    if (!decoded.adminId || typeof decoded.adminId !== 'number') {
       return res.status(400).json({ message: "Invalid token payload" });
     }
 
-    req.userId = decoded.userId;
+    req.adminId = decoded.adminId;
     next();
 
   } catch (e) {
