@@ -1,5 +1,5 @@
 'use client'
-import TableComponent from "@/app/components/TableComponent";
+import TableComponent from "@/app/components/tables/TableComponent";
 import Button from "@/app/components/ui/Button";
 import Cards from "@/app/components/ui/Cards";
 import { useRouter } from "next/navigation";

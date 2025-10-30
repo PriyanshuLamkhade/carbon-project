@@ -1,6 +1,6 @@
 "use client"
 import PreviewPopup from '@/app/components/PreviewPopup';
-import TableWithActions from '@/app/components/TableWithActionsProps';
+import TableWithActions from '@/app/components/tables/TableWithActionsProps';
 
 import Button from '@/app/components/ui/Button'
 import InputBox from '@/app/components/ui/InputBox';

@@ -10,7 +10,8 @@ import {
 import React from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { SideIcons } from './ui/SideIcons'
+import { SideIcons } from '../ui/SideIcons'
+
 
 const UserSidebar = () => {
   const pathname = usePathname()

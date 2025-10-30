@@ -1,4 +1,4 @@
-import AdminSidebar from "@/app/components/AdminSidebar copy";
+import AdminSidebar from "@/app/components/sidebars/AdminSidebar copy";
 
 export default function DashboardLayout({
   children,

@@ -4,7 +4,7 @@ import InputBox from "../../components/ui/InputBox";
 import Button from "../../components/ui/Button";
 import { useRouter } from "next/navigation";
 
-import MapPicker from "@/app/components/InitMap";
+import MapPicker from "@/app/components/maps/InitMap";
 
 function Form() {
   const [location, setLocation] = useState<{

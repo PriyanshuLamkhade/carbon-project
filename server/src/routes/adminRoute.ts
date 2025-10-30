@@ -1,6 +1,7 @@
 import express from "express";
 import { db } from "../index.js";
 import jwt from "jsonwebtoken";
+import { adminMiddleware } from "../middleware/admin.js";
 const JWT_ADMIN_SECRET = process.env.JWT_ADMIN_SECRET;
 if (!JWT_ADMIN_SECRET) {
   throw new Error(
@@ -41,6 +42,11 @@ adminRouter.post("/auth/signin", async (req, res) => {
   }
 });
 
+adminRouter.get("/recentSumissions",adminMiddleware,async(req,res)=>{
+  
+  await db.history.findMany({})
+
+})
 // adminRouter.get('requestsPending',(req,res)=>{
 
 // })

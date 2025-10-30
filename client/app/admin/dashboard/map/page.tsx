@@ -1,5 +1,5 @@
 "use client"
-import MultiMarkerMap from "@/app/components/MultiMarkerMapProps";
+import MultiMarkerMap from "@/app/components/maps/MultiMarkerMapProps";
 import { useState } from "react";
 
 

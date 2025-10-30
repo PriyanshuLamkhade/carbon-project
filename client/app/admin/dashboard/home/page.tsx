@@ -1,6 +1,7 @@
 'use client'
-import TableComponent from "@/app/components/TableComponent";
-import TableWithActions from "@/app/components/TableWithActionsProps";
+import DetailedTable from "@/app/components/tables/DetailedTable";
+import TableComponent from "@/app/components/tables/TableComponent";
+import TableWithActions from "@/app/components/tables/TableWithActionsProps";
 import Button from "@/app/components/ui/Button";
 import Cards from "@/app/components/ui/Cards";
 import { useRouter } from "next/navigation";
@@ -81,7 +82,7 @@ const router = useRouter()
 
        <div>
             <h1 className="text-3xl font-bold mb-3 -mt-1 ">Recent Submission</h1> 
-            <TableWithActions rows={data} setPreviewData={setPreviewData} setVisible={setVisible} theme='dark'/>
+            <DetailedTable rows={[]} theme="dark"/>
         </div>
     </div>
   );

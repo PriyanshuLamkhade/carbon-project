@@ -1,18 +1,57 @@
 "use client"
-import PreviewPopup from '@/app/components/PreviewPopup';
-import TableWithActions from '@/app/components/TableWithActionsProps';
 
-import Button from '@/app/components/ui/Button'
+import PreviewPopup from '@/app/components/PreviewPopup';
+import DetailedTable from '@/app/components/tables/DetailedTable';
 import InputBox from '@/app/components/ui/InputBox';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+
 interface Submission {
   historyId: number;
   submission: {location: string};
   status: string;
 }
 const page = () => {
- let [data, setData] = useState<Submission[]>([]);
+  const sampleData = [
+  {
+    id: "SUB-001",
+    siteName: "Green Valley Restoration",
+    user: "0xA12b...89F3",
+    area: 150.5,
+    dateSubmitted: "2025-10-20",
+    location: "Lagos, Nigeria",
+    status: "Pending",
+  },
+  {
+    id: "SUB-002",
+    siteName: "Blue River Project",
+    user: "john.doe.eth",
+    area: 200,
+    dateSubmitted: "2025-10-22",
+    location: "Nairobi, Kenya",
+    status: "Approved",
+  },
+  {
+    id: "SUB-003",
+    siteName: "Coastal Mangrove Revival",
+    user: "0x9B8e...72CD",
+    area: 95.3,
+    dateSubmitted: "2025-10-25",
+    location: "Dar es Salaam, Tanzania",
+    status: "Rejected",
+  },
+  {
+    id: "SUB-004",
+    siteName: "Rainforest Carbon Initiative",
+    user: "climatehero.eth",
+    area: 500,
+    dateSubmitted: "2025-10-28",
+    location: "Manaus, Brazil",
+    status: "Pending",
+  },
+];
+
+//  let [data, setData] = useState<Submission[]>([]);
 const [previewData, setPreviewData] = useState(null);
   const [visible, setVisible] = useState(false);
 // useEffect(()=>{
@@ -62,7 +101,13 @@ const router = useRouter()
 
       </div>
       <div id='main' className=''>
-          <TableWithActions rows={data} setPreviewData={setPreviewData} setVisible={setVisible} theme='dark'/>
+          <DetailedTable
+  rows={sampleData}
+  onReview={(row) => {
+    console.log("Review clicked:", row);
+  }}
+  theme="dark"
+/>
           <PreviewPopup
         visible={visible}
         onClose={() => setVisible(false)}

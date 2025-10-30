@@ -1,4 +1,5 @@
-import UserSidebar from "../../components/UserSidebar";
+import UserSidebar from "@/app/components/sidebars/UserSidebar";
+
 
 export default function DashboardLayout({
   children,
