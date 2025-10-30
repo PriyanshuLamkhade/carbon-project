@@ -274,7 +274,9 @@ userRouter.delete("/deleteSubmission", userMiddleware, async (req, res) => {
     const { historyId } = req.body;
 
     if (!userId) {
-      return res.status(401).json({ message: "Unauthorized: No user ID found" });
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: No user ID found" });
     }
 
     const data = await db.history.findUnique({ where: { historyId } });
@@ -288,7 +290,11 @@ userRouter.delete("/deleteSubmission", userMiddleware, async (req, res) => {
     }
 
     if (data.status !== "PENDING") {
-      return res.status(400).json({ message: "Only records with status 'INPROGRESS' can be deleted" });
+      return res
+        .status(400)
+        .json({
+          message: "Only records with status 'INPROGRESS' can be deleted",
+        });
     }
 
     await db.history.delete({ where: { historyId } });
@@ -298,6 +304,5 @@ userRouter.delete("/deleteSubmission", userMiddleware, async (req, res) => {
     return res.status(500).json({ message: "Failed to delete record", error });
   }
 });
-
 
 export default userRouter;

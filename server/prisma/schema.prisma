@@ -17,8 +17,9 @@ model Admin {
   adminId     Int    @id @default(autoincrement())
   name        String
   surname     String
-  email       String
+  email       String @unique
   phonenumber String
+  password    String
 }
 
 model User {

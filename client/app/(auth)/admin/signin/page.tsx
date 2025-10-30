@@ -11,6 +11,7 @@ const page = () => {
       const surnameRef = useRef<HTMLInputElement>(null);
       const emailRef = useRef<HTMLInputElement>(null);
       const phonenumberRef = useRef<HTMLInputElement>(null);
+      const passwordRef = useRef<HTMLInputElement>(null);
       const router = useRouter();
   return (
     <div className="h-screen w-full items-center flex flex-col text-white justify-center bg-gray-800">
@@ -19,6 +20,7 @@ const page = () => {
         <label>Surname:<InputBox ref={surnameRef} placeholder="Enter Your Surname" /></label>
         <label>Email:<InputBox ref={emailRef} placeholder="Enter Your Email" /></label>
         <label>PhoneNumber:<InputBox ref={phonenumberRef} placeholder="Enter Your PhoneNumber" /></label>
+        <label>Password:<InputBox ref={passwordRef} placeholder="Enter Your Password" type="password"/></label>
 
       </div>
        <Button
@@ -27,7 +29,7 @@ const page = () => {
           onClick={async () => {
             const res = await signIn();
             if (res && res.ok) {
-              router.push("/dashboard/home");
+              router.push("/admin/dashboard/home");
             } else {
               console.error("Sign-in failed");
             }
@@ -50,10 +52,14 @@ const page = () => {
       const name = nameRef.current?.value;
 
       const signInRes = await fetch("http://localhost:4000/admin/auth/signin", {
-        method: "POST",
+        method: "post",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          
+          name:nameRef.current?.value, 
+          surname:surnameRef.current?.value, 
+          phonenumber:phonenumberRef.current?.value, 
+          email:emailRef.current?.value, 
+          password:passwordRef.current?.value
         }),
         credentials: "include",
       });
