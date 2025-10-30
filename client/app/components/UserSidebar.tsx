@@ -35,7 +35,7 @@ const router = useRouter()
           return (
             <Link key={link.href} href={link.href}>
               <div className={isActive ? 'bg-white rounded-md' : ''}>
-                <SideIcons icon={link.icon} text={link.text} />
+                <SideIcons icon={link.icon} text={link.text} className='hover:bg-white'/>
               </div>
             </Link>
           )

@@ -12,7 +12,7 @@ const Cards = (props: CardProps) => {
    const hasCustomHeight = props.className?.includes('h-');
     const hasCustomWidth = props.className?.includes('w-');
   return (
-    <div className={`transition-all duration-500 delay-75  bg-white rounded-xl
+    <div className={`transition-all duration-500 delay-75  rounded-xl
     shadow-[0px_0px_15px_rgba(0,0,0,0.09)] p-9 space-y-3 relative overflow-hidden hover:-translate-2 
      ${hasCustomHeight ? '' : 'h-80'} ${hasCustomWidth ? '' : 'w-80'} ${props.className ?? ''}`}>
       <div className="w-24 h-32 bg-violet-500 rounded-full absolute -right-6 -top-8">
@@ -22,8 +22,8 @@ const Cards = (props: CardProps) => {
         {props.icon}
       </div>    
       <h1 className="text-2xl font-extrabold">{props.title}</h1>
-      <h2 className="text-zinc-800 text-xl">{props.subtext}</h2>
-      <p className="text-md text-zinc-500 leading-6">
+      <h2 className=" text-xl">{props.subtext}</h2>
+      <p className="text-md  leading-6">
         {props.body}
       </p>
     </div>

@@ -68,7 +68,7 @@ const router = useRouter()
   {cardData.map((card, idx) => (
     <Cards
       key={idx}
-      className="h-60 w-72"
+      className="h-60 w-72 bg-white text-zinc-800 "
       title={card.title}
       subtext={card.subtext}
       body={card.body}
