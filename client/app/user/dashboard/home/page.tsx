@@ -61,7 +61,7 @@ const router = useRouter()
         <h1 className="text-3xl font-bold ">Welcome, {"x"}!</h1> 
         <h2 className="text-xl">Keep Making Imapact!</h2>
         </div>
-       <Button size="md" variant="primary" text={"New Submission"} onClick={()=>router.push("/form")}/>
+       <Button size="md" variant="primary" text={"New Submission"} onClick={()=>router.push("/user/form")}/>
       </div>
        {/* smplify later */}
       <div id="cards" className="flex flex-wrap justify-evenly py-3 gap-2">

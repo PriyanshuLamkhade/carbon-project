@@ -101,19 +101,20 @@ const router = useRouter()
 
       </div>
       <div id='main' className=''>
-          <DetailedTable
+          {/* <DetailedTable
   rows={sampleData}
   onReview={(row) => {
     console.log("Review clicked:", row);
   }}
   theme="dark"
-/>
+/> */}
           <PreviewPopup
         visible={visible}
         onClose={() => setVisible(false)}
         data={previewData}
       />
       </div>
+      coming
     </div>
   )
 }

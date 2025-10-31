@@ -9,8 +9,8 @@ interface MarkerData {
   lat: number;
   lon: number;
   label?: string;
-  status?: "approved" | "pending" | "rejected" | "in progress" | string;
-  submissionId?: string | number;
+  status: "APPROVED" | "PENDING" | "REJECTED" | "INPROGRESS" | string;
+  submissionId?: number;
 }
 
 interface MultiMarkerMapProps {
@@ -33,7 +33,7 @@ const MultiMarkerMap: React.FC<MultiMarkerMapProps> = ({ markers }) => {
           return "orange";
         case "rejected":
           return "red";
-        case "in progress":
+        case "inprogress":
           return "blue";
         default:
           return "gray";

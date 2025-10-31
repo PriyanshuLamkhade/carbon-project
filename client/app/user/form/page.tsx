@@ -189,9 +189,18 @@ function Form() {
           className="space-y-6 bg-linear-to-br from-green-100 to-green-200 p-6 rounded-xl shadow-inner"
           id="Plantation-Details"
         >
+          
           <h2 className="text-2xl font-semibold text-gray-700 mb-4">
             Plantation Details :
           </h2>
+          <a
+  href="http://localhost:3000/trees"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+>
+  View All Trees 🌳
+</a>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
               <label className="block text-gray-600 font-medium mb-1">

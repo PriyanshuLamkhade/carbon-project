@@ -44,7 +44,7 @@ const router = useRouter()
         <h1 className="text-3xl font-bold ">Submissions</h1> 
         
         </div>
-       <Button size="md" variant="primary" text={"New Submission"} onClick={()=>router.push("/form")}/>
+       <Button size="md" variant="primary" text={"New Submission"} onClick={()=>router.push("/user/form")}/>
       </div>
       <div id='filter' className='flex flex-wrap my-4 gap-2'>
         <InputBox placeholder='Search UserId...'/>

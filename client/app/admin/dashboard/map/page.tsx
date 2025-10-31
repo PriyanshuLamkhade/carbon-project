@@ -1,46 +1,53 @@
-"use client"
+"use client";
+
 import MultiMarkerMap from "@/app/components/maps/MultiMarkerMapProps";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-
+// Matches the backend data structure
+interface MapData {
+  latitude: number;
+  longitude: number;
+  label?: string;
+  status: "PENDING" | "INPROGRESS" | "APPROVED" | "REJECTED";
+  submissionId: number;
+}
 
 export default function DemoMapPage() {
- const [markers] = useState([
-    {
-      lat: 28.6139,
-      lon: 77.209,
-      label: "Delhi",
-      status: "approved",
-      submissionId: "SUB-101",
-    },
-    {
-      lat: 19.076,
-      lon: 72.8777,
-      label: "Mumbai",
-      status: "pending",
-      submissionId: "SUB-102",
-    },
-    {
-      lat: 13.0827,
-      lon: 80.2707,
-      label: "Chennai",
-      status: "rejected",
-      submissionId: "SUB-103",
-    },
-    {
-      lat: 26.9124,
-      lon: 75.7873,
-      label: "Jaipur",
-      status: "in progress",
-      submissionId: "SUB-104",
-    },
-  ]); 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [markerData, setMarkerData] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function getUserSubmission() {
+      const response = await fetch("http://localhost:4000/admin/mapData", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data: MapData[] = await response.json();
+
+        // ✅ Convert backend fields to match what MultiMarkerMap expects
+        const markers = data.map((m) => ({
+          lat: m.latitude,
+          lon: m.longitude,
+          label: m.label,
+          status: m.status,
+          submissionId: m.submissionId,
+        }));
+
+        setMarkerData(markers);
+      } else {
+        console.error("Failed to fetch user details", response.status);
+      }
+    }
+
+    getUserSubmission();
+  }, []);
 
   return (
     <div>
       <h2 className="text-3xl font-bold mb-10">Click Markers For Details</h2>
-      <MultiMarkerMap markers={markers} />
+      <MultiMarkerMap markers={markerData} />
     </div>
   );
 }
