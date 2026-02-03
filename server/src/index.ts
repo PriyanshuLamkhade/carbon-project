@@ -2,13 +2,19 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import cors from "cors";
-import { PrismaClient } from "@prisma/client";
+
 import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoute.js";
 import http from "http";
 import { WebSocketServer } from "ws";
 import { instance } from "./stateManager.js";
 import "dotenv/config";
+
+
+import { PrismaClient } from "@prisma/client";
+import {PrismaPg} from "@prisma/adapter-pg"
+
+const adaper = new PrismaPg({connectionString: process.env.DATABASE_URL})
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 if (!JWT_USER_SECRET) {
   throw new Error(
@@ -21,8 +27,7 @@ if (!JWT_ADMIN_SECRET) {
     "JWT_ADMIN_SECRET is not defined in the environment variables"
   );
 }
-
-export const db = new PrismaClient();
+export const db = new PrismaClient({adapter:adaper});
 
 const app = express();
 app.use(

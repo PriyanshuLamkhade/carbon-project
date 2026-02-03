@@ -1,13 +1,14 @@
-import express from "express";
+import express, { Router } from "express";
 import bs58 from "bs58";
 import cookieParser from "cookie-parser";
 import { PublicKey } from "@solana/web3.js";
-import { ed25519 } from "@noble/curves/ed25519";
+
 import jwt from "jsonwebtoken";
 import { db } from "../index.js";
 import { z } from "zod";
 import "dotenv/config";
 import { userMiddleware } from "../middleware/users.js";
+import { ed25519 } from "@noble/curves/ed25519.js";
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 if (!JWT_USER_SECRET) {
   throw new Error(
@@ -18,7 +19,7 @@ if (!JWT_USER_SECRET) {
 const app = express();
 app.use(cookieParser());
 app.use(express.json());
-const userRouter = express.Router();
+const userRouter: Router = express.Router();
 const phoneSchema = z.string().regex(/^[0-9]{10}$/, "Phone must be 10 digits");
 
 // Get nonce for a given pubkey

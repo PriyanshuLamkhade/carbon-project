@@ -13,27 +13,31 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@noble/curves": "^2.0.1",
     "@noble/ed25519": "^3.0.0",
-    "@prisma/client": "^6.16.3",
+    "@prisma/adapter-pg": "^7.3.0",
+    "@prisma/client": "^7.3.0",
     "@solana/web3.js": "^1.98.4",
     "@types/ws": "^8.18.1",
+    "bs58": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "prisma": "^6.16.2",
+    "prisma": "^7.3.0",
     "typescript": "^5.9.2",
     "ws": "^8.18.3",
     "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/bs58": "^4.0.4",
+    "@types/bun": "latest",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/bun": "latest"
+    "@types/node": "^25.2.0"
   },
   "private": true,
   "peerDependencies": {
