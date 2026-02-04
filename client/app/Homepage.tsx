@@ -44,7 +44,7 @@ const Homepage = () => {
                  variant="primary"
                  size="lg"
                  onClick={() => {
-                   router.push("/signup");
+                   router.push("/sign-up");
                  }}
                  
                />

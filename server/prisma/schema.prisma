@@ -1,24 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
-
-model Nonce {
-  pubkey    String   @unique
-  nonce     String
-  createdAt DateTime @default(now())
-}
-
 model Admin {
   adminId     Int    @id @default(autoincrement())
   name        String
@@ -30,11 +16,14 @@ model Admin {
 
 model User {
   userId       Int       @id @default(autoincrement())
+  email        String    @unique
+  Password     String
   name         String
   surname      String
   phonenumber  String
+  profileImage String?
   organisation String
-  pubkey       String    @unique
+  pubkey       String?    @unique
   createdAt    DateTime  @default(now())
   role         Role      @default(USER)
   history      History[]

@@ -33,13 +33,14 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/(auth)/signup/handleSignMessage.tsx",
+    "app/(auth)/sign-up/handleSignMessage.tsx",
     "app/(auth)/wallet.tsx",
-    "app/(auth)/signin/page.tsx",
+    "app/(auth)/sign-in/page.tsx",
     "app/(auth)/wallet",
-    "app/(auth)/signin/SignInForm.tsx",
+    "app/(auth)/sign-in/SignInForm.tsx",
     ".next\\dev/types/**/*.ts",
-    ".next\\dev/types/**/*.ts"
+    ".next\\dev/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

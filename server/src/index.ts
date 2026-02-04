@@ -11,10 +11,11 @@ import { instance } from "./stateManager.js";
 import "dotenv/config";
 
 
-import { PrismaClient } from "@prisma/client";
-import {PrismaPg} from "@prisma/adapter-pg"
 
-const adaper = new PrismaPg({connectionString: process.env.DATABASE_URL})
+import {PrismaPg} from "@prisma/adapter-pg"
+import { PrismaClient } from "@prisma/client";
+
+const adapter = new PrismaPg({connectionString: process.env.DATABASE_URL})
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 if (!JWT_USER_SECRET) {
   throw new Error(
@@ -27,7 +28,7 @@ if (!JWT_ADMIN_SECRET) {
     "JWT_ADMIN_SECRET is not defined in the environment variables"
   );
 }
-export const db = new PrismaClient({adapter:adaper});
+export const db = new PrismaClient({adapter:adapter});
 
 const app = express();
 app.use(
@@ -39,6 +40,8 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
+
+app.use("/files", express.static("uploads"));
 
 app.use("/users", userRoutes);
 app.use("/admin", adminRoutes);

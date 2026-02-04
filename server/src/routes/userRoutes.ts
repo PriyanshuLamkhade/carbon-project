@@ -1,73 +1,26 @@
 import express, { Router } from "express";
-import bs58 from "bs58";
-import cookieParser from "cookie-parser";
-import { PublicKey } from "@solana/web3.js";
 
 import jwt from "jsonwebtoken";
 import { db } from "../index.js";
 import { z } from "zod";
 import "dotenv/config";
 import { userMiddleware } from "../middleware/users.js";
-import { ed25519 } from "@noble/curves/ed25519.js";
+import { uploadProfilePic } from "../middleware/upload.js";
+
+// import { ed25519 } from "@noble/curves/ed25519.js";
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 if (!JWT_USER_SECRET) {
   throw new Error(
-    "JWT_USER_SECRET is not defined in the environment variables"
+    "JWT_USER_SECRET is not defined in the environment variables",
   );
 }
 
-const app = express();
-app.use(cookieParser());
-app.use(express.json());
 const userRouter: Router = express.Router();
 const phoneSchema = z.string().regex(/^[0-9]{10}$/, "Phone must be 10 digits");
 
-// Get nonce for a given pubkey
-userRouter.post("/auth/nonce", async (req, res) => {
-  const pubkey = req.body.pubkey;
-  if (!pubkey) {
-    return res.status(400).json({ message: "Missing pubkey in request body" });
-  }
-  try {
-    const checkNonce = await db.nonce.findUnique({ where: { pubkey: pubkey } });
-
-    if (!checkNonce) {
-      const nonce = Math.random().toString(36).substring(2);
-      await db.nonce.create({
-        data: { pubkey, nonce },
-      });
-      return res.json({ nonce });
-    } else {
-      return res.json({ nonce: checkNonce.nonce });
-    }
-  } catch (error) {
-    console.error("Nonce error:", error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-// Shared signature verification
-async function verifySignature(
-  pubkey: string,
-  signature: string,
-  nonce: string
-): Promise<boolean> {
-  const storedNonce = await db.nonce.findUnique({ where: { pubkey: pubkey } });
-  if (!storedNonce || storedNonce.nonce !== nonce) return false;
-
-  const message = new TextEncoder().encode(
-    `Please sign this message to verify ownership.\nNonce: ${nonce}`
-  );
-  const pubKey = new PublicKey(pubkey).toBytes();
-  const sig = bs58.decode(signature);
-
-  return ed25519.verify(sig, message, pubKey);
-}
-
-// Signup route
 userRouter.post("/auth/signup", async (req, res) => {
-  const { pubkey, signature, nonce, name, surname, phonenumber, organisation } =
-    req.body;
+  
+  const { name, surname, phonenumber, organisation, email, password } = req.body;
   const validatedPhoneNumber = phoneSchema.safeParse(phonenumber);
 
   if (!validatedPhoneNumber.success) {
@@ -77,27 +30,21 @@ userRouter.post("/auth/signup", async (req, res) => {
     });
     return;
   }
-  if (!pubkey || !signature || !nonce)
-    return res.status(400).json({ message: "Missing fields" });
 
-  const existingUser = await db.user.findUnique({ where: { pubkey: pubkey } });
+  const existingUser = await db.user.findUnique({ where: { email } });
   if (existingUser)
     return res.status(409).json({ message: "User already exists" });
-
-  const isValid = await verifySignature(pubkey, signature, nonce);
-  if (!isValid) return res.status(401).json({ message: "Invalid signature" });
-
+  
   const newUser = await db.user.create({
     data: {
       name,
       surname,
       phonenumber: validatedPhoneNumber.data,
       organisation,
-      pubkey,
+      email,
+      Password:password
     },
   });
-
-  await db.nonce.delete({ where: { pubkey: pubkey } });
 
   const token = jwt.sign({ userId: newUser.userId }, JWT_USER_SECRET, {
     expiresIn: "24h",
@@ -112,47 +59,80 @@ userRouter.post("/auth/signup", async (req, res) => {
     })
     .json({ message: "Signup successful" });
 });
-
-// Signin route
 userRouter.post("/auth/signin", async (req, res) => {
-  const { name, pubkey, signature, nonce } = req.body;
-
-  if (!pubkey || !signature || !nonce)
+  ;
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) {
     return res.status(400).json({ message: "Missing fields" });
-
-  const user = await db.user.findUnique({ where: { pubkey: pubkey, name } });
-  if (!user) return res.status(404).json({ message: "User not found" });
-
-  const isValid = await verifySignature(pubkey, signature, nonce);
-  if (!isValid) return res.status(401).json({ message: "Invalid signature" });
-
-  await db.nonce.delete({ where: { pubkey: pubkey } });
-
-  const token = jwt.sign({ userId: user.userId }, JWT_USER_SECRET, {
-    expiresIn: "24h",
+  }
+  const user = await db.user.findUnique({
+    where: { email },
   });
-  res
-    .cookie("token", token, {
-      httpOnly: true, // Required for security
-      secure: false, // false for localhost (true only on HTTPS)
-      sameSite: "lax", // "lax" is fine for same-origin-ish setup
-      // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
-      path: "/",
-    })
-    .json({ message: "Signin successful" });
+  if (!user) {
+    res.json({
+      message: "User doesnot exists",
+    });
+    return;
+  }
+  if (password === user.Password) {
+    const token = jwt.sign({ userId: user.userId }, JWT_USER_SECRET, {
+      expiresIn: "24h",
+    });
+    res
+      .cookie("token", token, {
+        httpOnly: true, // Required for security
+        secure: false, // false for localhost (true only on HTTPS)
+        sameSite: "lax", // "lax" is fine for same-origin-ish setup
+        // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
+        path: "/",
+      })
+      .json({ message: "Signin successful" });
+  } else {
+    res.json({ message: "Incorrect password" });
+  }
 });
 
 userRouter.get("/userDetails", userMiddleware, async (req, res) => {
-  try {
-    const userId = req.userId;
-    if (userId) {
-      const details = await db.user.findUnique({ where: { userId: userId } });
-      res.json({ userDetails: details });
-    }
-  } catch (error) {
-    res.json({ error });
+  const userId = req.userId;
+
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
   }
+
+  const user = await db.user.findUnique({
+    where: { userId },
+    select: {
+      userId: true,
+      name: true,
+      email: true,
+      phonenumber: true,
+      profileImage: true,
+    },
+  });
+
+  res.json({ userDetails: user });
 });
+userRouter.post(
+  "/me/profile-picture",
+  userMiddleware,
+  uploadProfilePic.single("file"),
+  async (req, res) => {
+    const userId = req.userId;
+
+    if (!userId || !req.file) {
+      return res.status(400).json({ message: "Invalid request" });
+    }
+
+    const imagePath = `profile-pics/${userId}.jpg`;
+
+    await db.user.update({
+      where: { userId },
+      data: { profileImage: imagePath },
+    });
+
+    res.json({ message: "Profile picture updated" });
+  }
+);
 
 userRouter.post("/userForm", userMiddleware, async (req, res) => {
   //add image geotag submission later
@@ -291,11 +271,9 @@ userRouter.delete("/deleteSubmission", userMiddleware, async (req, res) => {
     }
 
     if (data.status !== "PENDING") {
-      return res
-        .status(400)
-        .json({
-          message: "Only records with status 'INPROGRESS' can be deleted",
-        });
+      return res.status(400).json({
+        message: "Only records with status 'INPROGRESS' can be deleted",
+      });
     }
 
     await db.history.delete({ where: { historyId } });

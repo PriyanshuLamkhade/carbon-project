@@ -1,31 +1,23 @@
 "use client";
 import Button from "@/app/components/ui/Button";
 import InputBox from "@/app/components/ui/InputBox";
-import { useWallet } from "@solana/wallet-adapter-react";
-import bs58 from "bs58";
+
 import { useRouter } from "next/navigation";
 import {  useRef, useState } from "react";
 
 export function SignUpForm() {
-  const [signedMessage, setSignedMessage] = useState<Uint8Array>();
-  const [nonce, setNonce] = useState<string>();
-  const { publicKey, signMessage } = useWallet();
+
   const router = useRouter();
   const nameRef = useRef<HTMLInputElement>(null);
   const surnameRef = useRef<HTMLInputElement>(null);
   const phoneNumberRef = useRef<HTMLInputElement>(null);
   const organisationRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="flex flex-col gap-10 mt-5">
-      <Button
-        text="Verify Wallet"
-        variant="secondary"
-        size="md"
-        onClick={() => {
-          getNonce();
-        }}
-      />
+
       <div className="flex flex-col gap-2">
         <label>Name:</label>
         <InputBox ref={nameRef} placeholder="Enter Your Name" />
@@ -38,8 +30,13 @@ export function SignUpForm() {
         <label>Organisation:</label>
         <InputBox
           ref={organisationRef}
-          placeholder="Enter Organisation Name"
-        />
+          placeholder="Enter Organisation Name"/>
+        <label>Email:</label>
+        <InputBox ref={emailRef} placeholder="Enter Email" />
+
+        <label>Password:</label>
+        <InputBox ref={passwordRef} placeholder="Enter Password" type="password"/>
+
         <span className="relative">
           <Button
             className={"mt-4"}
@@ -57,45 +54,35 @@ export function SignUpForm() {
             }}
           />
           <br />
+        </span>
           <span
-            className="text-blue-700 cursor-pointer hover:text-blue-900"
+            className="text-blue-500 cursor-pointer hover:text-blue-900"
             onClick={() => {
-              router.push("/signin");
+              router.push("/sign-in");
             }}
           >
             Already have a account?
           </span>
-        </span>
+          <span
+        className="text-blue-500 cursor-pointer hover:text-blue-900 mt-2"
+        onClick={() => router.push("/admin/sign-in")}
+      >
+        Sign in as admin
+      </span>
       </div>
     </div>
   );
-  async function getNonce() {
-    if (publicKey) {
-      if (!signMessage) {
-        console.log(signMessage);
-        return;
-      }
-      const nonceRes = await fetch("http://localhost:4000/users/auth/nonce", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pubkey: publicKey.toString() }),
-      });
-      const json = await nonceRes.json();
-      setNonce(json.nonce);
-      const message = `Please sign this message to verify ownership.\nNonce: ${json.nonce}`;
-      const encodedMessage = new TextEncoder().encode(message);
-      const signature = await signMessage(encodedMessage);
-      setSignedMessage(signature);
-    }
-  }
+  
   async function submitForm() {
   try {
     const name = nameRef.current?.value;
     const surname = surnameRef.current?.value;
     const phonenumber = phoneNumberRef.current?.value;
     const organisation = organisationRef.current?.value;
+    const email = emailRef.current?.value;
+    const password = passwordRef.current?.value;
 
-    if (!publicKey) return null;
+
 
     const response = await fetch("http://localhost:4000/users/auth/signup", {
       method: "POST",
@@ -105,12 +92,12 @@ export function SignUpForm() {
         surname,
         phonenumber,
         organisation,
-        pubkey: publicKey.toString(),
-        signature: signedMessage ? bs58.encode(signedMessage) : null,
-        nonce,
+        email,
+        password,
       }),
+      credentials: "include",
     });
-
+    console.log("Signup response:", response);
     return response;
   } catch (error) {
     console.error("Error during signup:", error);

@@ -40,7 +40,7 @@ const page = () => {
       <span
           className="text-blue-700 cursor-pointer hover:text-blue-900"
           onClick={() => {
-            router.push("/signin");
+            router.push("/sign-in");
           }}
         >
           Not a Admin?
@@ -49,7 +49,7 @@ const page = () => {
   );
   async function signIn() {
     try {
-      const name = nameRef.current?.value;
+
 
       const signInRes = await fetch("http://localhost:4000/admin/auth/signin", {
         method: "post",
