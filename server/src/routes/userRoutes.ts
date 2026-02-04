@@ -1,4 +1,11 @@
+import { fileURLToPath } from "url";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 import express, { Router } from "express";
+import fs from "fs";
 
 import jwt from "jsonwebtoken";
 import { db } from "../index.js";
@@ -6,6 +13,7 @@ import { z } from "zod";
 import "dotenv/config";
 import { userMiddleware } from "../middleware/users.js";
 import { uploadProfilePic } from "../middleware/upload.js";
+
 
 // import { ed25519 } from "@noble/curves/ed25519.js";
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
@@ -107,6 +115,7 @@ userRouter.get("/userDetails", userMiddleware, async (req, res) => {
       email: true,
       phonenumber: true,
       profileImage: true,
+      organisation:true
     },
   });
 
@@ -134,8 +143,9 @@ userRouter.post(
   }
 );
 
+
+
 userRouter.post("/userForm", userMiddleware, async (req, res) => {
-  //add image geotag submission later
   try {
     const {
       location,
@@ -153,26 +163,43 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
       CommunityInvolvementLevel,
       MGNREGAPersonDays,
       trained,
+      profileImage, // this can be your live camera or uploaded image
     } = req.body;
+
     const userId = req.userId;
 
-    if (!userId) {
-      return res
-        .status(401)
-        .json({ message: "Unauthorized: No user ID found" });
-    }
-    if (!location || !areaclaim) {
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    if (!location || !areaclaim)
       return res
         .status(400)
         .json({ message: "Location and area claim are required" });
+
+    // ✅ Save image locally if present
+    let profileImageFileName = null;
+    if (profileImage) {
+      const buffer = Buffer.from(profileImage, "base64");
+      const fileName = `profile_${userId}_${Date.now()}.jpg`;
+      const filePath = path.join(__dirname, "../uploads", fileName);
+
+      // Ensure uploads folder exists
+      fs.mkdirSync(path.dirname(filePath), { recursive: true });
+      fs.writeFileSync(filePath, buffer);
+
+      profileImageFileName = fileName;
+
+      // Update user profile image in DB (optional, or could be a new column for live image)
+      await db.user.update({
+        where: { userId },
+        data: { profileImage: profileImageFileName },
+      });
     }
+
+    // ✅ Create history record
     const history = await db.history.create({
-      data: {
-        user: { connect: { userId } },
-        status: "PENDING",
-      },
+      data: { user: { connect: { userId } }, status: "PENDING" },
     });
 
+    // ✅ Create submission record
     const submission = await db.submission.create({
       data: {
         location,
@@ -193,14 +220,18 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
         history: { connect: { historyId: history.historyId } },
       },
     });
+
     res.json({
       message: "Submission Completed",
       submissionId: submission.submissionId,
+      profileImage: profileImageFileName,
     });
   } catch (error) {
-    res.json(error);
+    console.error(error);
+    res.status(500).json({ message: "Internal server error", error });
   }
 });
+
 
 userRouter.get("/allhistory", userMiddleware, async (req, res) => {
   try {

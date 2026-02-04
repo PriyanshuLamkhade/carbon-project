@@ -322,42 +322,49 @@ function Form() {
   );
 
   async function submitForm() {
-    const payload = {
-      location: locationRef.current?.value,
-      latitude: location?.lat,
-      longitude: location?.lon,
-      areaclaim: areaClaimRef.current?.valueAsNumber,
-      description: descriptionRef.current?.value,
-      species1: species1Ref.current?.value,
-      species1_count: species1CountRef.current?.valueAsNumber,
-      species2: species2Ref.current?.value,
-      species2_count: species2CountRef.current?.valueAsNumber,
-      species3: species3Ref.current?.value,
-      species3_count: species3CountRef.current?.valueAsNumber,
-      plantationDate: plantationDateRef.current?.value,
-      MGNREGAPersonDays: mgnregaRef.current?.valueAsNumber,
-      CommunityInvolvementLevel: (
-        document.getElementById("level") as HTMLSelectElement
-      )?.value,
-      trained: (document.getElementById("trained") as HTMLSelectElement)?.value,
-    };
+  // Get captured image from localStorage
+  const capturedImage = localStorage.getItem("capturedImage");
 
-    console.log("Form submission payload:", payload);
+  const payload = {
+    location: locationRef.current?.value,
+    latitude: location?.lat,
+    longitude: location?.lon,
+    areaclaim: areaClaimRef.current?.valueAsNumber,
+    description: descriptionRef.current?.value,
+    species1: species1Ref.current?.value,
+    species1_count: species1CountRef.current?.valueAsNumber,
+    species2: species2Ref.current?.value,
+    species2_count: species2CountRef.current?.valueAsNumber,
+    species3: species3Ref.current?.value,
+    species3_count: species3CountRef.current?.valueAsNumber,
+    plantationDate: plantationDateRef.current?.value,
+    MGNREGAPersonDays: mgnregaRef.current?.valueAsNumber,
+    CommunityInvolvementLevel: (
+      document.getElementById("level") as HTMLSelectElement
+    )?.value,
+    trained: (document.getElementById("trained") as HTMLSelectElement)?.value,
 
-      try {
-        const formRes = await fetch("http://localhost:4000/users/userForm", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-          credentials: "include",
-        });
+    // Add captured image
+    profileImage: capturedImage, // base64 string
+  };
 
-        return formRes;
-      } catch (error) {
-        console.error("Error during form submission:", error);
-        return null;
-      }
+  console.log("Form submission payload:", payload);
+
+  try {
+    const res = await fetch("http://localhost:4000/users/userForm", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      credentials: "include",
+    });
+
+    return res;
+  } catch (error) {
+    console.error("Error during form submission:", error);
+    return null;
   }
+}
+
 }
 
 export default Form;
