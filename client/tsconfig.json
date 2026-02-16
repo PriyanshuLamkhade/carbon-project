@@ -23,7 +23,7 @@
     ],
     "paths": {
       "@/*": [
-        "./*"
+        "./src/*"
       ]
     },
     "allowJs": true
@@ -33,11 +33,11 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/(auth)/sign-up/handleSignMessage.tsx",
-    "app/(auth)/wallet.tsx",
-    "app/(auth)/sign-in/page.tsx",
-    "app/(auth)/wallet",
-    "app/(auth)/sign-in/SignInForm.tsx",
+    "src/features/auth/SignUpForm.tsx",
+    "src/app/(auth)/wallet.tsx",
+    "src/app/(auth)/sign-in/page.tsx",
+    "src/app/(auth)/wallet",
+    "src/features/auth/SignInForm.tsx",
     ".next\\dev/types/**/*.ts",
     ".next\\dev/types/**/*.ts",
     ".next/dev/types/**/*.ts"
