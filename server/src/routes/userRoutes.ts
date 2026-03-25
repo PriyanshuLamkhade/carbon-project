@@ -13,6 +13,7 @@ import { z } from "zod";
 import "dotenv/config";
 import { userMiddleware } from "../middleware/users.js";
 import { uploadProfilePic } from "../middleware/upload.js";
+import { addUserRole, loginUser, myProfile } from "../controller/auth.js";
 
 
 // import { ed25519 } from "@noble/curves/ed25519.js";
@@ -143,6 +144,10 @@ userRouter.post(
   }
 );
 
+
+userRouter.post("/login",loginUser)
+userRouter.put("/add/role",userMiddleware,addUserRole)
+userRouter.get("/me",userMiddleware,myProfile)
 
 
 userRouter.post("/userForm", userMiddleware, async (req, res) => {

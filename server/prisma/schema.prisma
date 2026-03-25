@@ -17,12 +17,11 @@ model Admin {
 model User {
   userId       Int       @id @default(autoincrement())
   email        String    @unique
-  Password     String
   name         String
-  surname      String
-  phonenumber  String
+  surname      String?
+  phonenumber  String?
   profileImage String?
-  organisation String
+  organisation String?
   pubkey       String?    @unique
   createdAt    DateTime  @default(now())
   role         Role      @default(USER)
@@ -88,6 +87,7 @@ model Verification {
 enum Role {
   USER
   NCCR
+  VALIDATOR
 }
 
 enum Status {

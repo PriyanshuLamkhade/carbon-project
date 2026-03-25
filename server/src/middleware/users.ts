@@ -1,12 +1,16 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import 'dotenv/config';
+import { User } from "@prisma/client";
 
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 if (!JWT_USER_SECRET) {
   throw new Error("JWT_USER_SECRET is not defined in the environment variables");
 }
 
+export interface AuthenticatedRequest extends Request {
+  user?: User | null;
+}
 // Extend Express Request type to include userId
 declare global {
   namespace Express {
@@ -16,7 +20,7 @@ declare global {
   }
 }
 
-export const userMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const userMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const token = req.cookies.token;
 
