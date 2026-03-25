@@ -27,79 +27,79 @@ if (!JWT_USER_SECRET) {
 const userRouter: Router = express.Router();
 const phoneSchema = z.string().regex(/^[0-9]{10}$/, "Phone must be 10 digits");
 
-userRouter.post("/auth/signup", async (req, res) => {
+// userRouter.post("/auth/signup", async (req, res) => {
   
-  const { name, surname, phonenumber, organisation, email, password } = req.body;
-  const validatedPhoneNumber = phoneSchema.safeParse(phonenumber);
+//   const { name, surname, phonenumber, organisation, email, password } = req.body;
+//   const validatedPhoneNumber = phoneSchema.safeParse(phonenumber);
 
-  if (!validatedPhoneNumber.success) {
-    res.json({
-      message: "Incorrect format",
-      error: validatedPhoneNumber.error,
-    });
-    return;
-  }
+//   if (!validatedPhoneNumber.success) {
+//     res.json({
+//       message: "Incorrect format",
+//       error: validatedPhoneNumber.error,
+//     });
+//     return;
+//   }
 
-  const existingUser = await db.user.findUnique({ where: { email } });
-  if (existingUser)
-    return res.status(409).json({ message: "User already exists" });
+//   const existingUser = await db.user.findUnique({ where: { email } });
+//   if (existingUser)
+//     return res.status(409).json({ message: "User already exists" });
   
-  const newUser = await db.user.create({
-    data: {
-      name,
-      surname,
-      phonenumber: validatedPhoneNumber.data,
-      organisation,
-      email,
-      Password:password
-    },
-  });
+//   const newUser = await db.user.create({
+//     data: {
+//       name,
+//       surname,
+//       phonenumber: validatedPhoneNumber.data,
+//       organisation,
+//       email,
+//       Password:password
+//     },
+//   });
 
-  const token = jwt.sign({ userId: newUser.userId }, JWT_USER_SECRET, {
-    expiresIn: "24h",
-  });
-  res
-    .cookie("token", token, {
-      httpOnly: true, // Required for security
-      secure: false, // false for localhost (true only on HTTPS)
-      sameSite: "lax", // "lax" is fine for same-origin-ish setup
-      // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
-      path: "/",
-    })
-    .json({ message: "Signup successful" });
-});
-userRouter.post("/auth/signin", async (req, res) => {
-  ;
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: "Missing fields" });
-  }
-  const user = await db.user.findUnique({
-    where: { email },
-  });
-  if (!user) {
-    res.json({
-      message: "User doesnot exists",
-    });
-    return;
-  }
-  if (password === user.Password) {
-    const token = jwt.sign({ userId: user.userId }, JWT_USER_SECRET, {
-      expiresIn: "24h",
-    });
-    res
-      .cookie("token", token, {
-        httpOnly: true, // Required for security
-        secure: false, // false for localhost (true only on HTTPS)
-        sameSite: "lax", // "lax" is fine for same-origin-ish setup
-        // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
-        path: "/",
-      })
-      .json({ message: "Signin successful" });
-  } else {
-    res.json({ message: "Incorrect password" });
-  }
-});
+//   const token = jwt.sign({ userId: newUser.userId }, JWT_USER_SECRET, {
+//     expiresIn: "24h",
+//   });
+//   res
+//     .cookie("token", token, {
+//       httpOnly: true, // Required for security
+//       secure: false, // false for localhost (true only on HTTPS)
+//       sameSite: "lax", // "lax" is fine for same-origin-ish setup
+//       // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
+//       path: "/",
+//     })
+//     .json({ message: "Signup successful" });
+// });
+// userRouter.post("/auth/signin", async (req, res) => {
+//   ;
+//   const { name, email, password } = req.body;
+//   if (!name || !email || !password) {
+//     return res.status(400).json({ message: "Missing fields" });
+//   }
+//   const user = await db.user.findUnique({
+//     where: { email },
+//   });
+//   if (!user) {
+//     res.json({
+//       message: "User doesnot exists",
+//     });
+//     return;
+//   }
+//   if (password === user.Password) {
+//     const token = jwt.sign({ userId: user.userId }, JWT_USER_SECRET, {
+//       expiresIn: "24h",
+//     });
+//     res
+//       .cookie("token", token, {
+//         httpOnly: true, // Required for security
+//         secure: false, // false for localhost (true only on HTTPS)
+//         sameSite: "lax", // "lax" is fine for same-origin-ish setup
+//         // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
+//         path: "/",
+//       })
+//       .json({ message: "Signin successful" });
+//   } else {
+//     res.json({ message: "Incorrect password" });
+//   }
+// });
 
 userRouter.get("/userDetails", userMiddleware, async (req, res) => {
   const userId = req.userId;

@@ -24,7 +24,7 @@ export const loginUser = TryCatch(async (req, res) => {
   );
   const { email, name, picture } = userRes.data;
 
-  let user = await db.user.findUnique({ where: {email} });
+  let user = await db.user.findFirst({ where: {email} });
 
   if (!user) {
     user = await db.user.create({
@@ -36,14 +36,17 @@ export const loginUser = TryCatch(async (req, res) => {
     });
   }
 
-  const token = jwt.sign({ userId }, process.env.JWT_SECRET as string, {
-    expiresIn: "15d",
-  });
-  res.status(200).json({
-    message: "Logged Success",
-    token,
-    user,
-  });
+  const token = jwt.sign({ userId: user.userId }, process.env.JWT_USER_SECRET as string, {
+  expiresIn: "15d",
+});
+  res.cookie("token", token, {
+      httpOnly: true, // Required for security
+      secure: false, // false for localhost (true only on HTTPS)
+      sameSite: "lax", // "lax" is fine for same-origin-ish setup
+      // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
+      path: "/",
+    })
+    .json({ message: "Signup successful" });
 });
 
 const allowedRoles = ["USER","VALIDATOR","NCCR"] as const;
@@ -72,7 +75,7 @@ export const addUserRole = TryCatch(async (req:AuthenticatedRequest, res) => {
       message: "User not found",
     });
   }
-  const token = jwt.sign({ userId }, process.env.JWT_SECRET as string, {
+  const token = jwt.sign({ userId }, process.env.JWT_USER_SECRET as string, {
     expiresIn: "15d",
   });
 
