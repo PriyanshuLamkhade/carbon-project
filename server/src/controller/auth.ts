@@ -8,7 +8,8 @@ import { AuthenticatedRequest } from "../middleware/users.js";
 
 export const loginUser = TryCatch(async (req, res) => {
   const { code } = req.body;
-   const userId = req.userId;
+  const userId = req.userId;
+  let newUser = false;
   if (!code) {
     return res.status(400).json({
       message: "Authorization code is required",
@@ -24,35 +25,65 @@ export const loginUser = TryCatch(async (req, res) => {
   );
   const { email, name, picture } = userRes.data;
 
-  let user = await db.user.findFirst({ where: {email} });
+  let user = await db.user.findFirst({ where: { email } });
 
   if (!user) {
-    user = await db.user.create({
-      data: {
-        name,
-        email,
-        profileImage: picture,
-      },
-    });
+    let tempUserData = { email, name, picture };
+    newUser = true;
+    res.json({ message: "Continue Profile", newUser, tempUserData });
   }
 
-  const token = jwt.sign({ userId: user.userId }, process.env.JWT_USER_SECRET as string, {
-  expiresIn: "15d",
-});
-  res.cookie("token", token, {
+  const token = jwt.sign(
+    { userId: user?.userId },
+    process.env.JWT_USER_SECRET as string,
+    {
+      expiresIn: "15d",
+    },
+  );
+  res
+    .cookie("token", token, {
       httpOnly: true, // Required for security
       secure: false, // false for localhost (true only on HTTPS)
       sameSite: "lax", // "lax" is fine for same-origin-ish setup
       // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
       path: "/",
     })
-    .json({ message: "Signup successful" });
+    .json({ message: "Login successful", newUser, user, role:user?.role });
+});
+export const registerUser = TryCatch(async (req, res) => {
+  const { userData, phone, organisation, role } = req.body;
+  const { name, email, picture } = userData;
+  if (!req.body) {
+    res.json({ message: "body missing" });
+  }
+  let user = await db.user.create({
+    data: {
+      name,
+      email,
+      profileImage: picture,
+      phonenumber:phone, organisation, role
+    },
+  });
+  const token = jwt.sign(
+    { userId: user?.userId },
+    process.env.JWT_USER_SECRET as string,
+    {
+      expiresIn: "15d",
+    },
+  );
+  res.cookie("token", token, {
+      httpOnly: true, // Required for security
+      secure: false, // false for localhost (true only on HTTPS)
+      sameSite: "lax", // "lax" is fine for same-origin-ish setup
+      // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
+      path: "/",
+    }).json({"message":"User Created",userId : user.userId, role:user.role})
 });
 
-const allowedRoles = ["USER","VALIDATOR","NCCR"] as const;
+const allowedRoles = ["USER", "VALIDATOR", "NCCR"] as const;
 type Role = (typeof allowedRoles)[number];
 
-export const addUserRole = TryCatch(async (req:AuthenticatedRequest, res) => {
+export const addUserRole = TryCatch(async (req: AuthenticatedRequest, res) => {
   const userId = req.userId;
   if (!userId) {
     return res.status(401).json({
@@ -66,10 +97,9 @@ export const addUserRole = TryCatch(async (req:AuthenticatedRequest, res) => {
     });
   }
   const user = await db.user.update({
-    where:{ userId },
-    data: { role},
-  }
-  );
+    where: { userId },
+    data: { role },
+  });
   if (!user) {
     return res.status(404).json({
       message: "User not found",
@@ -84,9 +114,9 @@ export const addUserRole = TryCatch(async (req:AuthenticatedRequest, res) => {
 
 export const myProfile = TryCatch(async (req, res) => {
   const userId = req.userId;
-  if(!userId){
-    return res.json({"message":"user not found"})
+  if (!userId) {
+    return res.json({ message: "user not found" });
   }
-  const user = await db.user.findUnique({where:{userId}})
+  const user = await db.user.findUnique({ where: { userId } });
   res.json(user);
 });
