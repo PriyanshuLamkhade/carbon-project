@@ -1,6 +1,7 @@
 "use client";
 
 
+import { authService } from "@/app/page";
 import DetailedTable from "@/components/tables/DetailedTable";
 import Button from "@/components/ui/Button";
 import Cards from "@/components/ui/Cards";
@@ -16,7 +17,7 @@ interface Submission {
   Status: string;
 }
 
-const AdminDashboard = () => {
+const ValidatorDashboard = () => {
   const [recentEntries, setRecentEntries] = useState<Submission[]>([]);
   const [counts, setCounts] = useState({
     PENDING: 0,
@@ -29,7 +30,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     async function getUserSubmission() {
-      const response = await fetch("http://localhost:4000/admin/dashboard/home", {
+      const response = await fetch(`${authService}/validator/dashboard/home`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -80,7 +81,7 @@ const AdminDashboard = () => {
           size="md"
           variant="primary"
           text={"All Submissions"}
-          onClick={() => router.push("/admin/dashboard/allsubmissions")}
+          onClick={() => router.push("/validator/dashboard/allsubmissions")}
         />
       </div>
 
@@ -104,4 +105,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default ValidatorDashboard;

@@ -24,29 +24,20 @@ export const AppProvider = ({ children }: AppProviderProps) => {
 
   
   async function fetchUser() {
-    try {
-     
-      const token = localStorage.getItem("token");
-      if (!token) {
-        return;
-      }
-      const { data } = await axios.get(`${authService}/users/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setUser(data);
-      setIsAuth(true);
-      
-    } catch (error) {
-      console.log(error);
-      setUser(null);
-      setIsAuth(false);
-      
-    } finally {
-      setLoading(false);
-    }
+  try {
+    const { data } = await axios.get(`${authService}/users/me`, {
+      withCredentials: true,
+    });
+
+    setUser(data);
+    setIsAuth(true);
+  } catch (error) {
+    setUser(null);
+    setIsAuth(false);
+  } finally {
+    setLoading(false);
   }
+}
   useEffect(() => {
     fetchUser();
   }, []);

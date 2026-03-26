@@ -4,7 +4,7 @@ import jwt, { type JwtPayload } from "jsonwebtoken";
 import cors from "cors";
 
 import userRoutes from "./routes/userRoutes.js";
-import adminRoutes from "./routes/adminRoute.js";
+import validatorRoutes from "./routes/validatorRoutes.js";
 import http from "http";
 import { WebSocketServer } from "ws";
 import { instance } from "./stateManager.js";
@@ -44,7 +44,7 @@ app.use(express.json());
 app.use("/files", express.static("uploads"));
 
 app.use("/users", userRoutes);
-app.use("/admin", adminRoutes);
+app.use("/validator", validatorRoutes);
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });

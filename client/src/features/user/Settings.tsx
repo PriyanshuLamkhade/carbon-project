@@ -6,13 +6,14 @@ import InputBox from "@/components/ui/InputBox";
 import { useEffect, useState } from "react";
 import ImageDrop from "../upload/ImageDrop";
 import ToggleSwitch from "@/components/ui/ToggleSwitch";
+import { authService } from "@/app/page";
 
 const UserSettings = () => {
   const [files, setFiles] = useState<any[]>([]);
 
   useEffect(() => {
   const loadProfilePic = async () => {
-    const res = await fetch("http://localhost:4000/users/userDetails", {
+    const res = await fetch(`${authService}/users/userDetails`, {
       credentials: "include",
     });
 
@@ -24,7 +25,7 @@ const UserSettings = () => {
       setFiles([
         {
           id: "existing",
-          preview: `http://localhost:4000/files/${data.userDetails.profileImage}?${Date.now()}`,
+          preview: `${authService}/files/${data.userDetails.profileImage}?${Date.now()}`,
         },
       ]);
     }
@@ -42,7 +43,7 @@ const uploadProfilePicture = async () => {
   const formData = new FormData();
   formData.append("file", selected.file);
 
-  await fetch("http://localhost:4000/users/me/profile-picture", {
+  await fetch(`${authService}/users/me/profile-picture`, {
     method: "POST",
     body: formData,
     credentials: "include",

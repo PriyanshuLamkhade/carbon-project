@@ -33,7 +33,7 @@ const Homepage = () => {
                  Track And Trade <br />Blue Carbon <br />
                  With Blockchain Transparency
                </h1>
-              <Link href="/sign-up">
+              <Link href="/sign-in">
                <Button
                 className="w-[28vw]"
                  text="Get Started"

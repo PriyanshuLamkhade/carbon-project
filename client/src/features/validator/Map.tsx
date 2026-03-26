@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import MultiMarkerMap from "../map/MultiMarkerMapProps";
+import { authService } from "@/app/page";
 
 // Matches the backend data structure
 interface MapData {
@@ -12,12 +13,12 @@ interface MapData {
   submissionId: number;
 }
 
-export default function AdminMap() {
+export default function ValidatorMap() {
   const [markerData, setMarkerData] = useState<any[]>([]);
 
   useEffect(() => {
     async function getUserSubmission() {
-      const response = await fetch("http://localhost:4000/admin/mapData", {
+      const response = await fetch(`${authService}/validator/mapData`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

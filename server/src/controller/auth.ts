@@ -115,7 +115,7 @@ export const addUserRole = TryCatch(async (req: AuthenticatedRequest, res) => {
 export const myProfile = TryCatch(async (req, res) => {
   const userId = req.userId;
   if (!userId) {
-    return res.json({ message: "user not found" });
+    return res.status(401).json({ message: "Unauthorized" });
   }
   const user = await db.user.findUnique({ where: { userId } });
   res.json(user);

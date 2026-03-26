@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import InputBox from "@/components/ui/InputBox";
 import MapPicker from "../map/InitMap";
 import Button from "@/components/ui/Button";
+import { authService } from "@/app/page";
 
 
 function UserForm() {
@@ -22,7 +23,7 @@ function UserForm() {
 
   useEffect(() => {
     async function callDetails() {
-      const response = await fetch("http://localhost:4000/users/userDetails", {
+      const response = await fetch(`${authService}/users/userDetails`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -312,7 +313,7 @@ function UserForm() {
             e.preventDefault();
             const res = await submitForm();
             if (res?.ok) {
-              router.push("/user/dashboard/home");
+              router.push("/user/dashboard");
             } else {
               console.error("Form submission failed");
             }
@@ -352,7 +353,7 @@ function UserForm() {
   console.log("Form submission payload:", payload);
 
   try {
-    const res = await fetch("http://localhost:4000/users/userForm", {
+    const res = await fetch(`${authService}/users/userForm`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

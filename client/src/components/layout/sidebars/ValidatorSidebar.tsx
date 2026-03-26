@@ -12,21 +12,21 @@ import { usePathname, useRouter } from 'next/navigation'
 import { SideIcons } from '../../ui/SideIcons'
 
 
-const AdminSidebar = () => {
+const ValidatorSidebar = () => {
   const pathname = usePathname()
   const router = useRouter()
   const links = [
-    { href: '/admin/dashboard/home', text: 'Home', icon: <HomeIcon size="20px" /> },
-    { href: '/admin/dashboard/map', text: 'Map', icon: <MapPin size="20px"/> },
-    { href: '/admin/dashboard/allsubmissions', text: 'All Submissions', icon: <VerifiedIcon size="20px" /> },
-    { href: '/admin/dashboard/carbontokens', text: 'Carbon Tokens', icon: <CoinsIcon size="20px" /> },
-    { href: '/admin/dashboard/settings', text: 'Settings', icon: <Settings size="20px"  /> },
+    { href: '/validator/dashboard/home', text: 'Home', icon: <HomeIcon size="20px" /> },
+    { href: '/validator/dashboard/map', text: 'Map', icon: <MapPin size="20px"/> },
+    { href: '/validator/dashboard/allsubmissions', text: 'All Submissions', icon: <VerifiedIcon size="20px" /> },
+    { href: '/validator/dashboard/carbontokens', text: 'Carbon Tokens', icon: <CoinsIcon size="20px" /> },
+    { href: '/validator/dashboard/settings', text: 'Settings', icon: <Settings size="20px"  /> },
   ]
 
   return (
     <div className="hidden w-[17vmax] min-h-screen bg-black/80 border-r pt-6 border-black  md:flex flex-col font-semibold">
       <h1 className="text-white/90 ml-2 text-lg lg:text-2xl font-extrabold flex-shrink-0 md:ml-8 sm:mb-3">
-        Admin <br /> Dashboard
+        Validator <br /> Dashboard
         </h1>
 
       <div className="min-h-[20vmax] w-full mt-10 flex flex-col gap-2">
@@ -54,4 +54,4 @@ const AdminSidebar = () => {
   )
 }
 
-export default AdminSidebar
+export default ValidatorSidebar

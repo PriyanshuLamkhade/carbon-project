@@ -2,49 +2,50 @@ import express, { Router } from "express";
 import { db } from "../index.js";
 import jwt from "jsonwebtoken";
 import { adminMiddleware } from "../middleware/admin.js";
+import { userMiddleware } from "../middleware/users.js";
 const JWT_ADMIN_SECRET = process.env.JWT_ADMIN_SECRET;
 if (!JWT_ADMIN_SECRET) {
   throw new Error(
     "JWT_ADMIN_SECRET is not defined in the environment variables",
   );
 }
-const adminRouter: Router = express.Router();
+const validatorRouter: Router = express.Router();
 
-adminRouter.post("/auth/signin", async (req, res) => {
-  const { name, surname, phonenumber, email, password } = req.body;
-  if (!name || !surname || !phonenumber || !email || !password) {
-    return res.status(400).json({ message: "Missing fields" });
-  }
-  const admin = await db.admin.findUnique({
-    where: { name, surname, phonenumber, email },
-  });
-  if (!admin) {
-    res.json({
-      message: "Admin doesnot exists",
-    });
-    return;
-  }
-  if (password === admin.password) {
-    const token = jwt.sign({ adminId: admin.adminId }, JWT_ADMIN_SECRET, {
-      expiresIn: "24h",
-    });
-    res
-      .cookie("token", token, {
-        httpOnly: true, // Required for security
-        secure: false, // false for localhost (true only on HTTPS)
-        sameSite: "lax", // "lax" is fine for same-origin-ish setup
-        // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
-        path: "/",
-      })
-      .json({ message: "Signin successful" });
-  } else {
-    res.json({ message: "Incorrect password" });
-  }
-});
+// validatorRouter.post("/auth/signin", async (req, res) => {
+//   const { name, surname, phonenumber, email, password } = req.body;
+//   if (!name || !surname || !phonenumber || !email || !password) {
+//     return res.status(400).json({ message: "Missing fields" });
+//   }
+//   const admin = await db.admin.findUnique({
+//     where: { name, surname, phonenumber, email },
+//   });
+//   if (!admin) {
+//     res.json({
+//       message: "Admin doesnot exists",
+//     });
+//     return;
+//   }
+//   if (password === admin.password) {
+//     const token = jwt.sign({ adminId: admin.adminId }, JWT_ADMIN_SECRET, {
+//       expiresIn: "24h",
+//     });
+//     res
+//       .cookie("token", token, {
+//         httpOnly: true, // Required for security
+//         secure: false, // false for localhost (true only on HTTPS)
+//         sameSite: "lax", // "lax" is fine for same-origin-ish setup
+//         // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
+//         path: "/",
+//       })
+//       .json({ message: "Signin successful" });
+//   } else {
+//     res.json({ message: "Incorrect password" });
+//   }
+// });
 
-adminRouter.get("/dashboard/home", adminMiddleware, async (req, res) => {
+validatorRouter.get("/dashboard/home", userMiddleware, async (req, res) => {
   try {
-    if (!req.adminId) return res.status(401).json({ message: "Invalid token" });
+    if (!req.userId) return res.status(401).json({ message: "Invalid token" });
 
     // Counts by status
     const counts = await db.history.groupBy({
@@ -93,9 +94,9 @@ adminRouter.get("/dashboard/home", adminMiddleware, async (req, res) => {
   }
 });
 
-adminRouter.get("/mapData", adminMiddleware, async (req, res) => {
+validatorRouter.get("/mapData", userMiddleware, async (req, res) => {
   try {
-    if (!req.adminId) return res.status(401).json({ message: "Invalid token" });
+    if (!req.userId) return res.status(401).json({ message: "Invalid token" });
     const entries = await db.history.findMany({
       include: {
         submission: {
@@ -123,18 +124,18 @@ adminRouter.get("/mapData", adminMiddleware, async (req, res) => {
   }
 });
 
-// adminRouter.get('requestsPending',(req,res)=>{
+// validatorRouter.get('requestsPending',(req,res)=>{
 
 // })
 
-// adminRouter.get('requestInfo',(req,res)=>{
+// validatorRouter.get('requestInfo',(req,res)=>{
 
 // })
 
-// adminRouter.post('verifyDataForm',(req,res)=>{
+// validatorRouter.post('verifyDataForm',(req,res)=>{
 
 // })
-// adminRouter.post('confirmSubmission',(req,res)=>{
+// validatorRouter.post('confirmSubmission',(req,res)=>{
 
 // })
-export default adminRouter;
+export default validatorRouter;

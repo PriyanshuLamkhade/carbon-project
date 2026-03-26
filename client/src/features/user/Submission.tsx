@@ -1,5 +1,6 @@
 "use client"
 
+import { authService } from '@/app/page';
 import PreviewPopup from '@/components/PreviewPopup';
 import TableWithActions from '@/components/tables/TableWithActionsProps';
 import Button from '@/components/ui/Button';
@@ -17,7 +18,7 @@ const [previewData, setPreviewData] = useState(null);
   const [visible, setVisible] = useState(false);
 useEffect(()=>{
   async function getUserSubmission(){
-  const response =  await fetch("http://localhost:4000/users/allhistory", {
+  const response =  await fetch(`${authService}/users/allhistory`, {
         method: "get",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

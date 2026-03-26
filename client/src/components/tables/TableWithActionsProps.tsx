@@ -1,4 +1,5 @@
 "use client";
+import { authService } from "@/app/page";
 import React from "react";
 
 interface RowData {
@@ -81,7 +82,7 @@ const TableWithActions: React.FC<TableWithActionsProps> = ({
               <div className="flex gap-3">
                 <button
                   onClick={async () => {
-                    const res = await fetch("http://localhost:4000/users/previewData", {
+                    const res = await fetch(`${authService}/users/previewData`, {
                       method: "post",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ historyId: row.historyId }),
@@ -104,7 +105,7 @@ const TableWithActions: React.FC<TableWithActionsProps> = ({
                 </button>
                 <button
                   onClick={async () => {
-                    const res = await fetch("http://localhost:4000/users/deleteSubmission", {
+                    const res = await fetch(`${authService}/users/deleteSubmission`, {
                       method: "delete",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ historyId: row.historyId }),

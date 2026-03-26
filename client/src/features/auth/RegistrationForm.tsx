@@ -59,13 +59,13 @@ export default function RegistrationForm({ userData }: any) {
         organisation: formData.organisation,
         role: formData.role,
         userData //name, email profile pic
-      });
+      },{withCredentials: true,});
       setSubmitted(true);
       toast.success(result.data.message)
       if( result.data.role === "USER"){
         router.push("/user/dashboard")
       }else if( result.data.role === "VALIDATOR"){
-        router.push("/admin/dashboard")
+        router.push("/validator/dashboard")
       }
     }
     } catch (error) {

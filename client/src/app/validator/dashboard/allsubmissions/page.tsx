@@ -1,4 +1,5 @@
-import CheckSubmissions from '@/features/admin/AllSubmissions'
+
+import CheckSubmissions from '@/features/validator/AllSubmissions'
 import React from 'react'
 
 const page = () => {

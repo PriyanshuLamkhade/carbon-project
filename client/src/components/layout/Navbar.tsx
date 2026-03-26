@@ -65,13 +65,7 @@ export const Navbar = () => {
         />
         </Link>
         
-        <Link href="/sign-up"> 
-        <Button
-          text="Sign up"
-          variant="secondary"
-          size="sm"
-        />
-        </Link>
+        
       </div>
     </div>
   );
