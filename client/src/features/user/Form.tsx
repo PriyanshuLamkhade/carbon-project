@@ -6,6 +6,7 @@ import InputBox from "@/components/ui/InputBox";
 import MapPicker from "../map/InitMap";
 import Button from "@/components/ui/Button";
 import { authService } from "@/app/page";
+import toast from "react-hot-toast";
 
 function UserForm() {
   const [location, setLocation] = useState<{
@@ -136,49 +137,55 @@ function UserForm() {
               <MapPicker mode="boundary" setBoundary={setBoundary} />
 
               <div className="flex flex-col gap-3 mt-3 w-full">
-  {boundary ? (
-    <div className="bg-green-100 p-4 rounded w-full">
-      <p className="font-semibold mb-2 text-lg">📍 Boundary Details</p>
+                {boundary ? (
+                  <div className="bg-green-100 p-4 rounded w-full">
+                    <p className="font-semibold mb-2 text-lg">
+                      📍 Boundary Details
+                    </p>
 
-      <p>
-        <span className="font-medium">Center:</span>{" "}
-        {boundary.centerLat.toFixed(6)}, {boundary.centerLng.toFixed(6)}
-      </p>
+                    <p>
+                      <span className="font-medium">Center:</span>{" "}
+                      {boundary.centerLat.toFixed(6)},{" "}
+                      {boundary.centerLng.toFixed(6)}
+                    </p>
 
-      <p>
-        <span className="font-medium">Area:</span> {boundary.area} hectares
-      </p>
+                    <p>
+                      <span className="font-medium">Area:</span> {boundary.area}{" "}
+                      hectares
+                    </p>
 
-      <p className="mb-3">
-        <span className="font-medium">Address:</span> {boundary.address}
-      </p>
+                    <p className="mb-3">
+                      <span className="font-medium">Address:</span>{" "}
+                      {boundary.address}
+                    </p>
 
-      <p className="font-semibold mt-3">🧭 Coordinates:</p>
+                    <p className="font-semibold mt-3">🧭 Coordinates:</p>
 
-      <div className="max-h-40 overflow-y-auto bg-white p-3 rounded mt-2 border">
-        {boundary.coordinates[0]
-          .slice(0, -1)
-          .map((coord, index) => (
-            <div
-              key={index}
-              className="text-sm text-gray-700 border-b py-1 flex justify-between"
-            >
-              <span>Point {index + 1}</span>
-              <span>
-                Lat: {coord[1].toFixed(6)} | Lng: {coord[0].toFixed(6)}
-              </span>
+                    <div className="max-h-40 overflow-y-auto bg-white p-3 rounded mt-2 border">
+                      {boundary.coordinates[0]
+                        .slice(0, -1)
+                        .map((coord, index) => (
+                          <div
+                            key={index}
+                            className="text-sm text-gray-700 border-b py-1 flex justify-between"
+                          >
+                            <span>Point {index + 1}</span>
+                            <span>
+                              Lat: {coord[1].toFixed(6)} | Lng:{" "}
+                              {coord[0].toFixed(6)}
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-blue-50 p-3 rounded text-gray-600">
+                    📍 Draw a boundary on the map to see details
+                  </div>
+                )}
+              </div>
             </div>
-          ))}
-      </div>
-    </div>
-  ) : (
-    <div className="bg-blue-50 p-3 rounded text-gray-600">
-      📍 Draw a boundary on the map to see details
-    </div>
-  )}
-</div>
-            </div>
-            
+
             <label className="flex flex-col gap-1 text-gray-600 text-lg">
               Description:
               <textarea
@@ -340,12 +347,18 @@ function UserForm() {
   async function submitForm() {
     // Get captured image from localStorage
     const capturedImage = localStorage.getItem("capturedImage");
-
+    if (!boundary) {
+      toast("Please draw a boundary first");
+      return;
+    }
     const payload = {
       latitude: boundary?.centerLat,
       longitude: boundary?.centerLng,
       area: boundary?.area,
-      coordinates: boundary?.coordinates,
+      geoTag: {
+        type: "Polygon",
+        coordinates: boundary?.coordinates,
+      },
       location: boundary?.address,
       areaclaim: areaClaimRef.current?.valueAsNumber,
       description: descriptionRef.current?.value,

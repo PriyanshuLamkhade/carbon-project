@@ -13,8 +13,12 @@ import { z } from "zod";
 import "dotenv/config";
 import { userMiddleware } from "../middleware/users.js";
 import { uploadProfilePic } from "../middleware/upload.js";
-import { addUserRole, loginUser, myProfile, registerUser } from "../controller/auth.js";
-
+import {
+  addUserRole,
+  loginUser,
+  myProfile,
+  registerUser,
+} from "../controller/auth.js";
 
 // import { ed25519 } from "@noble/curves/ed25519.js";
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
@@ -26,7 +30,6 @@ if (!JWT_USER_SECRET) {
 
 const userRouter: Router = express.Router();
 const phoneSchema = z.string().regex(/^[0-9]{10}$/, "Phone must be 10 digits");
-
 
 userRouter.get("/userDetails", userMiddleware, async (req, res) => {
   const userId = req.userId;
@@ -43,7 +46,7 @@ userRouter.get("/userDetails", userMiddleware, async (req, res) => {
       email: true,
       phonenumber: true,
       profileImage: true,
-      organisation:true
+      organisation: true,
     },
   });
 
@@ -68,14 +71,13 @@ userRouter.post(
     });
 
     res.json({ message: "Profile picture updated" });
-  }
+  },
 );
 
-
-userRouter.post("/login",loginUser)
-userRouter.put("/add/role",userMiddleware,addUserRole)
-userRouter.get("/me",userMiddleware,myProfile)
-userRouter.post("/registerUser",registerUser)
+userRouter.post("/login", loginUser);
+userRouter.put("/add/role", userMiddleware, addUserRole);
+userRouter.get("/me", userMiddleware, myProfile);
+userRouter.post("/registerUser", registerUser);
 
 userRouter.post("/userForm", userMiddleware, async (req, res) => {
   try {
@@ -83,7 +85,9 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
       location,
       longitude,
       latitude,
+      geoTag,
       description,
+      area,
       areaclaim,
       species1,
       species1_count,
@@ -99,7 +103,9 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
     } = req.body;
 
     const userId = req.userId;
-
+    if (!geoTag || geoTag.type !== "Polygon") {
+      return res.status(400).json({ message: "Invalid geoTag data" });
+    }
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
     if (!location || !areaclaim)
       return res
@@ -137,7 +143,9 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
         location,
         longitude,
         latitude,
+        geoTag: geoTag,
         description,
+        area,
         areaclaim,
         species1,
         species1_count,
@@ -163,7 +171,6 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
     res.status(500).json({ message: "Internal server error", error });
   }
 });
-
 
 userRouter.get("/allhistory", userMiddleware, async (req, res) => {
   try {

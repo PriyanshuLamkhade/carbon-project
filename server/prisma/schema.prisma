@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
 model Admin {
   adminId     Int    @id @default(autoincrement())
   name        String
@@ -22,7 +23,7 @@ model User {
   phonenumber  String?
   profileImage String?
   organisation String?
-  pubkey       String?    @unique
+  pubkey       String?   @unique
   createdAt    DateTime  @default(now())
   role         Role      @default(USER)
   history      History[]
@@ -30,7 +31,7 @@ model User {
 
 model History {
   historyId    Int           @id @default(autoincrement())
-  user         User          @relation(fields: [userId], references: [userId],onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [userId], onDelete: Cascade)
   userId       Int
   carbon       Carbon?
   submission   Submission?
@@ -45,7 +46,7 @@ model Carbon {
   tokensIssued  Int?
   //txHash String?
 
-  history   History @relation(fields: [historyId], references: [historyId],onDelete: Cascade)
+  history   History @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
   historyId Int     @unique
 }
 
@@ -55,9 +56,10 @@ model Submission {
   location                  String
   longitude                 Float?
   latitude                  Float?
-  geoTag                    Json?
+  geoTag                    Json?    @db.Json
   description               String?
-  areaclaim                 Int
+  area                      Float? //area by map
+  areaclaim                 Int //area claimed by user
   species1                  String
   species1_count            Int
   species2                  String?
@@ -68,7 +70,7 @@ model Submission {
   CommunityInvolvementLevel Level
   MGNREGAPersonDays         Int
   trained                   String
-  history                   History  @relation(fields: [historyId], references: [historyId],onDelete: Cascade)
+  history                   History  @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
   historyId                 Int      @unique
   submissionDate            DateTime @default(now())
 }
@@ -78,7 +80,7 @@ model Verification {
   actualArea       Int
   location         String
   //verifiedImages
-  history          History  @relation(fields: [historyId], references: [historyId],onDelete: Cascade)
+  history          History  @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
   historyId        Int      @unique
   verifiedBy       String?
   verificationDate DateTime @default(now())
