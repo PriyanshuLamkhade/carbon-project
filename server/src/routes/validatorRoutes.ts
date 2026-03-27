@@ -105,6 +105,7 @@ validatorRouter.get("/mapData", userMiddleware, async (req, res) => {
             longitude: true,
             location: true,
             submissionId: true,
+             geoTag: true,
           },
         },
       },
@@ -116,6 +117,7 @@ validatorRouter.get("/mapData", userMiddleware, async (req, res) => {
       label: e.submission?.location,
       status: e.status,
       submissionId: e.submission?.submissionId,
+      geoTag: e.submission?.geoTag,
     }));
     res.json(userData);
   } catch (error) {

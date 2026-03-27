@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Submission" ADD COLUMN     "area" DOUBLE PRECISION,
+ALTER COLUMN "geoTag" SET DATA TYPE JSON;
