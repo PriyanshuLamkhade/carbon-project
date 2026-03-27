@@ -7,32 +7,34 @@ import { useEffect, useState } from "react";
 import ImageDrop from "../upload/ImageDrop";
 import ToggleSwitch from "@/components/ui/ToggleSwitch";
 import { authService } from "@/app/page";
+import { useAppData } from "@/context/AppContext";
 
 const UserSettings = () => {
+  const {user} = useAppData()
+  console.log(user)
   const [files, setFiles] = useState<any[]>([]);
+//   useEffect(() => {
+//   const loadProfilePic = async () => {
+//     const res = await fetch(`${authService}/users/userDetails`, {
+//       credentials: "include",
+//     });
 
-  useEffect(() => {
-  const loadProfilePic = async () => {
-    const res = await fetch(`${authService}/users/userDetails`, {
-      credentials: "include",
-    });
+//     if (!res.ok) return;
 
-    if (!res.ok) return;
+//     const data = await res.json();
 
-    const data = await res.json();
+//     if (data.userDetails?.profileImage) {
+//       setFiles([
+//         {
+//           id: "existing",
+//           preview: `${authService}/files/${data.userDetails.profileImage}?${Date.now()}`,
+//         },
+//       ]);
+//     }
+//   };
 
-    if (data.userDetails?.profileImage) {
-      setFiles([
-        {
-          id: "existing",
-          preview: `${authService}/files/${data.userDetails.profileImage}?${Date.now()}`,
-        },
-      ]);
-    }
-  };
-
-  loadProfilePic();
-}, []);
+//   loadProfilePic();
+// }, []);
 const uploadProfilePicture = async () => {
   if (!files.length) return;
 
@@ -64,13 +66,18 @@ const uploadProfilePicture = async () => {
       <div id="main" className="flex flex-wrap gap-5">
         <div className="flex flex-col gap-2 bg-white p-7 rounded-lg">
           <h1 className="text-xl font-bold ">Profile Settings</h1>
-          {files.map((file) => (
-            <img
-              key={file.id}
-              src={file.preview}
-              className="w-32 h-32 rounded-full object-cover"
-            />
-          ))}
+          <img
+  src={
+    files.length > 0
+      ? files[0].preview
+      : user?.profileImage
+      ? user.profileImage.startsWith("http")
+        ? user.profileImage // Google image
+        : `${authService}/files/${user.profileImage}` // uploaded image
+      : "/default-avatar.png"
+  }
+  className="w-32 h-32 rounded-full object-cover"
+/>
           <label htmlFor="" className="text-md text-gray-500">
             Display Name
           </label>

@@ -7,14 +7,20 @@ import MapPicker from "../map/InitMap";
 import Button from "@/components/ui/Button";
 import { authService } from "@/app/page";
 
-
 function UserForm() {
   const [location, setLocation] = useState<{
     lat: number;
     lon: number;
     address: string;
   } | null>(null);
-
+  const [boundary, setBoundary] = useState<{
+    type: string;
+    coordinates: number[][][];
+    area: number;
+    centerLat: number;
+    centerLng: number;
+    address: string;
+  } | null>(null);
   const router = useRouter();
   const [userDetails, setUserDetails] = useState({
     organisation: "",
@@ -42,20 +48,20 @@ function UserForm() {
 
     callDetails();
   }, []);
-  useEffect(() => {
-    if (location) {
-      if (latitudeRef.current)
-        latitudeRef.current.value = location.lat.toFixed(6);
-      if (longitudeRef.current)
-        longitudeRef.current.value = location.lon.toFixed(6);
-      if (locationRef.current) locationRef.current.value = location.address;
-    }
-  }, [location]);
+  // useEffect(() => {
+  //   if (location) {
+  //     if (latitudeRef.current)
+  //       latitudeRef.current.value = location.lat.toFixed(6);
+  //     if (longitudeRef.current)
+  //       longitudeRef.current.value = location.lon.toFixed(6);
+  //     if (locationRef.current) locationRef.current.value = location.address;
+  //   }
+  // }, [location]);
 
   //  BASIC DETAILS refs
-  const locationRef = useRef<HTMLInputElement>(null);
-  const latitudeRef = useRef<HTMLInputElement>(null);
-  const longitudeRef = useRef<HTMLInputElement>(null);
+  // const locationRef = useRef<HTMLInputElement>(null);
+  // const latitudeRef = useRef<HTMLInputElement>(null);
+  // const longitudeRef = useRef<HTMLInputElement>(null);
   const areaClaimRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
@@ -127,43 +133,52 @@ function UserForm() {
           <div className="flex flex-col gap-6">
             <div>
               <h1>Select a Location</h1>
-              <MapPicker setLocation={setLocation} />
+              <MapPicker mode="boundary" setBoundary={setBoundary} />
 
-              <div className="flex gap-2 mt-3 ">
-                <label className="flex flex-col gap-1 text-gray-600 text-lg">
-                  Latitude:
-                  <InputBox
-                    placeholder={
-                      location?.lat.toFixed(6) ?? "Select location on map"
-                    }
-                    ref={latitudeRef}
-                    className="w-full"
-                    readonly={true}
-                  />
-                </label>
+              <div className="flex flex-col gap-3 mt-3 w-full">
+  {boundary ? (
+    <div className="bg-green-100 p-4 rounded w-full">
+      <p className="font-semibold mb-2 text-lg">📍 Boundary Details</p>
 
-                <label className="flex flex-col gap-1 text-gray-600 text-lg">
-                  Longitude:
-                  <InputBox
-                    placeholder={
-                      location?.lon.toFixed(6) ?? "Select location on map"
-                    }
-                    ref={longitudeRef}
-                    className="w-full"
-                    readonly={true}
-                  />
-                </label>
-              </div>
+      <p>
+        <span className="font-medium">Center:</span>{" "}
+        {boundary.centerLat.toFixed(6)}, {boundary.centerLng.toFixed(6)}
+      </p>
+
+      <p>
+        <span className="font-medium">Area:</span> {boundary.area} hectares
+      </p>
+
+      <p className="mb-3">
+        <span className="font-medium">Address:</span> {boundary.address}
+      </p>
+
+      <p className="font-semibold mt-3">🧭 Coordinates:</p>
+
+      <div className="max-h-40 overflow-y-auto bg-white p-3 rounded mt-2 border">
+        {boundary.coordinates[0]
+          .slice(0, -1)
+          .map((coord, index) => (
+            <div
+              key={index}
+              className="text-sm text-gray-700 border-b py-1 flex justify-between"
+            >
+              <span>Point {index + 1}</span>
+              <span>
+                Lat: {coord[1].toFixed(6)} | Lng: {coord[0].toFixed(6)}
+              </span>
             </div>
-            <label className="flex flex-col gap-1 text-gray-600 text-lg">
-              Location:
-              <InputBox
-                placeholder={location?.address ?? "Select location on map"}
-                ref={locationRef}
-                className="min-w-full"
-                readonly={true}
-              />
-            </label>
+          ))}
+      </div>
+    </div>
+  ) : (
+    <div className="bg-blue-50 p-3 rounded text-gray-600">
+      📍 Draw a boundary on the map to see details
+    </div>
+  )}
+</div>
+            </div>
+            
             <label className="flex flex-col gap-1 text-gray-600 text-lg">
               Description:
               <textarea
@@ -191,18 +206,17 @@ function UserForm() {
           className="space-y-6 bg-linear-to-br from-green-100 to-green-200 p-6 rounded-xl shadow-inner"
           id="Plantation-Details"
         >
-          
           <h2 className="text-2xl font-semibold text-gray-700 mb-4">
             Plantation Details :
           </h2>
           <a
-  href="http://localhost:3000/trees"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
->
-  View All Trees 🌳
-</a>
+            href="http://localhost:3000/trees"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+          >
+            View All Trees 🌳
+          </a>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div>
               <label className="block text-gray-600 font-medium mb-1">
@@ -324,49 +338,50 @@ function UserForm() {
   );
 
   async function submitForm() {
-  // Get captured image from localStorage
-  const capturedImage = localStorage.getItem("capturedImage");
+    // Get captured image from localStorage
+    const capturedImage = localStorage.getItem("capturedImage");
 
-  const payload = {
-    location: locationRef.current?.value,
-    latitude: location?.lat,
-    longitude: location?.lon,
-    areaclaim: areaClaimRef.current?.valueAsNumber,
-    description: descriptionRef.current?.value,
-    species1: species1Ref.current?.value,
-    species1_count: species1CountRef.current?.valueAsNumber,
-    species2: species2Ref.current?.value,
-    species2_count: species2CountRef.current?.valueAsNumber,
-    species3: species3Ref.current?.value,
-    species3_count: species3CountRef.current?.valueAsNumber,
-    plantationDate: plantationDateRef.current?.value,
-    MGNREGAPersonDays: mgnregaRef.current?.valueAsNumber,
-    CommunityInvolvementLevel: (
-      document.getElementById("level") as HTMLSelectElement
-    )?.value,
-    trained: (document.getElementById("trained") as HTMLSelectElement)?.value,
+    const payload = {
+      latitude: boundary?.centerLat,
+      longitude: boundary?.centerLng,
+      area: boundary?.area,
+      coordinates: boundary?.coordinates,
+      location: boundary?.address,
+      areaclaim: areaClaimRef.current?.valueAsNumber,
+      description: descriptionRef.current?.value,
+      species1: species1Ref.current?.value,
+      species1_count: species1CountRef.current?.valueAsNumber,
+      species2: species2Ref.current?.value,
+      species2_count: species2CountRef.current?.valueAsNumber,
+      species3: species3Ref.current?.value,
+      species3_count: species3CountRef.current?.valueAsNumber,
+      plantationDate: plantationDateRef.current?.value,
+      MGNREGAPersonDays: mgnregaRef.current?.valueAsNumber,
+      CommunityInvolvementLevel: (
+        document.getElementById("level") as HTMLSelectElement
+      )?.value,
+      trained: (document.getElementById("trained") as HTMLSelectElement)?.value,
 
-    // Add captured image
-    profileImage: capturedImage, // base64 string
-  };
+      // Add captured image
+      profileImage: capturedImage, // base64 string
+    };
 
-  console.log("Form submission payload:", payload);
+    console.log("Form submission payload:", payload);
 
-  try {
-    const res = await fetch(`${authService}/users/userForm`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-      credentials: "include",
-    });
+    try {
+      const res = await fetch(`${authService}/users/userForm`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        credentials: "include",
+      });
 
-    return res;
-  } catch (error) {
-    console.error("Error during form submission:", error);
-    return null;
+      return res;
+    } catch (error) {
+      console.error("Error during form submission:", error);
+      return null;
+    }
   }
-}
-
 }
 
 export default UserForm;
