@@ -16,17 +16,60 @@ model Admin {
 }
 
 model User {
-  userId       Int       @id @default(autoincrement())
-  email        String    @unique
+  userId       Int        @id @default(autoincrement())
+  email        String     @unique
   name         String
   surname      String?
   phonenumber  String?
   profileImage String?
   organisation String?
-  pubkey       String?   @unique
-  createdAt    DateTime  @default(now())
-  role         Role      @default(USER)
+  pubkey       String?    @unique
+  createdAt    DateTime   @default(now())
+  role         Role       @default(USER)
   history      History[]
+  validator    Validator?
+}
+
+model Validator {
+  validatorId Int @id @default(autoincrement())
+
+  user      User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  userId    Int     @unique
+  address   String?
+  latitude  Float
+  longitude Float
+
+  activeProjects    Int @default(0)
+  maxActiveProjects Int @default(3)
+
+  totalAssigned Int     @default(0)
+  totalAccepted Int     @default(0)
+  totalRejected Int     @default(0)
+  isAvailable   Boolean @default(true)
+
+  rating Float @default(0)
+
+  status ValidatorStatus @default(PENDING)
+
+  assignments   Assignment[]
+  verifications Verification[]
+
+  createdAt DateTime @default(now())
+}
+
+model Assignment {
+  assignmentId Int @id @default(autoincrement())
+
+  validator   Validator @relation(fields: [validatorId], references: [validatorId])
+  validatorId Int
+
+  submission   Submission @relation(fields: [submissionId], references: [submissionId])
+  submissionId Int       
+
+  status     AssignmentStatus @default(PENDING)
+  isActive   Boolean          @default(true)
+  assignedAt DateTime         @default(now())
+  deadline   DateTime
 }
 
 model History {
@@ -51,12 +94,12 @@ model Carbon {
 }
 
 model Submission {
-  submissionId              Int      @id @default(autoincrement())
+  submissionId              Int          @id @default(autoincrement())
   //images
   location                  String
   longitude                 Float?
   latitude                  Float?
-  geoTag                    Json?    @db.Json
+  geoTag                    Json?        @db.Json
   description               String?
   area                      Float? //area by map
   areaclaim                 Int //area claimed by user
@@ -70,19 +113,22 @@ model Submission {
   CommunityInvolvementLevel Level
   MGNREGAPersonDays         Int
   trained                   String
-  history                   History  @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
-  historyId                 Int      @unique
-  submissionDate            DateTime @default(now())
+  history                   History      @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
+  historyId                 Int          @unique
+  submissionDate            DateTime     @default(now())
+  assignments                Assignment[]
 }
 
 model Verification {
-  verificationId   Int      @id @default(autoincrement())
-  actualArea       Int
-  location         String
+  verificationId Int        @id @default(autoincrement())
+  actualArea     Int
+  location       String
   //verifiedImages
-  history          History  @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
-  historyId        Int      @unique
-  verifiedBy       String?
+  history        History    @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
+  historyId      Int        @unique
+  validatorId    Int?
+  validator      Validator? @relation(fields: [validatorId], references: [validatorId])
+
   verificationDate DateTime @default(now())
 }
 
@@ -103,4 +149,18 @@ enum Level {
   Low
   Medium
   High
+}
+
+enum ValidatorStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum AssignmentStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COMPLETED
+  EXPIRED
 }
