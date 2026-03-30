@@ -10,7 +10,7 @@ import { WebSocketServer } from "ws";
 import { instance } from "./stateManager.js";
 import "dotenv/config";
 
-
+// import chatRoutes from "./routes/chat.js";
 
 import {PrismaPg} from "@prisma/adapter-pg"
 import { PrismaClient } from "@prisma/client";
@@ -43,6 +43,8 @@ app.use(express.json());
 
 app.use("/files", express.static("uploads"));
 
+
+// app.use("/api", chatRoutes);
 app.use("/users", userRoutes);
 app.use("/validator", validatorRoutes);
 

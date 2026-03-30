@@ -11,6 +11,10 @@ interface MarkerData {
   label?: string;
   status: "APPROVED" | "PENDING" | "REJECTED" | "INPROGRESS" | string;
   submissionId?: number;
+  geoTag?: {
+    type: "Polygon";
+    coordinates: number[][][];
+  };
 }
 
 interface MultiMarkerMapProps {
@@ -21,6 +25,7 @@ const MultiMarkerMap: React.FC<MultiMarkerMapProps> = ({ markers }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markerRefs = useRef<any[]>([]);
+  const polygonRefs = useRef<any[]>([]);
   const [isReady, setIsReady] = useState(false);
 
   // Color mapping for statuses (using colored marker icons)
@@ -60,7 +65,10 @@ const MultiMarkerMap: React.FC<MultiMarkerMapProps> = ({ markers }) => {
       L = leaflet;
 
       if (mapContainerRef.current && !mapRef.current) {
-        mapRef.current = L.map(mapContainerRef.current).setView([20.5937, 78.9629], 4);
+        mapRef.current = L.map(mapContainerRef.current).setView(
+          [20.5937, 78.9629],
+          4,
+        );
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
           attribution: "&copy; OpenStreetMap contributors",
         }).addTo(mapRef.current);
@@ -78,10 +86,11 @@ const MultiMarkerMap: React.FC<MultiMarkerMapProps> = ({ markers }) => {
 
   useEffect(() => {
     if (!isReady || !mapRef.current) return;
-
-    // Clear previous markers
     markerRefs.current.forEach((marker) => mapRef.current.removeLayer(marker));
     markerRefs.current = [];
+
+    polygonRefs.current.forEach((poly) => mapRef.current.removeLayer(poly));
+    polygonRefs.current = [];
 
     if (markers.length === 0) return;
 
@@ -97,20 +106,68 @@ const MultiMarkerMap: React.FC<MultiMarkerMapProps> = ({ markers }) => {
             <div style="font-size:14px; line-height:1.4;">
               <b>${m.label || "Location"}</b><br/>
               <small><b>Submission ID:</b> ${m.submissionId || "N/A"}</small><br/>
-              <span style="color:${icon.options.iconUrl.includes("green") ? "green" :
-                icon.options.iconUrl.includes("orange") ? "orange" :
-                icon.options.iconUrl.includes("red") ? "red" :
-                icon.options.iconUrl.includes("blue") ? "blue" : "gray"
+              <span style="color:${
+                icon.options.iconUrl.includes("green")
+                  ? "green"
+                  : icon.options.iconUrl.includes("orange")
+                    ? "orange"
+                    : icon.options.iconUrl.includes("red")
+                      ? "red"
+                      : icon.options.iconUrl.includes("blue")
+                        ? "blue"
+                        : "gray"
               }; font-weight:600; text-transform:capitalize;">
                 ${m.status || "unknown"}
               </span><br/>
               <small>Lat: ${m.lat.toFixed(4)}, Lon: ${m.lon.toFixed(4)}</small>
             </div>
-          `
+          `,
+        );
+      marker.on("click", () => {
+        if (m.geoTag?.coordinates) {
+          const coords = m.geoTag.coordinates[0].map(
+            ([lng, lat]): [number, number] => [lat, lng],
+          );
+          mapRef.current.fitBounds(coords);
+        }
+      });
+      if (m.geoTag?.coordinates) {
+        const coords = m.geoTag.coordinates[0].map(
+          ([lng, lat]): [number, number] => [lat, lng],
         );
 
+        const color =
+          m.status === "APPROVED"
+            ? "green"
+            : m.status === "REJECTED"
+              ? "red"
+              : m.status === "INPROGRESS"
+                ? "blue"
+                : "orange";
+
+        const polygon = L.polygon(coords, {
+          color,
+          fillColor: color,
+          fillOpacity: 0.2,
+        }).addTo(mapRef.current);
+
+        polygon.bindPopup(`
+    <b>${m.label || "Boundary"}</b><br/>
+    Submission ID: ${m.submissionId || "N/A"}<br/>
+    Status: ${m.status}
+  `);
+
+        polygonRefs.current.push(polygon);
+      }
+
       markerRefs.current.push(marker);
-      bounds.extend([m.lat, m.lon]);
+      if (m.geoTag?.coordinates) {
+        m.geoTag.coordinates[0].forEach(([lng, lat]) => {
+          bounds.extend([lat, lng]);
+        });
+      } else {
+        bounds.extend([m.lat, m.lon]);
+      }
     });
 
     // Fit to all markers

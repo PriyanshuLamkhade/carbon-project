@@ -10,9 +10,10 @@ interface RowData {
 interface TableComponentProps {
   rows: RowData[];
   theme?: 'light' | 'dark'; // Optional theme prop
+  onClick?:(x: any) => void;
 }
 
-const TableComponent: React.FC<TableComponentProps> = ({ rows, theme = 'light' }) => {
+const TableComponent: React.FC<TableComponentProps> = ({onClick, rows, theme = 'light' }) => {
   const isDark = theme === 'dark';
 
   // Map status to tailwind colors (supporting dark mode)
@@ -59,6 +60,8 @@ const TableComponent: React.FC<TableComponentProps> = ({ rows, theme = 'light' }
           <th className={headerStyle}>Location</th>
           <th className={headerStyle}>Area Claimed</th>
           <th className={headerStyle}>Status</th>
+          {onClick && <th className={headerStyle}>Button</th>}
+          
         </tr>
       </thead>
       <tbody>
@@ -76,6 +79,7 @@ const TableComponent: React.FC<TableComponentProps> = ({ rows, theme = 'light' }
                 {row.status}
               </span>
             </td>
+            {onClick && <td className={`${cellStyle} cursor-pointer`} onClick={()=>{onClick}}>Details</td>}
           </tr>
         ))}
       </tbody>

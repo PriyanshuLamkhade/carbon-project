@@ -3,6 +3,7 @@ import { db } from "../index.js";
 import jwt from "jsonwebtoken";
 import { adminMiddleware } from "../middleware/admin.js";
 import { userMiddleware } from "../middleware/users.js";
+import { registerValidator } from "../controller/auth.js";
 const JWT_ADMIN_SECRET = process.env.JWT_ADMIN_SECRET;
 if (!JWT_ADMIN_SECRET) {
   throw new Error(
@@ -43,45 +44,73 @@ const validatorRouter: Router = express.Router();
 //   }
 // });
 
+validatorRouter.post("/registerValidator", registerValidator);
+
 validatorRouter.get("/dashboard/home", userMiddleware, async (req, res) => {
   try {
-    if (!req.userId) return res.status(401).json({ message: "Invalid token" });
-
-    // Counts by status
-    const counts = await db.history.groupBy({
-      by: ["status"],
-      _count: { status: true },
-    });
-
-    // Recent entries with related data
-    const recentEntries = await db.history.findMany({
-      orderBy: { timestamp: "desc" },
-      take: 10,
-      include: { carbon: true, submission: true, user: true },
-    });
-
-    interface Count {
-      status: "PENDING" | "INPROGRESS" | "APPROVED" | "REJECTED";
-      _count: { status: number };
+    if (!req.userId) {
+      return res.status(401).json({ message: "Invalid token" });
     }
-    const statusCounts: Record<Count["status"], number> = {
-      PENDING: 0,
-      INPROGRESS: 0,
-      APPROVED: 0,
-      REJECTED: 0,
-    };
-    counts.forEach((c: Count) => {
-      statusCounts[c.status] = c._count.status;
+
+    // 🔹 Get validator from userId
+    const validator = await db.validator.findUnique({
+      where: { userId: req.userId },
     });
 
-    // Map recent entries to simplified structure
-    const usersData = recentEntries.map((e) => ({
-      SubmissionID: e.submission?.submissionId ?? null,
-      SubmittedBy: e.user ? `${e.user.name} ${e.user.surname}` : null,
-      AreaClaimed: e.submission?.areaclaim ?? null,
-      DateSubmitted: e.submission?.submissionDate ?? e.timestamp,
-      Location: e.submission?.location ?? null,
-      Status: e.status,
+    if (!validator) {
+      return res.status(404).json({ message: "Validator not found" });
+    }
+
+    // 🔹 Get assignments for this validator
+    const assignments = await db.assignment.findMany({
+      where: {
+        validatorId: validator.validatorId,
+        isActive: true, // only current
+      },
+      include: {
+        submission: {
+          include: {
+            history: true,
+          },
+        },
+      },
+      orderBy: {
+        assignedAt: "desc",
+      },
+    });
+
+    // 🔹 Count by AssignmentStatus
+    const statusCounts = {
+      PENDING: 0,
+      ACCEPTED: 0,
+      REJECTED: 0,
+      COMPLETED: 0,
+      EXPIRED: 0,
+    };
+
+    assignments.forEach((a) => {
+      statusCounts[a.status]++;
+    });
+
+    // 🔹 Map to SAME UI STRUCTURE (important)
+    const usersData = assignments.map((a) => ({
+      SubmissionID: a.submission.submissionId,
+      SubmittedBy: null, // optional (you can include user if needed)
+      AreaClaimed: a.submission.areaclaim,
+      DateSubmitted: a.submission.submissionDate,
+      Location: a.submission.location,
+
+      // 🔥 IMPORTANT: map AssignmentStatus → UI Status
+      Status:
+        a.status === "ACCEPTED"
+          ? "INPROGRESS"
+          : a.status === "PENDING"
+          ? "PENDING"
+          : a.status === "COMPLETED"
+          ? "APPROVED"
+          : a.status === "REJECTED"
+          ? "REJECTED"
+          : "PENDING",
     }));
 
     res.json({
@@ -126,18 +155,6 @@ validatorRouter.get("/mapData", userMiddleware, async (req, res) => {
   }
 });
 
-// validatorRouter.get('requestsPending',(req,res)=>{
-
-// })
-
-// validatorRouter.get('requestInfo',(req,res)=>{
-
-// })
-
-// validatorRouter.post('verifyDataForm',(req,res)=>{
-
-// })
-// validatorRouter.post('confirmSubmission',(req,res)=>{
 
 // })
 export default validatorRouter;

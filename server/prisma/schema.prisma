@@ -101,7 +101,7 @@ model Submission {
   latitude                  Float?
   geoTag                    Json?        @db.Json
   description               String?
-  area                      Float? //area by map
+  area                      Float? //area by map  
   areaclaim                 Int //area claimed by user
   species1                  String
   species1_count            Int

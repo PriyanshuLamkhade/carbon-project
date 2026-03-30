@@ -30,6 +30,7 @@
     "googleapis": "^171.4.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
+    "openai": "^6.33.0",
     "prisma": "^7.3.0",
     "typescript": "^5.9.2",
     "ws": "^8.18.3",

@@ -99,7 +99,11 @@ const ValidatorDashboard = () => {
 
       <div>
         <h1 className="text-3xl font-bold mb-3 -mt-1">Recent Submission</h1>
-        <DetailedTable rows={recentEntries} theme="dark" />
+        <DetailedTable rows={recentEntries} theme="dark" onReview={(row) => {
+  if (row.SubmissionID) {
+    router.push(`/validator/preview/${row.SubmissionID}`);
+  }
+}}/>
       </div>
     </div>
   );

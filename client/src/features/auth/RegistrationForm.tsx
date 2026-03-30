@@ -3,6 +3,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import ValidatorDetails from "./ValidatorDetails";
 
 type Role = "USER" | "VALIDATOR" | "";
 
@@ -11,6 +12,13 @@ interface FormData {
   organisation: string;
   role: Role;
 }
+type ValidatorDataType = {
+  phone: string;
+  organisation: string;
+  role: "VALIDATOR";
+  userData: any;
+};
+
 
 const isValidPhone = (val: string): boolean => /^\d{10}$/.test(val);
 
@@ -30,7 +38,8 @@ export default function RegistrationForm({ userData }: any) {
   });
   const [submitted, setSubmitted] = useState(false);
   const [focused, setFocused] = useState<string | null>(null);
-
+  const [validatorData, setValidatorData] = useState<ValidatorDataType>()
+  const [isvalidator, setIsValidator] = useState(false)
   const router = useRouter()
   const phoneValid = isValidPhone(rawPhone);
   const orgValid = formData.organisation.trim().length > 0;
@@ -53,7 +62,19 @@ export default function RegistrationForm({ userData }: any) {
 
   async function handleSubmit() {
     try {
-      if (allValid) {
+      if(formData.role === "VALIDATOR"){
+        const validatorDetail = {
+        phone: `+91${formData.phone}`,
+        organisation: formData.organisation,
+        role: formData.role,
+        userData
+      };
+
+      setValidatorData(validatorDetail);
+        setIsValidator(true)
+        
+      }
+      else if (allValid) {
       const result = await axios.post(`${authService}/users/registerUser`, {
         phone: `+91${formData.phone}`,
         organisation: formData.organisation,
@@ -74,6 +95,11 @@ export default function RegistrationForm({ userData }: any) {
     
   }
 
+  if(isvalidator){
+    return <ValidatorDetails validatorData={validatorData}/>
+  }
+
+
   const handleReset = () => {
     setRawPhone("");
     setFormData({ phone: "", organisation: "", role: "" });
@@ -86,7 +112,7 @@ export default function RegistrationForm({ userData }: any) {
       ? rawPhone
       : formatPhoneDisplay(rawPhone);
 
-  
+   
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-6">
       <div className="w-full max-w-md bg-white  rounded-2xl  overflow-hidden">

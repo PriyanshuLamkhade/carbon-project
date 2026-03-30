@@ -48,8 +48,9 @@ export const loginUser = TryCatch(async (req, res) => {
       // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
       path: "/",
     })
-    .json({ message: "Login successful", newUser, user, role:user?.role });
+    .json({ message: "Login successful", newUser, user, role: user?.role });
 });
+
 export const registerUser = TryCatch(async (req, res) => {
   const { userData, phone, organisation, role } = req.body;
   const { name, email, picture } = userData;
@@ -61,7 +62,53 @@ export const registerUser = TryCatch(async (req, res) => {
       name,
       email,
       profileImage: picture,
-      phonenumber:phone, organisation, role
+      phonenumber: phone,
+      organisation,
+      role,
+    },
+  });
+  const token = jwt.sign(
+    { userId: user?.userId },
+    process.env.JWT_USER_SECRET as string,
+    {
+      expiresIn: "15d",
+    },
+  );
+  res
+    .cookie("token", token, {
+      httpOnly: true, // Required for security
+      secure: false, // false for localhost (true only on HTTPS)
+      sameSite: "lax", // "lax" is fine for same-origin-ish setup
+      // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
+      path: "/",
+    })
+    .json({ message: "User Created", userId: user.userId, role: user.role });
+});
+
+export const registerValidator = TryCatch(async (req, res) => {
+  const { userData, phone, organisation, role, validatorDetails } = req.body;
+  const { name, email, picture } = userData;
+  const { address, latitude, longitude } = validatorDetails;
+  if (!req.body) {
+    res.json({ message: "body missing" });
+  }
+  let user = await db.user.create({
+    data: {
+      name,
+      email,
+      profileImage: picture,
+      phonenumber: phone,
+      organisation,
+      role,
+    },
+  });
+
+  let validator = await db.validator.create({
+    data: {
+      latitude,
+      longitude,
+      address,
+      userId: user.userId,
     },
   });
   const token = jwt.sign(
@@ -77,7 +124,7 @@ export const registerUser = TryCatch(async (req, res) => {
       sameSite: "lax", // "lax" is fine for same-origin-ish setup
       // sameSite: "none",     // use this if frontend/backend are on different domains AND you're using HTTPS
       path: "/",
-    }).json({"message":"User Created",userId : user.userId, role:user.role})
+    }).json({"message":"Validator Created",userId : user.userId, role:user.role,validatorId:validator.validatorId})
 });
 
 const allowedRoles = ["USER", "VALIDATOR", "NCCR"] as const;

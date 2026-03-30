@@ -17,7 +17,7 @@ const UserSidebar = () => {
   const pathname = usePathname()
 const router = useRouter()
   const links = [
-    { href: '/user/dashboard/home', text: 'Home', icon: <HomeIcon size="20px" /> },
+    { href: '/user/dashboard', text: 'Home', icon: <HomeIcon size="20px" /> },
     { href: '/user/dashboard/submissions', text: 'My Submissions', icon: <User size="20px" /> },
     { href: '/user/dashboard/areas', text: 'Verified Areas', icon: <VerifiedIcon size="20px" /> },
     { href: '/user/dashboard/carbonTokens', text: 'Carbon Tokens', icon: <CoinsIcon size="20px" /> },

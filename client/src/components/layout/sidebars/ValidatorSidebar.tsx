@@ -1,7 +1,9 @@
 'use client'
 
 import {
+  ActivitySquare,
   CoinsIcon,
+  History,
   HomeIcon,
   MapPin,
   Settings,
@@ -16,9 +18,13 @@ const ValidatorSidebar = () => {
   const pathname = usePathname()
   const router = useRouter()
   const links = [
-    { href: '/validator/dashboard/home', text: 'Home', icon: <HomeIcon size="20px" /> },
+    { href: '/validator/dashboard/', text: 'Home', icon: <HomeIcon size="20px" /> },
     { href: '/validator/dashboard/map', text: 'Map', icon: <MapPin size="20px"/> },
-    { href: '/validator/dashboard/allsubmissions', text: 'All Submissions', icon: <VerifiedIcon size="20px" /> },
+
+    { href: '/validator/dashboard/activesubmissions', text: 'Active Submissions', icon: <ActivitySquare size="20px" /> },
+    { href: '/validator/dashboard/availablesubmissions', text: 'Available Submissions', icon: <VerifiedIcon size="20px" /> },
+    { href: '/validator/dashboard/pastprojects', text: 'Past Projects', icon: <History size="20px" /> },
+
     { href: '/validator/dashboard/carbontokens', text: 'Carbon Tokens', icon: <CoinsIcon size="20px" /> },
     { href: '/validator/dashboard/settings', text: 'Settings', icon: <Settings size="20px"  /> },
   ]
@@ -35,7 +41,7 @@ const ValidatorSidebar = () => {
           return (
             <Link key={link.href} href={link.href}>
               <div className={isActive ? 'bg-violet-500 rounded-md' : ''}>
-                <SideIcons icon={link.icon} text={link.text}  className='hover:bg-violet-500 text-white/90'/>
+                <SideIcons icon={link.icon} text={link.text}  className='hover:bg-violet-500 text-white/90 '/>
               </div>
             </Link>
           )

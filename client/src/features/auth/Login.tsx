@@ -27,11 +27,8 @@ const Login = () => {
         },
         { withCredentials: true },
       );
-      const { data } = await axios.get(`${authService}/users/me`, {
-        withCredentials: true,
-      });
+      
 
-      setUser(data);
       setIsAuth(true);
       toast.success(result.data.message);
       setLoading(false);
@@ -43,6 +40,7 @@ const Login = () => {
       } else if (!result.data.newUser && result.data.role === "VALIDATOR") {
         router.push("/validator/dashboard");
       } else {
+        console.log("new user")
         setOnboard(result.data.newUser);
         setTempUser(result.data.tempUserData);
       }

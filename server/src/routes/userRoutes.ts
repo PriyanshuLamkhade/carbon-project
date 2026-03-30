@@ -19,6 +19,7 @@ import {
   myProfile,
   registerUser,
 } from "../controller/auth.js";
+import { previewData } from "../controller/submission.js";
 
 // import { ed25519 } from "@noble/curves/ed25519.js";
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
@@ -78,7 +79,7 @@ userRouter.post("/login", loginUser);
 userRouter.put("/add/role", userMiddleware, addUserRole);
 userRouter.get("/me", userMiddleware, myProfile);
 userRouter.post("/registerUser", registerUser);
-
+userRouter.post("/previewData",userMiddleware,previewData)
 userRouter.post("/userForm", userMiddleware, async (req, res) => {
   try {
     const {

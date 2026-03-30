@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import MultiMarkerMap from "../map/MultiMarkerMapProps";
 import { authService } from "@/app/page";
-
+type GeoTag = {
+  type: "Polygon";
+  coordinates: number[][][];
+};
 // Matches the backend data structure
 interface MapData {
   latitude: number;
@@ -11,6 +14,7 @@ interface MapData {
   label?: string;
   status: "PENDING" | "INPROGRESS" | "APPROVED" | "REJECTED";
   submissionId: number;
+  geoTag?: GeoTag;
 }
 
 export default function ValidatorMap() {
@@ -34,6 +38,7 @@ export default function ValidatorMap() {
           label: m.label,
           status: m.status,
           submissionId: m.submissionId,
+          geoTag: m.geoTag,
         }));
 
         setMarkerData(markers);
