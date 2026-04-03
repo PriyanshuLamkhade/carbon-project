@@ -12,7 +12,7 @@ import { db } from "../index.js";
 import { z } from "zod";
 import "dotenv/config";
 import { userMiddleware } from "../middleware/users.js";
-import { uploadProfilePic } from "../middleware/upload.js";
+
 import {
   addUserRole,
   loginUser,
@@ -53,27 +53,27 @@ userRouter.get("/userDetails", userMiddleware, async (req, res) => {
 
   res.json({ userDetails: user });
 });
-userRouter.post(
-  "/me/profile-picture",
-  userMiddleware,
-  uploadProfilePic.single("file"),
-  async (req, res) => {
-    const userId = req.userId;
+// userRouter.post(
+//   "/me/profile-picture",
+//   userMiddleware,
+//   uploadProfilePic.single("file"),
+//   async (req, res) => {
+//     const userId = req.userId;
 
-    if (!userId || !req.file) {
-      return res.status(400).json({ message: "Invalid request" });
-    }
+//     if (!userId || !req.file) {
+//       return res.status(400).json({ message: "Invalid request" });
+//     }
 
-    const imagePath = `profile-pics/${userId}.jpg`;
+//     const imagePath = `profile-pics/${userId}.jpg`;
 
-    await db.user.update({
-      where: { userId },
-      data: { profileImage: imagePath },
-    });
+//     await db.user.update({
+//       where: { userId },
+//       data: { profileImage: imagePath },
+//     });
 
-    res.json({ message: "Profile picture updated" });
-  },
-);
+//     res.json({ message: "Profile picture updated" });
+//   },
+// );
 
 userRouter.post("/login", loginUser);
 userRouter.put("/add/role", userMiddleware, addUserRole);

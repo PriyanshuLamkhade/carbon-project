@@ -2,19 +2,19 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import cors from "cors";
-
 import userRoutes from "./routes/userRoutes.js";
 import validatorRoutes from "./routes/validatorRoutes.js";
 import http from "http";
 import { WebSocketServer } from "ws";
 import { instance } from "./stateManager.js";
 import "dotenv/config";
-
-// import chatRoutes from "./routes/chat.js";
+import cloudinary from 'cloudinary'
 
 import {PrismaPg} from "@prisma/adapter-pg"
 import { PrismaClient } from "@prisma/client";
+import uploadRoutes from './routes/cloudinary.js'
 
+const app = express();
 const adapter = new PrismaPg({connectionString: process.env.DATABASE_URL})
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 if (!JWT_USER_SECRET) {
@@ -29,8 +29,9 @@ if (!JWT_ADMIN_SECRET) {
   );
 }
 export const db = new PrismaClient({adapter:adapter});
+app.use(express.json({limit:"50mb"}))
+app.use(express.urlencoded({limit:"50mb",extended:true}))
 
-const app = express();
 app.use(
   cors({
     credentials: true,
@@ -41,10 +42,19 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 
-app.use("/files", express.static("uploads"));
+const{CLOUD_NAME,CLOUD_API_KEY,CLOUD_SECRET_KEY} = process.env;
 
+if(!CLOUD_NAME||!CLOUD_API_KEY||!CLOUD_SECRET_KEY){
+  throw new Error("Missing Cloudinary environment variables")
+}
 
-// app.use("/api", chatRoutes);
+cloudinary.v2.config({
+  cloud_name:CLOUD_NAME,
+  api_key:CLOUD_API_KEY,
+  api_secret:CLOUD_SECRET_KEY
+})
+
+app.use("/cloud",uploadRoutes);
 app.use("/users", userRoutes);
 app.use("/validator", validatorRoutes);
 
