@@ -1,14 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { authService } from "@/app/page";
 import VerificationForm1 from "@/features/validator/VerificationForms/VerificationForm1";
 import VerificationForm2 from "@/features/validator/VerificationForms/VerificationForm2";
 import VerificationForm3 from "@/features/validator/VerificationForms/VerificationForm3";
+import toast from "react-hot-toast";
 export default function Page() {
+  const router = useRouter()
   const { id } = useParams();
   const [submission, setSubmission] = useState<any>(null);
+  const searchParams = useSearchParams();
+    const historyId = searchParams.get("historyId");
 
   const [step, setStep] = useState(1);
   const [verificationData, setVerificationData] = useState<any>(null);
@@ -18,7 +22,7 @@ export default function Page() {
       const res = await fetch(`${authService}/users/previewData`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ historyId: Number(id) }),
+        body: JSON.stringify({ historyId: Number(historyId) }),
         credentials: "include",
       });
 
@@ -33,6 +37,7 @@ export default function Page() {
     const round = (num: number) => Number(num.toFixed(2));
     // 🧠 CLEAN STRUCTURE
     const cleanedData = {
+      historyId: Number(historyId),
       decision: data.decision,
 
       verification: {
@@ -76,12 +81,19 @@ export default function Page() {
       console.log(pair[0], pair[1]);
     }
 
-    // 🚀 API call
-    // await fetch(`${authService}/validator/submitVerification`, {
-    //   method: "POST",
-    //   body: formData,
-    //   credentials: "include",
-    // });
+    
+   const res = await fetch(`${authService}/validator/submitVerification`, {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+    if(res.ok){
+      toast.success("Verification Completed")
+      router.push("/validator/dashboard")
+    }
+    else{
+      toast.error("Failed")
+    }
   };
   if (!submission) {
     return <div className="p-6">Loading...</div>;

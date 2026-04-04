@@ -1,9 +1,16 @@
 import express, { Router } from "express";
 import { db } from "../index.js";
-import jwt from "jsonwebtoken";
 import { adminMiddleware } from "../middleware/admin.js";
 import { userMiddleware } from "../middleware/users.js";
 import { registerValidator } from "../controller/auth.js";
+
+import multer from "multer";
+import uploadImagesToCloudinary from "../utils/cloudinaryUpload.js";
+const router = express.Router();
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
 const JWT_ADMIN_SECRET = process.env.JWT_ADMIN_SECRET;
 if (!JWT_ADMIN_SECRET) {
   throw new Error(
@@ -93,7 +100,8 @@ validatorRouter.get("/dashboard/home", userMiddleware, async (req, res) => {
     });
 
     // 🔹 Map to SAME UI STRUCTURE (important)
-    const usersData = assignments.map((a) => ({
+    const usersData = assignments.map((a: any) => ({
+      HistoryId: a.submission.history.historyId,
       SubmissionID: a.submission.submissionId,
       SubmittedBy: null, // optional (you can include user if needed)
       AreaClaimed: a.submission.areaclaim,
@@ -105,12 +113,12 @@ validatorRouter.get("/dashboard/home", userMiddleware, async (req, res) => {
         a.status === "ACCEPTED"
           ? "INPROGRESS"
           : a.status === "PENDING"
-          ? "PENDING"
-          : a.status === "COMPLETED"
-          ? "APPROVED"
-          : a.status === "REJECTED"
-          ? "REJECTED"
-          : "PENDING",
+            ? "PENDING"
+            : a.status === "COMPLETED"
+              ? "APPROVED"
+              : a.status === "REJECTED"
+                ? "REJECTED"
+                : "PENDING",
     }));
 
     res.json({
@@ -134,7 +142,7 @@ validatorRouter.get("/mapData", userMiddleware, async (req, res) => {
             longitude: true,
             location: true,
             submissionId: true,
-             geoTag: true,
+            geoTag: true,
           },
         },
       },
@@ -155,6 +163,100 @@ validatorRouter.get("/mapData", userMiddleware, async (req, res) => {
   }
 });
 
+validatorRouter.post(
+  "/submitVerification",
+  userMiddleware,
+  upload.array("images"),
+  async (req, res) => {
+    try {
+      if (!req.userId) {
+        return res.status(401).json({ message: "Invalid token" });
+      }
+      const validator = await db.validator.findUnique({
+        where: { userId: req.userId },
+      });
 
-// })
+      if (!validator) {
+        return res.status(403).json({ message: "Validator not found" });
+      }
+      const rawData = req.body.data;
+      const data = JSON.parse(rawData);
+
+      const files = req.files as Express.Multer.File[];
+      const imageFiles = files?.filter((file) =>
+        file.mimetype.startsWith("image/"),
+      );
+      // 🧠 Extract data
+      const v = data.verification;
+      const cIn = data.carbonInput;
+      const cOut = data.carbonOutput;
+
+      // 📸 Upload to Cloudinary
+      let uploadedImages: any[] = [];
+
+      if (files && files.length > 0) {
+        uploadedImages = await uploadImagesToCloudinary(files, "verified");
+      }
+      if (!req.body.data) {
+        return res.status(400).json({ message: "Missing data" });
+      }
+
+      // 🧾 Save in DB
+      const verification = await db.verification.create({
+        data: {
+          decision: data.decision,
+
+          // 🟦 Section A
+          location: v.location,
+          actualArea: v.area,
+          boundaryMatch: v.boundaryMatch,
+          density: v.density,
+          soilCondition: v.soilCondition,
+          illegalActivity: v.illegalActivity,
+          pollution: v.pollution,
+          confidence: v.confidence,
+          remarks: v.remarks,
+          score: v.score,
+          boundaryPoints: v.boundaryPoints,
+
+          // 🟩 Section B
+          survivalRate: cIn.survivalRate,
+          avgHeight: cIn.avgHeight,
+          plantationHealth: cIn.plantationHealth,
+          waterCondition: cIn.waterCondition,
+          soilQuality: cIn.soilQuality,
+          plantingMethod: cIn.plantingMethod,
+          mortalityCause: cIn.mortalityCause,
+
+          // 🟨 Section C
+          AGB: cOut.AGB,
+          BGB: cOut.BGB,
+          soilCarbon: cOut.soilCarbon,
+          totalCarbon: cOut.totalCarbon,
+          annualCO2: cOut.annualCO2,
+
+          // 📸 Store Cloudinary response
+          images: uploadedImages,
+
+          // 🔗 Relations
+          historyId: data.historyId, // IMPORTANT
+          validatorId: validator.validatorId, // if auth middleware exists
+        },
+      });
+
+      return res.json({
+        success: true,
+        message: "Verification stored successfully",
+        verification,
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        success: false,
+        error: "Failed to store verification",
+      });
+    }
+  },
+);
+
 export default validatorRouter;

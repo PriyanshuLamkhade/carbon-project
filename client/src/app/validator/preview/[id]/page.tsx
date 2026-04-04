@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { authService } from "@/app/page";
 import toast from "react-hot-toast";
 import MultiMarkerMap from "@/features/map/MultiMarkerMapProps";
@@ -11,6 +11,8 @@ const SubmissionPreviewPage = () => {
   const params = useParams();
   const router = useRouter();
   const id = params?.id;
+  const searchParams = useSearchParams();
+  const historyId = searchParams.get("historyId");
 
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,7 @@ const SubmissionPreviewPage = () => {
       const res = await fetch(`${authService}/users/previewData`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ historyId: id }),
+        body: JSON.stringify({ historyId: historyId }),
         credentials: "include",
       });
 
@@ -137,7 +139,7 @@ const SubmissionPreviewPage = () => {
       {/* 🔹 Next Button */}
       <div className="flex justify-end">
         <button
-          onClick={() => router.push(`/validator/verify/${id}`)}
+          onClick={() => router.push(`/validator/verify/${id}?historyId=${historyId}`)}
           className="px-6 py-3 bg-green-500 text-white rounded-2xl font-semibold cursor-pointer hover:bg-green-600"
         >
           Proceed to Verification →

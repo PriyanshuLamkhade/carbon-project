@@ -1,6 +1,5 @@
 "use client";
 
-
 import { authService } from "@/app/page";
 import DetailedTable from "@/components/tables/DetailedTable";
 import Button from "@/components/ui/Button";
@@ -9,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface Submission {
+  HistoryId: number | null;
   SubmissionID: number | null;
   SubmittedBy: string | null;
   AreaClaimed: number | null;
@@ -23,7 +23,7 @@ const ValidatorDashboard = () => {
     PENDING: 0,
     INPROGRESS: 0,
     APPROVED: 0,
-    REJECTED: 0
+    REJECTED: 0,
   });
 
   const router = useRouter();
@@ -49,22 +49,38 @@ const ValidatorDashboard = () => {
 
   const cardData = [
     {
-      title: <span className="text-xl">Pending <br /> Areas</span>,
+      title: (
+        <span className="text-xl">
+          Pending <br /> Areas
+        </span>
+      ),
       subtext: <p className="text-3xl font-extrabold">{counts.PENDING}</p>,
       body: "requests",
     },
     {
-      title: <span className="text-xl">In progress <br /> Areas</span>,
+      title: (
+        <span className="text-xl">
+          In progress <br /> Areas
+        </span>
+      ),
       subtext: <p className="text-3xl font-extrabold">{counts.INPROGRESS}</p>,
       body: "requests",
     },
     {
-      title: <span className="text-xl">Accepted <br /> Areas</span>,
+      title: (
+        <span className="text-xl">
+          Accepted <br /> Areas
+        </span>
+      ),
       subtext: <p className="text-3xl font-extrabold">{counts.APPROVED}</p>,
       body: "requests",
     },
     {
-      title: <span className="text-xl">Rejected <br /> Areas</span>,
+      title: (
+        <span className="text-xl">
+          Rejected <br /> Areas
+        </span>
+      ),
       subtext: <p className="text-3xl font-extrabold">{counts.REJECTED}</p>,
       body: "requests",
     },
@@ -72,7 +88,10 @@ const ValidatorDashboard = () => {
 
   return (
     <div className="space-y-6 text-white/90">
-      <div id="top" className="flex justify-between items-center flex-wrap py-1">
+      <div
+        id="top"
+        className="flex justify-between items-center flex-wrap py-1"
+      >
         <div>
           <h1 className="text-3xl font-bold">Welcome, {"x"}!</h1>
           <h2 className="text-xl">Keep Making Impact!</h2>
@@ -99,11 +118,17 @@ const ValidatorDashboard = () => {
 
       <div>
         <h1 className="text-3xl font-bold mb-3 -mt-1">Recent Submission</h1>
-        <DetailedTable rows={recentEntries} theme="dark" onReview={(row) => {
-  if (row.SubmissionID) {
-    router.push(`/validator/preview/${row.SubmissionID}`);
-  }
-}}/>
+        <DetailedTable
+          rows={recentEntries}
+          theme="dark"
+          onReview={(row) => {
+            if (row.SubmissionID) {
+              // manually build the URL
+              const url = `/validator/preview/${row.SubmissionID}?historyId=${row.HistoryId}`;
+              router.push(url);
+            }
+          }}
+        />
       </div>
     </div>
   );

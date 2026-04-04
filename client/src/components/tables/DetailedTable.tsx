@@ -2,6 +2,7 @@
 import React from "react";
 
 interface Submission {
+  HistoryId: any;
   SubmissionID: number | null;
   SubmittedBy: string | null;
   AreaClaimed: number | null;

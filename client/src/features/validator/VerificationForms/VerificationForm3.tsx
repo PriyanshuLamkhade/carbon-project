@@ -123,14 +123,15 @@ export default function VerificationForm3({
       {/* ✅ DECISION BUTTONS */}
       <div className="flex gap-4">
         <button
-          onClick={() => setDecision("ACCEPTED")}
+          onClick={() => setDecision("APPROVED")}
+  
           className={`px-6 py-3 rounded-xl ${
-            decision === "ACCEPTED"
+            decision === "APPROVED"
               ? "bg-green-600 text-white"
               : "bg-gray-200"
           }`}
         >
-          Accept
+          Approve
         </button>
 
         <button

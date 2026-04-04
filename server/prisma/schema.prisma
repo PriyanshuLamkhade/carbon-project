@@ -120,14 +120,50 @@ model Submission {
 }
 
 model Verification {
-  verificationId Int        @id @default(autoincrement())
-  actualArea     Int
-  location       String
-  //verifiedImages
-  history        History    @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
-  historyId      Int        @unique
-  validatorId    Int?
-  validator      Validator? @relation(fields: [validatorId], references: [validatorId])
+  verificationId Int @id @default(autoincrement())
+
+  // 🟦 Decision
+  decision Status
+
+  // 🟦 Section A (Verification)
+  location        String
+  actualArea      Int
+  boundaryMatch   String
+  density         String
+  soilCondition   String
+  illegalActivity String
+  pollution       String
+  confidence      String
+  remarks         String?
+  score           Int
+
+  boundaryPoints Json? @db.Json
+
+  // 🟩 Section B (Carbon Inputs)
+  survivalRate     Int
+  avgHeight        String
+  plantationHealth String
+  waterCondition   String
+  soilQuality      String
+  plantingMethod   String
+  mortalityCause   String?
+
+  // 🟨 Section C (Carbon Output)
+  AGB         Float
+  BGB         Float
+  soilCarbon  Float
+  totalCarbon Float
+  annualCO2   Float
+
+  // 📸 Images
+  images Json? @db.Json
+
+  // 🔗 Relations
+  history     History    @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
+  historyId   Int        @unique
+
+  validatorId Int?
+  validator   Validator? @relation(fields: [validatorId], references: [validatorId])
 
   verificationDate DateTime @default(now())
 }
