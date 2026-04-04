@@ -12,7 +12,7 @@ import cloudinary from 'cloudinary'
 
 import {PrismaPg} from "@prisma/adapter-pg"
 import { PrismaClient } from "@prisma/client";
-import uploadRoutes from './routes/cloudinary.js'
+
 
 const app = express();
 const adapter = new PrismaPg({connectionString: process.env.DATABASE_URL})
@@ -54,54 +54,53 @@ cloudinary.v2.config({
   api_secret:CLOUD_SECRET_KEY
 })
 
-app.use("/cloud",uploadRoutes);
 app.use("/users", userRoutes);
 app.use("/validator", validatorRoutes);
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
-wss.on("connection", (ws, req) => {
-  if (!req.url) return ws.close();
+// wss.on("connection", (ws, req) => {
+//   if (!req.url) return ws.close();
 
-  const params = new URLSearchParams(req.url?.split("?")[1]);
-  const token = params.get("token");
-  const role = params.get("role");
+//   const params = new URLSearchParams(req.url?.split("?")[1]);
+//   const token = params.get("token");
+//   const role = params.get("role");
 
-  if (!token || !role) {
-    ws.close();
-    return;
-  }
+//   if (!token || !role) {
+//     ws.close();
+//     return;
+//   }
 
-  try {
-    let decoded :any;
+//   try {
+//     let decoded :any;
 
-    if (role === "user") {
-      decoded = jwt.verify(token, JWT_USER_SECRET) as JwtPayload & {
-        userId: number;
-      };
-      instance.addUser(decoded.userId, ws);
-      console.log(`User ${decoded.userId} connected`);
-    } else if (role === "admin") {
-      decoded = jwt.verify(token, JWT_ADMIN_SECRET);
-      instance.addAdmin(ws);
-      console.log(`Admin connected`);
-    } else {
-      ws.close(); // invalid role
-    }
-    ws.on("close", () => {
-      if (role === "user" && decoded?.userId) {
-        instance.removeUser(decoded.userId, ws);
-      } else if (role === "admin") {
-        instance.removeAdmin(ws);
-      }
-      console.log(`${role} disconnected`);
-    });
-  } catch (err) {
-    console.error("Invalid token:", err);
-    ws.close();
-  }
-});
+//     if (role === "user") {
+//       decoded = jwt.verify(token, JWT_USER_SECRET) as JwtPayload & {
+//         userId: number;
+//       };
+//       instance.addUser(decoded.userId, ws);
+//       console.log(`User ${decoded.userId} connected`);
+//     } else if (role === "admin") {
+//       decoded = jwt.verify(token, JWT_ADMIN_SECRET);
+//       instance.addAdmin(ws);
+//       console.log(`Admin connected`);
+//     } else {
+//       ws.close(); // invalid role
+//     }
+//     ws.on("close", () => {
+//       if (role === "user" && decoded?.userId) {
+//         instance.removeUser(decoded.userId, ws);
+//       } else if (role === "admin") {
+//         instance.removeAdmin(ws);
+//       }
+//       console.log(`${role} disconnected`);
+//     });
+//   } catch (err) {
+//     console.error("Invalid token:", err);
+//     ws.close();
+//   }
+// });
 
 // Server start
 const PORT = 4000;

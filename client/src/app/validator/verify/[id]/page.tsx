@@ -2,13 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import VerificationForm from "@/features/validator/VerificationForm";
 import { authService } from "@/app/page";
-
+import VerificationForm1 from "@/features/validator/VerificationForms/VerificationForm1";
+import VerificationForm2 from "@/features/validator/VerificationForms/VerificationForm2";
+import VerificationForm3 from "@/features/validator/VerificationForms/VerificationForm3";
 export default function Page() {
   const { id } = useParams();
   const [submission, setSubmission] = useState<any>(null);
 
+  const [step, setStep] = useState(1);
+  const [verificationData, setVerificationData] = useState<any>(null);
+  const [sectionBData, setSectionBData] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
       const res = await fetch(`${authService}/users/previewData`, {
@@ -24,11 +28,98 @@ export default function Page() {
 
     if (id) fetchData();
   }, [id]);
+  const handleFinalSubmit = async (data: any) => {
+    const formData = new FormData();
+    const round = (num: number) => Number(num.toFixed(2));
+    // 🧠 CLEAN STRUCTURE
+    const cleanedData = {
+      decision: data.decision,
 
-  // 🔥 IMPORTANT
+      verification: {
+        location: data.verificationData.form.validatorLocation,
+        area: Number(data.verificationData.form.actualArea.trim()),
+        boundaryMatch: data.verificationData.form.boundaryMatch,
+        density: data.verificationData.form.mangroveDensity,
+        soilCondition: data.verificationData.form.soilCondition,
+        illegalActivity: data.verificationData.form.illegalActivity,
+        pollution: data.verificationData.form.pollution,
+        confidence: data.verificationData.form.confidence,
+        remarks: data.verificationData.form.remarks,
+        score: data.verificationData.score,
+        boundaryPoints: data.verificationData.boundaryPoints,
+      },
+
+      carbonInput: {
+        ...data.sectionBData.sectionB,
+        survivalRate: Number(data.sectionBData.sectionB.survivalRate),
+      },
+
+      carbonOutput: {
+        AGB: round(data.AGB),
+        BGB: round(data.BGB),
+        soilCarbon: round(data.soilCarbon),
+        totalCarbon: round(data.totalCarbon),
+        annualCO2: round(data.annualCO2),
+      },
+    };
+
+    // ✅ Append JSON
+    formData.append("data", JSON.stringify(cleanedData));
+
+    // ✅ Append images ONLY here
+    data.images.forEach((file: File) => {
+      formData.append("images", file);
+    });
+
+    // 🔍 Debug properly
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
+    // 🚀 API call
+    // await fetch(`${authService}/validator/submitVerification`, {
+    //   method: "POST",
+    //   body: formData,
+    //   credentials: "include",
+    // });
+  };
   if (!submission) {
     return <div className="p-6">Loading...</div>;
   }
+  if (step === 3) {
+    return (
+      <VerificationForm3
+        submission={submission}
+        verificationData={verificationData}
+        sectionBData={sectionBData}
+        onNext={(data: any) => {
+          handleFinalSubmit(data);
+        }}
+      />
+    );
+  }
+  // 🟢 SECTION B
+  if (step === 2) {
+    return (
+      <VerificationForm2
+        submission={submission}
+        verificationData={verificationData}
+        onNext={(data: any) => {
+          setSectionBData(data);
+          setStep(3);
+        }}
+      />
+    );
+  }
 
-  return <VerificationForm submission={submission} />;
+  // 🟢 SECTION A
+  return (
+    <VerificationForm1
+      submission={submission}
+      onNext={(data: any) => {
+        setVerificationData(data);
+        setStep(2);
+      }}
+    />
+  );
 }
