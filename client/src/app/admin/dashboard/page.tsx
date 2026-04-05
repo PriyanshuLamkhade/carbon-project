@@ -1,8 +1,8 @@
-import Dashboard from '@/features/admin/Dashboard'
+import AdminDashboard from '@/features/admin/Dashboard'
 
 const page = () => {
   return (
-    <Dashboard/>
+    <AdminDashboard/>
   )
 }
 

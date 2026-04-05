@@ -103,7 +103,7 @@ const TableWithActions: React.FC<TableWithActionsProps> = ({
                 >
                   Preview
                 </button>
-                <button
+                {row.status === "pending" && <button
                   onClick={async () => {
                     const res = await fetch(`${authService}/users/deleteSubmission`, {
                       method: "delete",
@@ -118,7 +118,8 @@ const TableWithActions: React.FC<TableWithActionsProps> = ({
                   }`}
                 >
                   Delete
-                </button>
+                </button>}
+                
               </div>
             </td>
           </tr>

@@ -1,10 +1,10 @@
-import Chatbot from '@/features/chatbot'
+import MarketplacePage from '@/features/marketplace/marketplace'
 import React from 'react'
 
 const page = () => {
   return (
     <div>
-        <Chatbot/>
+        <MarketplacePage/>
     </div>
   )
 }
