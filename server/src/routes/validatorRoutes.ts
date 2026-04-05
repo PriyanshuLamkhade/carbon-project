@@ -244,6 +244,10 @@ validatorRouter.post(
         },
       });
 
+      await db.history.update({
+        where:{historyId:data.historyId}
+        ,data:{status:"INPROGRESS"}})
+
       return res.json({
         success: true,
         message: "Verification stored successfully",

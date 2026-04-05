@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.37.2",
     "@react-oauth/google": "^0.13.4",
     "@tailwindcss/postcss": "^4.1.15",
     "@tailwindcss/vite": "^4.1.18",
