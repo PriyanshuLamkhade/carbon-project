@@ -1,3 +1,4 @@
+import AdminSidebar from "@/components/layout/sidebars/AdminSidebar";
 
 
 export default function DashboardLayout({
@@ -7,7 +8,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex min-h-screen bg-black/70 ">
-      
+      <AdminSidebar/>
         
       
       <main className="flex-1 p-5 text-white/90">{children}</main>

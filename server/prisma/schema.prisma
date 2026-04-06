@@ -87,7 +87,7 @@ model Carbon {
   carbonId      Int  @id @default(autoincrement())
   carbonCleaned Int?
   tokensIssued  Int?
-  //txHash String?
+  txHash String?
 
   history   History @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
   historyId Int     @unique

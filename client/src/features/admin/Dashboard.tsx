@@ -1,3 +1,4 @@
+import AdminSidebar from '@/components/layout/sidebars/AdminSidebar'
 import React from 'react'
 
 const AdminDashboard = () => {

@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename);
 import express, { Router } from "express";
 import fs from "fs";
 
-import jwt from "jsonwebtoken";
+
 import { db } from "../index.js";
 import { z } from "zod";
 import "dotenv/config";
