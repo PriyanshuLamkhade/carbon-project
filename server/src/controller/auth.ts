@@ -52,7 +52,7 @@ export const loginUser = TryCatch(async (req, res) => {
 });
 
 export const registerUser = TryCatch(async (req, res) => {
-  const { userData, phone, organisation, role } = req.body;
+  const { userData, phone, organisation, role,walletAddress } = req.body;
   const { name, email, picture } = userData;
   if (!req.body) {
     res.json({ message: "body missing" });
@@ -63,6 +63,7 @@ export const registerUser = TryCatch(async (req, res) => {
       email,
       profileImage: picture,
       phonenumber: phone,
+      pubkey:walletAddress,
       organisation,
       role,
     },

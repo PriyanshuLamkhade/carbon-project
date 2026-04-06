@@ -121,9 +121,10 @@ export const mintTokens = async (req: Request, res: Response) => {
     const submission = await db.submission.findUnique({
       where: { submissionId },
       include: {
-        user: true, // ✅ IMPORTANT (wallet address)
+        // ✅ IMPORTANT (wallet address)
         history: {
           include: {
+            user: true,
             verification: true,
             carbon: true,
           },
@@ -134,7 +135,9 @@ export const mintTokens = async (req: Request, res: Response) => {
     if (!submission || !submission.history?.verification) {
       return res.status(400).json({ message: "No verification found" });
     }
-
+    if (!submission.history?.verification) {
+      return res.status(400).json({ message: "No verification found" });
+    }
     const verification = submission.history.verification;
 
     // ❌ Only allow approved
@@ -146,15 +149,19 @@ export const mintTokens = async (req: Request, res: Response) => {
     if (submission.history.carbon?.tokensIssued) {
       return res.status(400).json({ message: "Already minted" });
     }
-    const user = submission.user as User;
+    const user = submission.history.user;
     // ❌ Ensure wallet exists
-    if (!user.walletAddress) {
+    if (!user.pubkey) {
       return res.status(400).json({ message: "User wallet not found" });
     }
-
+    if (submission.history.carbon) {
+      return res.status(400).json({ message: "Already minted" });
+    }
     // 🔥 Calculate tokens
     const tokens = Math.floor(verification.totalCarbon);
-
+    if (submission.history.carbon) {
+      return res.status(400).json({ message: "Already minted" });
+    }
     if (tokens <= 0) {
       return res.status(400).json({ message: "Invalid token amount" });
     }
@@ -163,7 +170,7 @@ export const mintTokens = async (req: Request, res: Response) => {
     const amount = ethers.parseUnits(tokens.toString(), 18);
 
     // 🚀 CALL BLOCKCHAIN
-    const tx = await (token as any).mintToLandowner(user.walletAddress, amount);
+    const tx = await (token as any).mintToLandowner(user.pubkey, amount);
 
     const receipt = await tx.wait();
 
@@ -178,7 +185,13 @@ export const mintTokens = async (req: Request, res: Response) => {
         historyId: submission.historyId,
       },
     });
-
+    const updateStatus = await db.history.update({
+      where:{historyId : submission.historyId},
+      data:{status:"APPROVED"}
+    })
+    console.log("Minting to:", user.pubkey);
+    console.log("Tokens:", tokens);
+    console.log("Submission:", submissionId);
     return res.json({
       message: "Tokens minted successfully",
       tokens,

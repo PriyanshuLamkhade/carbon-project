@@ -19,7 +19,6 @@ type ValidatorDataType = {
   userData: any;
 };
 
-
 const isValidPhone = (val: string): boolean => /^\d{10}$/.test(val);
 
 const formatPhoneDisplay = (digits: string): string => {
@@ -30,6 +29,8 @@ const formatPhoneDisplay = (digits: string): string => {
 };
 
 export default function RegistrationForm({ userData }: any) {
+  const [wallet, setWallet] = useState<string | null>(null);
+  const [connecting, setConnecting] = useState(false);
   const [rawPhone, setRawPhone] = useState<string>("");
   const [formData, setFormData] = useState<FormData>({
     phone: "",
@@ -38,17 +39,48 @@ export default function RegistrationForm({ userData }: any) {
   });
   const [submitted, setSubmitted] = useState(false);
   const [focused, setFocused] = useState<string | null>(null);
-  const [validatorData, setValidatorData] = useState<ValidatorDataType>()
-  const [isvalidator, setIsValidator] = useState(false)
-  const router = useRouter()
+  const [validatorData, setValidatorData] = useState<ValidatorDataType>();
+  const [isvalidator, setIsValidator] = useState(false);
+  const router = useRouter();
   const phoneValid = isValidPhone(rawPhone);
   const orgValid = formData.organisation.trim().length > 0;
   const roleValid = formData.role !== "";
-  const allValid = phoneValid && orgValid && roleValid;
+  const walletValid =
+    formData.role === "VALIDATOR" || (formData.role === "USER" && wallet);
+
+  const allValid = phoneValid && orgValid && roleValid && walletValid;
   const completedCount = [phoneValid, orgValid, roleValid].filter(
     Boolean,
   ).length;
 
+  const connectWallet = async () => {
+    try {
+      if (!window.ethereum) {
+        toast.error("Install MetaMask");
+        return;
+      }
+
+      setConnecting(true);
+
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+
+      setWallet(accounts[0]);
+
+      toast.success("Wallet connected");
+    } catch (err) {
+      console.error(err);
+      toast.error("Wallet connection failed");
+    } finally {
+      setConnecting(false);
+    }
+  };
+
+  const disconnectWallet = () => {
+  setWallet(null);
+  toast("Wallet disconnected");
+};
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const cleaned = e.target.value
       .replace(/[^\d+]/g, "")
@@ -62,43 +94,44 @@ export default function RegistrationForm({ userData }: any) {
 
   async function handleSubmit() {
     try {
-      if(formData.role === "VALIDATOR"){
+      if (formData.role === "VALIDATOR") {
         const validatorDetail = {
-        phone: `+91${formData.phone}`,
-        organisation: formData.organisation,
-        role: formData.role,
-        userData
-      };
+          phone: `+91${formData.phone}`,
+          organisation: formData.organisation,
+          role: formData.role,
+          userData,
+        };
 
-      setValidatorData(validatorDetail);
-        setIsValidator(true)
-        
+        setValidatorData(validatorDetail);
+        setIsValidator(true);
+      } else if (allValid) {
+        const result = await axios.post(
+          `${authService}/users/registerUser`,
+          {
+            phone: `+91${formData.phone}`,
+            organisation: formData.organisation,
+            role: formData.role,
+            walletAddress: wallet, // 🔥 added
+            userData,
+          },
+          { withCredentials: true },
+        );
+        setSubmitted(true);
+        toast.success(result.data.message);
+        if (result.data.role === "USER") {
+          router.push("/user/dashboard");
+        } else if (result.data.role === "VALIDATOR") {
+          router.push("/validator/dashboard");
+        }
       }
-      else if (allValid) {
-      const result = await axios.post(`${authService}/users/registerUser`, {
-        phone: `+91${formData.phone}`,
-        organisation: formData.organisation,
-        role: formData.role,
-        userData //name, email profile pic
-      },{withCredentials: true,});
-      setSubmitted(true);
-      toast.success(result.data.message)
-      if( result.data.role === "USER"){
-        router.push("/user/dashboard")
-      }else if( result.data.role === "VALIDATOR"){
-        router.push("/validator/dashboard")
-      }
-    }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-    
   }
 
-  if(isvalidator){
-    return <ValidatorDetails validatorData={validatorData}/>
+  if (isvalidator) {
+    return <ValidatorDetails validatorData={validatorData} />;
   }
-
 
   const handleReset = () => {
     setRawPhone("");
@@ -112,7 +145,6 @@ export default function RegistrationForm({ userData }: any) {
       ? rawPhone
       : formatPhoneDisplay(rawPhone);
 
-   
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-6">
       <div className="w-full max-w-md bg-white  rounded-2xl  overflow-hidden">
@@ -333,7 +365,36 @@ export default function RegistrationForm({ userData }: any) {
             </div>
           </div>
         </div>
+        {/* Wallet */}
+        {formData.role === "USER" && (
+  <div className="space-y-2">
+    <label className="text-xs font-semibold text-gray-500 uppercase">
+      Wallet
+    </label>
 
+    {!wallet ? (
+      <button
+        onClick={connectWallet}
+        className="w-full py-3 rounded-xl bg-black text-white hover:bg-gray-800 transition"
+      >
+        {connecting ? "Connecting..." : "Connect Wallet"}
+      </button>
+    ) : (
+      <div className="flex items-center justify-between bg-green-50 border border-green-300 px-3 py-2 rounded text-sm">
+        <span className="text-green-700">
+          ✅ {wallet.slice(0, 6)}...{wallet.slice(-4)}
+        </span>
+
+        <button
+          onClick={disconnectWallet}
+          className="text-red-500 hover:text-red-600 text-xs font-semibold"
+        >
+          Disconnect
+        </button>
+      </div>
+    )}
+  </div>
+)}
         {/* CTA */}
         <div className="px-8 pb-8">
           <button
