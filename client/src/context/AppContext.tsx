@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 
-import type { AppContextType, User } from "../types";
+import type { AppContextType, User } from "../types/types";
 import { authService } from "@/app/page";
 
 const AppContext = createContext<AppContextType | undefined>(undefined);

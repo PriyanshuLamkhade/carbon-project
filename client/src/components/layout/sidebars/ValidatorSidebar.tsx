@@ -25,7 +25,7 @@ const ValidatorSidebar = () => {
     { href: '/validator/dashboard/availablesubmissions', text: 'Available Submissions', icon: <VerifiedIcon size="20px" /> },
     { href: '/validator/dashboard/pastprojects', text: 'Past Projects', icon: <History size="20px" /> },
 
-    { href: '/validator/dashboard/carbontokens', text: 'Carbon Tokens', icon: <CoinsIcon size="20px" /> },
+    
     { href: '/validator/dashboard/settings', text: 'Settings', icon: <Settings size="20px"  /> },
   ]
 

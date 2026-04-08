@@ -245,12 +245,13 @@ export default function SubmissionDetailPage() {
   </span>
 ) : (
   <>
-    <button
+  {verification.decision === "REJECTED" ? <button className="bg-red-500 p-3 ">Project is Rejected</button> :<button
       onClick={() => setShowConfirm(true)}
       className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded mt-4"
     >
       Mint Tokens
-    </button>
+    </button> }
+    
 
     {showConfirm && (
       <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">

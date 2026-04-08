@@ -20,6 +20,7 @@ import {
   registerUser,
 } from "../controller/auth.js";
 import { previewData } from "../controller/submission.js";
+import { assignValidator } from "../services/assignmentService.js";
 
 // import { ed25519 } from "@noble/curves/ed25519.js";
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
@@ -59,7 +60,7 @@ userRouter.post("/login", loginUser);
 userRouter.put("/add/role", userMiddleware, addUserRole);
 userRouter.get("/me", userMiddleware, myProfile);
 userRouter.post("/registerUser", registerUser);
-userRouter.post("/previewData",userMiddleware,previewData)
+userRouter.post("/reviewData",userMiddleware,previewData)
 userRouter.post("/userForm", userMiddleware, async (req, res) => {
   try {
     const {
@@ -141,7 +142,7 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
         history: { connect: { historyId: history.historyId } },
       },
     });
-
+    await assignValidator(submission.submissionId);
     res.json({
       message: "Submission Completed",
       submissionId: submission.submissionId,
@@ -177,29 +178,7 @@ userRouter.get("/allhistory", userMiddleware, async (req, res) => {
   }
 });
 
-// userRouter.post("/previewData", userMiddleware, async (req, res) => {
-//   try {
-//     const userId = req.userId;
-//     const { historyId } = req.body;
-//     if (!userId) {
-//       return res
-//         .status(401)
-//         .json({ message: "Unauthorized: No user ID found" });
-//     }
-//     const previewData = await db.history.findUnique({
-//       where: {
-//         historyId,
-//       },
-//       include: {
-//         carbon: true,
-//         submission: true,
-//       },
-//     });
-//     return res.status(200).json({ previewData: previewData });
-//   } catch (error) {
-//     return res.status(500).json({ message: "Failed to fetch previews", error });
-//   }
-// });
+
 userRouter.delete("/deleteSubmission", userMiddleware, async (req, res) => {
   try {
     const userId = req.userId;

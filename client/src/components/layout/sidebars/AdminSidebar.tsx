@@ -29,22 +29,22 @@ const AdminSidebar = () => {
       icon: <Users size="20px" />,
     },
     {
-      href: '/admin/projects',
+      href: '/admin/dashboard/projects',
       text: 'Projects',
       icon: <FileCheck size="20px" />,
     },
     {
-      href: '/admin/tokens',
+      href: '/admin/dashboard/tokens',
       text: 'Carbon Tokens',
       icon: <Coins size="20px" />,
     },
     {
-      href: '/admin/transactions',
+      href: '/admin/dashboard/transactions',
       text: 'Transactions',
       icon: <BarChart3 size="20px" />,
     },
     {
-      href: '/admin/settings',
+      href: '/admin/dashboard/settings',
       text: 'Settings',
       icon: <Settings size="20px" />,
     },

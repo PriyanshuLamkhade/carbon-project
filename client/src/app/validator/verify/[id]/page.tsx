@@ -19,7 +19,7 @@ export default function Page() {
   const [sectionBData, setSectionBData] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetch(`${authService}/users/previewData`, {
+      const res = await fetch(`${authService}/users/reviewData`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ historyId: Number(historyId) }),

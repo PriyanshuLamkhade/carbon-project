@@ -1,6 +1,6 @@
 import express from "express";
 import { adminMiddleware } from "../middleware/admin.js";
-import { getAllUsers, getSubmissionById, getUserById, mintTokens } from "../controller/admin.controller.js";
+import { getAdminStats, getAllTokens, getAllUsers, getSubmissionById, getUserById, mintTokens } from "../controller/admin.controller.js";
 import { db } from "../index.js";
 import jwt from "jsonwebtoken";
 
@@ -53,4 +53,6 @@ adminRouter.post(
   adminMiddleware,
   mintTokens
 );
+adminRouter.get("/stats", adminMiddleware, getAdminStats);
+adminRouter.get("/tokens", adminMiddleware, getAllTokens);
 export default adminRouter;

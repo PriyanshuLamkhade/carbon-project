@@ -42,7 +42,7 @@
     ".next\\dev/types/**/*.ts",
     ".next\\dev/types/**/*.ts",
     ".next/dev/types/**/*.ts"
-  ],
+, "../server/src/services/assignmentService.ts"  ],
   "exclude": [
     "node_modules"
   ]

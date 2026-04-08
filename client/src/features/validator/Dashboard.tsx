@@ -124,7 +124,7 @@ const ValidatorDashboard = () => {
           onReview={(row) => {
             if (row.SubmissionID) {
               // manually build the URL
-              const url = `/validator/preview/${row.SubmissionID}?historyId=${row.HistoryId}`;
+              const url = `/validator/review/${row.SubmissionID}?historyId=${row.HistoryId}`;
               router.push(url);
             }
           }}

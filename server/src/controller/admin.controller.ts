@@ -207,3 +207,90 @@ export const mintTokens = async (req: Request, res: Response) => {
     });
   }
 };
+export const getAdminStats = async (req: Request, res: Response) => {
+  try {
+    const totalUsers = await db.user.count({
+      where: { role: "USER" },
+    });
+
+    const totalSubmissions = await db.submission.count();
+
+    const approved = await db.verification.count({
+      where: { decision: "APPROVED" },
+    });
+
+    const pending = await db.verification.count({
+      where: { decision: "PENDING" },
+    });
+
+    // 🔥 NEW STATS
+    const totalCarbon = await db.verification.aggregate({
+      _sum: { totalCarbon: true },
+    });
+
+    const totalTokens = await db.carbon.aggregate({
+      _sum: { tokensIssued: true },
+    });
+
+    const validators = await db.validator.count({
+      where: { status: "APPROVED" },
+    });
+
+    const avgScore = await db.verification.aggregate({
+      _avg: { score: true },
+    });
+
+    const recentSubmissions = await db.submission.findMany({
+      take: 5,
+      orderBy: { submissionDate: "desc" },
+    });
+
+    res.json({
+      totalUsers,
+      totalSubmissions,
+      approved,
+      pending,
+      totalCarbon: totalCarbon._sum.totalCarbon || 0,
+      totalTokens: totalTokens._sum.tokensIssued || 0,
+      validators,
+      avgScore: Math.round(avgScore._avg.score || 0),
+      recentSubmissions,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching stats" });
+  }
+};
+
+export const getAllTokens = async (req: Request, res: Response) => {
+  try {
+    const tokens = await db.carbon.findMany({
+      include: {
+        history: {
+          include: {
+            user: true,
+            submission: true,
+          },
+        },
+      },
+      orderBy: {
+        carbonId: "desc",
+      },
+    });
+
+    const formatted = tokens.map((t) => ({
+      carbonId: t.carbonId,
+      userName: t.history.user.name,
+      submissionId: t.history.submission?.submissionId,
+      location: t.history.submission?.location,
+      carbonCleaned: t.carbonCleaned,
+      tokensIssued: t.tokensIssued,
+      txHash: t.txHash || "N/A",
+      date: t.history.timestamp,
+    }));
+
+    res.json(formatted);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching tokens" });
+  }
+};
