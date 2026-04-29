@@ -7,14 +7,14 @@ let L: typeof import("leaflet");
 
 interface MapPickerProps {
   mode?: "point" | "boundary"; // New prop to switch modes
-  setLocation?: (data: { lat: number; lon: number; address: string }) => void;
+  setLocation?: (data: { lat: number; lon: number }) => void;
   setBoundary?: (data: {
     type: string;
-    coordinates: number[][];
+    coordinates: number[][][];
     area: number;
     centerLat: number;
     centerLng: number;
-    address: string;
+    // address: string;
   }) => void;
   initialBoundary?: any; // For editing existing boundary
 }
@@ -90,11 +90,11 @@ const MapPicker: React.FC<MapPickerProps> = ({
                 `/api/reverse-geocode?lat=${lat}&lon=${lon}`
               );
               const data = await response.json();
-              const address = data.display_name || "Address not found";
-              setLocation?.({ lat, lon, address });
+              // const address = data.display_name || "Address not found";
+              setLocation?.({ lat, lon });
             } catch (err) {
               console.error("Reverse geocoding error:", err);
-              setLocation?.({ lat, lon, address: "Error retrieving address" });
+              setLocation?.({ lat, lon });
             }
           });
         } else {
@@ -199,7 +199,7 @@ drawnItemsRef.current.addLayer(layer);
           `/api/reverse-geocode?lat=${centerLat}&lon=${centerLng}`
         );
         const data = await response.json();
-        const address = data.display_name || "Address not found";
+        // const address = data.display_name || "Address not found";
 
         setBoundary?.({
           type: "Polygon",
@@ -207,7 +207,7 @@ drawnItemsRef.current.addLayer(layer);
           area: parseFloat(areaInHectares),
           centerLat,
           centerLng,
-          address,
+          // address,
         });
       } catch (err) {
         console.error("Reverse geocoding error:", err);
@@ -217,7 +217,7 @@ drawnItemsRef.current.addLayer(layer);
           area: parseFloat(areaInHectares),
           centerLat,
           centerLng,
-          address: "Error retrieving address",
+          // address: "Error retrieving address",
         });
       }
     };
@@ -238,8 +238,8 @@ drawnItemsRef.current.addLayer(layer);
       
       {mode === "boundary" && isReady && (
         <div className="bg-blue-50 p-4 rounded-lg">
-          <h3 className="font-bold mb-2">📍 Draw Land Boundary</h3>
-          <ol className="text-sm space-y-1 mb-3">
+          <h3 className="font-bold mb-2 text-lg">📍 Draw Land Boundary</h3>
+          <ol className="text-md space-y-1 mb-3 ">
             <li>1. Click the polygon tool (⬡) on the map</li>
             <li>2. Click points around your land boundary</li>
             <li>3. Double-click to complete the polygon</li>

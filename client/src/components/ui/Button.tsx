@@ -4,7 +4,8 @@ interface buttonProps {
   variant: "primary" | "secondary"|"third";
   size: "sm" | "md" | "lg";
   onClick?: (e:any)=>void;
-  className?: string
+  className?: string;
+  type?:"button" | "submit" | "reset" ;
 }
 const sizeStyles ={
     "sm":"px-4 py-1.5",
@@ -22,7 +23,8 @@ const varientStyles ={
 const Button = (props: buttonProps) => {
   return (
     <div>
-      <button
+      <button 
+      type={props.type || "button"}
         className={`${varientStyles[props.variant]} ${sizeStyles[props.size]} ${props.className}
           transition-all duration-300 border    font-extrabold text-base rounded-2xl  hover:-translate-y-1 cursor-pointer
           `}

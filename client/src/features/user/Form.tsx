@@ -7,6 +7,7 @@ import MapPicker from "../map/InitMap";
 import Button from "@/components/ui/Button";
 import { authService } from "@/app/page";
 import toast from "react-hot-toast";
+import ManualPolygonMap from "../map/ManualEntryMap";
 
 function UserForm() {
   const [location, setLocation] = useState<{
@@ -20,7 +21,7 @@ function UserForm() {
     area: number;
     centerLat: number;
     centerLng: number;
-    address: string;
+    // address: string;
   } | null>(null);
   const router = useRouter();
   const [userDetails, setUserDetails] = useState({
@@ -63,9 +64,10 @@ function UserForm() {
   // const locationRef = useRef<HTMLInputElement>(null);
   // const latitudeRef = useRef<HTMLInputElement>(null);
   // const longitudeRef = useRef<HTMLInputElement>(null);
+  const [mapMode, setMapMode] = useState<"manual" | "draw">("manual");
   const areaClaimRef = useRef<HTMLInputElement>(null);
   const descriptionRef = useRef<HTMLTextAreaElement>(null);
-
+  const addressRef = useRef<HTMLInputElement>(null);
   //  PLANTATION DETAILS refs
   const species1Ref = useRef<HTMLInputElement>(null);
   const species1CountRef = useRef<HTMLInputElement>(null);
@@ -132,9 +134,32 @@ function UserForm() {
             Basic Details :
           </h2>
           <div className="flex flex-col gap-6">
+           
+            <div className="flex gap-2 items-center">
+              <h1>Select Location Entry Method :</h1>
+              <Button
+                size="md"
+                variant="primary"
+                text="Manual"
+                onClick={() => {
+                  setMapMode("manual");
+                }}
+              />{" "}
+              <Button
+                size="md"
+                variant="secondary"
+                text="Draw"
+                onClick={() => {
+                  setMapMode("draw");
+                }}
+              />
+            </div>
             <div>
-              <h1>Select a Location</h1>
-              <MapPicker mode="boundary" setBoundary={setBoundary} />
+              {mapMode === "manual" ? (
+                <ManualPolygonMap setBoundary={setBoundary} />
+              ) : (
+                <MapPicker mode="boundary" setBoundary={setBoundary} />
+              )}
 
               <div className="flex flex-col gap-3 mt-3 w-full">
                 {boundary ? (
@@ -154,10 +179,10 @@ function UserForm() {
                       hectares
                     </p>
 
-                    <p className="mb-3">
+                    {/* <p className="mb-3">
                       <span className="font-medium">Address:</span>{" "}
                       {boundary.address}
-                    </p>
+                    </p> */}
 
                     <p className="font-semibold mt-3">🧭 Coordinates:</p>
 
@@ -179,13 +204,23 @@ function UserForm() {
                     </div>
                   </div>
                 ) : (
-                  <div className="bg-blue-50 p-3 rounded text-gray-600">
+                  <div className="bg-blue-50 p-3 rounded text-lg text-gray-600">
                     📍 Draw a boundary on the map to see details
                   </div>
                 )}
               </div>
             </div>
-
+            <span>
+              <label className="flex flex-col gap-1 text-gray-600 text-lg">
+                {" "}
+                Address:{" "}
+                <InputBox
+                  type="text"
+                  ref={addressRef}
+                  placeholder="Enter Address"
+                />
+              </label>
+            </span>
             <label className="flex flex-col gap-1 text-gray-600 text-lg">
               Description:
               <textarea
@@ -359,7 +394,7 @@ function UserForm() {
         type: "Polygon",
         coordinates: boundary?.coordinates,
       },
-      location: boundary?.address,
+      location: addressRef.current?.value,
       areaclaim: areaClaimRef.current?.valueAsNumber,
       description: descriptionRef.current?.value,
       species1: species1Ref.current?.value,
