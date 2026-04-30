@@ -10,47 +10,26 @@ import { authService } from "@/app/page";
 import { useAppData } from "@/context/AppContext";
 
 const UserSettings = () => {
-  const {user} = useAppData()
-  console.log(user)
+  const { user } = useAppData();
+  console.log(user);
   const [files, setFiles] = useState<any[]>([]);
-//   useEffect(() => {
-//   const loadProfilePic = async () => {
-//     const res = await fetch(`${authService}/users/userDetails`, {
-//       credentials: "include",
-//     });
 
-//     if (!res.ok) return;
+  const uploadProfilePicture = async () => {
+    if (!files.length) return;
 
-//     const data = await res.json();
+    const selected = files[0];
 
-//     if (data.userDetails?.profileImage) {
-//       setFiles([
-//         {
-//           id: "existing",
-//           preview: `${authService}/files/${data.userDetails.profileImage}?${Date.now()}`,
-//         },
-//       ]);
-//     }
-//   };
+    if (!selected.file) return; // existing image
 
-//   loadProfilePic();
-// }, []);
-const uploadProfilePicture = async () => {
-  if (!files.length) return;
+    const formData = new FormData();
+    formData.append("file", selected.file);
 
-  const selected = files[0];
-
-  if (!selected.file) return; // existing image
-
-  const formData = new FormData();
-  formData.append("file", selected.file);
-
-  await fetch(`${authService}/users/me/profile-picture`, {
-    method: "POST",
-    body: formData,
-    credentials: "include",
-  });
-};
+    await fetch(`${authService}/users/me/profile-picture`, {
+      method: "POST",
+      body: formData,
+      credentials: "include",
+    });
+  };
 
   return (
     <div className="space-y-6 text-gray-700">
@@ -61,47 +40,47 @@ const uploadProfilePicture = async () => {
         <div>
           <h1 className="text-3xl font-bold ">Settings</h1>
         </div>
-        <Button size="md" variant="primary" text={"Save Changes"} onClick={uploadProfilePicture}/>
+        <Button
+          size="md"
+          variant="primary"
+          text={"Save Changes"}
+          onClick={uploadProfilePicture}
+        />
       </div>
       <div id="main" className="flex flex-wrap gap-5">
-        <div className="flex flex-col gap-2 bg-white p-7 rounded-lg">
-          <h1 className="text-xl font-bold ">Profile Settings</h1>
+        <div className="flex flex-col gap-3 bg-white p-5 rounded-lg borde min-w-[60%]">
+          <h1 className="text-xl font-bold ">Profile Settings:</h1>
           <img
-  src={
-    files.length > 0
-      ? files[0].preview
-      : user?.profileImage
-      ? user.profileImage.startsWith("http")
-        ? user.profileImage // Google image
-        : `${authService}/files/${user.profileImage}` // uploaded image
-      : "/default-avatar.png"
-  }
+  src={user?.profileImage}
+  alt="Profile"
+  referrerPolicy="no-referrer"
   className="w-32 h-32 rounded-full object-cover"
 />
-          <label htmlFor="" className="text-md text-gray-500">
-            Display Name
-          </label>
-          <InputBox placeholder="User" />
-          <label htmlFor="" className="text-md text-gray-500">
-            Email
-          </label>
-          <InputBox placeholder="user@example.com" />
-          <label htmlFor="" className="text-md text-gray-500">
-            Phone Number
-          </label>
-          <InputBox placeholder="1234567890" />
-        </div>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="w-[150px] text-md text-gray-500">
+                Display Name:
+              </span>
+              <InputBox className="flex-1" placeholder="User" />
+              <Button size="sm" text="Edit" variant="primary" />
+            </div>
 
-        <div className="flex flex-col gap-2 bg-white p-7 rounded-lg">
-          <h1 className="text-xl font-bold ">Profile Picture</h1>
+            <div className="flex items-center gap-2">
+              <span className="w-[150px] text-md text-gray-500">Email:</span>
+              <InputBox className="flex-1" placeholder="user@example.com" />
+              <Button size="sm" text="Edit" variant="primary" />
+            </div>
 
-          <ImageDrop setFiles={setFiles} />
-          <pre className=" text-gray-500 mt-5 leading-tight align">
-            Upload a clear photo of your face <br />
-            Min: 200×200 px • Max: 800×800 px <br />
-            JPG / PNG • Max size: 300 KB <br />
-          </pre>
+            <div className="flex items-center gap-2">
+              <span className="w-[150px] text-md text-gray-500">
+                Phone Number:
+              </span>
+              <InputBox className="flex-1" placeholder="1234567890" />
+              <Button size="sm" text="Edit" variant="primary" />
+            </div>
+          </div>
         </div>
+        {/* ProfileImage */}
 
         <div className=" flex flex-col gap-5 bg-white p-7 rounded-lg ">
           <h1 className="text-xl font-bold ">Notification</h1>

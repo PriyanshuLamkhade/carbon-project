@@ -23,6 +23,7 @@ export const loginUser = TryCatch(async (req, res) => {
   const userRes = await axios.get(
     `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`,
   );
+  console.log("picture:", userRes.data.picture);
   const { email, name, picture } = userRes.data;
 
   let user = await db.user.findFirst({ where: { email } });

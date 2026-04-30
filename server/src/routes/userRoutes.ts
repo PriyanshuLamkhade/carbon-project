@@ -81,7 +81,7 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
       CommunityInvolvementLevel,
       MGNREGAPersonDays,
       trained,
-      profileImage, // this can be your live camera or uploaded image
+      formUserapturedImage, // this can be your live camera or uploaded image
     } = req.body;
 
     const userId = req.userId;
@@ -96,8 +96,8 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
 
     // ✅ Save image locally if present
     let profileImageFileName = null;
-    if (profileImage) {
-      const buffer = Buffer.from(profileImage, "base64");
+    if (formUserapturedImage) {
+      const buffer = Buffer.from(formUserapturedImage, "base64");
       const fileName = `profile_${userId}_${Date.now()}.jpg`;
       const filePath = path.join(__dirname, "../uploads", fileName);
 
@@ -106,12 +106,7 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
       fs.writeFileSync(filePath, buffer);
 
       profileImageFileName = fileName;
-
-      // Update user profile image in DB (optional, or could be a new column for live image)
-      await db.user.update({
-        where: { userId },
-        data: { profileImage: profileImageFileName },
-      });
+      
     }
 
     // ✅ Create history record
@@ -140,6 +135,7 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
         MGNREGAPersonDays,
         trained,
         history: { connect: { historyId: history.historyId } },
+        formUserapturedImage: profileImageFileName
       },
     });
     await assignValidator(submission.submissionId);

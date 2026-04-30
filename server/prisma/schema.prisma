@@ -95,7 +95,7 @@ model Carbon {
 
 model Submission {
   submissionId              Int          @id @default(autoincrement())
-  //images
+  formUserapturedImage         String?
   location                  String
   longitude                 Float?
   latitude                  Float?

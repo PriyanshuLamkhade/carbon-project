@@ -411,7 +411,7 @@ function UserForm() {
       trained: (document.getElementById("trained") as HTMLSelectElement)?.value,
 
       // Add captured image
-      profileImage: capturedImage, // base64 string
+      formUserapturedImage: capturedImage, // base64 string
     };
 
     console.log("Form submission payload:", payload);
