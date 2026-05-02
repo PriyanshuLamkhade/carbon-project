@@ -62,6 +62,21 @@ export default function MarketplacePage() {
   };
 
   useEffect(() => {
+  const checkAccess = async () => {
+    const res = await fetch("http://localhost:4000/industry/me", {
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      alert("Please login as an approved industry");
+      window.location.href = "/industry/login";
+    }
+  };
+
+  checkAccess();
+}, []);
+
+  useEffect(() => {
     if (account) {
       fetchListings();
       fetchBalance();
@@ -99,24 +114,53 @@ export default function MarketplacePage() {
 
   // 🔥 Retire tokens
   const retireTokens = async () => {
-    if (!retireAmount || Number(retireAmount) <= 0) {
-      alert("Invalid amount");
-      return;
-    }
+  const provider = getProvider();
+  const signer = await provider.getSigner();
+  const token = new ethers.Contract(TOKEN_ADDRESS, tokenAbi, signer);
 
-    const provider = getProvider();
-    const signer = await provider.getSigner();
-    const token = new ethers.Contract(TOKEN_ADDRESS, tokenAbi, signer);
+  const amt = ethers.parseUnits(retireAmount, 18);
 
-    const amt = ethers.parseUnits(retireAmount, 18);
+  const tx = await token.retire(amt, retireReason || "retired");
+  const receipt = await tx.wait();
 
-    const tx = await token.retire(amt, retireReason || "retired");
-    await tx.wait();
+  const txHash = receipt.hash;
+  const wallet = await signer.getAddress();
 
-    alert("Tokens retired!");
+  // 🔥 Call backend
+  const res = await fetch("http://localhost:4000/industry/retire", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      tokens: retireAmount,
+      txHash,
+      walletAddress: wallet,
+      reason: retireReason,
+    }),
+  });
 
-    fetchBalance();
-  };
+  // 🔥 Download certificate
+  const data = await res.json();
+
+if (!data.certificateId) {
+  alert("Certificate generation failed");
+  return;
+}
+
+// ✅ 1. Redirect to certificate page (frontend)
+window.location.href = `/certificate/${data.certificateId}`;
+
+// ✅ 2. Download PDF (backend)
+setTimeout(() => {
+  window.open(
+    `http://localhost:4000/certificate/${data.certificateId}/download`,
+    "_blank"
+  );
+}, 1000);
+};
+  
 
  return (
   <div className="min-h-screen bg-gray-950 text-white p-6">

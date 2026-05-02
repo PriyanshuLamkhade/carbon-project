@@ -11,6 +11,7 @@ import {
   Users2,
   UserSquare2,
   UserStarIcon,
+  Factory,
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -47,9 +48,9 @@ const AdminSidebar = () => {
       icon: <BarChart3 size="20px" />,
     },
     {
-      href: '/admin/dashboard/settings',
-      text: 'Settings',
-      icon: <Settings size="20px" />,
+      href: '/admin/dashboard/industries',
+      text: 'Industry',
+      icon: <Factory size="20px" />,
     },
   ]
 

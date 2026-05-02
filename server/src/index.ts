@@ -13,6 +13,8 @@ import cloudinary from 'cloudinary'
 import {PrismaPg} from "@prisma/adapter-pg"
 import { PrismaClient } from "@prisma/client";
 import adminRouter from "./routes/adminRoutes.js";
+import industryRouter from "./routes/industry.Routes.js";
+import certificateRouter from "./routes/certificateRoutes.js";
 
 
 const app = express();
@@ -58,6 +60,8 @@ cloudinary.v2.config({
 app.use("/users", userRoutes);
 app.use("/validator", validatorRoutes);
 app.use("/admin",adminRouter)
+app.use("/industry", industryRouter);
+app.use("/certificate", certificateRouter );
 
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });

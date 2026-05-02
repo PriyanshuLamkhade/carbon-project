@@ -48,11 +48,7 @@ adminRouter.post("/auth/signin", async (req, res) => {
 adminRouter.get("/users", adminMiddleware, getAllUsers);
 adminRouter.get("/users/:id", adminMiddleware, getUserById);
 adminRouter.get("/submissions/:id", adminMiddleware, getSubmissionById);
-adminRouter.post(
-  "/submissions/:id/mint",
-  adminMiddleware,
-  mintTokens
-);
+adminRouter.post("/submissions/:id/mint",adminMiddleware,mintTokens);
 adminRouter.get("/stats", adminMiddleware, getAdminStats);
 adminRouter.get("/tokens", adminMiddleware, getAllTokens);
 // GET /admin/validators?status=APPROVED | PENDING
@@ -148,5 +144,41 @@ adminRouter.patch("/validators/:id/remove", adminMiddleware, async (req, res) =>
   } catch (err) {
     res.status(500).json({ error: "Error removing validator" });
   }
+});
+
+// GET industries
+adminRouter.get("/industries", adminMiddleware, async (req, res) => {
+  const { status } = req.query;
+
+  const industries = await db.industry.findMany({
+    where: status ? { status: status as any } : {},
+    orderBy: { createdAt: "desc" },
+  });
+
+  res.json(industries);
+});
+
+// APPROVE
+adminRouter.patch("/industries/:id/approve", adminMiddleware, async (req, res) => {
+  const id = Number(req.params.id);
+
+  await db.industry.update({
+    where: { industryId: id },
+    data: { status: "APPROVED" },
+  });
+
+  res.json({ message: "Approved" });
+});
+
+// REJECT
+adminRouter.patch("/industries/:id/reject", adminMiddleware, async (req, res) => {
+  const id = Number(req.params.id);
+
+  await db.industry.update({
+    where: { industryId: id },
+    data: { status: "REJECTED" },
+  });
+
+  res.json({ message: "Rejected" });
 });
 export default adminRouter;

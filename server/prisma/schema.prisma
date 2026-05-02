@@ -167,6 +167,40 @@ model Verification {
 
   verificationDate DateTime @default(now())
 }
+model Certificate {
+  certificateId String @id
+
+  industryId Int
+  industry   Industry @relation(fields: [industryId], references: [industryId])
+
+  walletAddress String
+  tokensRetired Float
+  carbonOffset  Float
+  txHash String
+  reason String?
+
+  createdAt DateTime @default(now())
+}
+model Industry {
+  industryId Int @id @default(autoincrement())
+
+  companyName String
+  email       String @unique
+  password    String
+
+  phone   String?
+  address String?
+
+  status IndustryStatus @default(PENDING)
+  certificates Certificate[]
+  createdAt DateTime @default(now())
+}
+
+enum IndustryStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
 
 enum Role {
   USER
