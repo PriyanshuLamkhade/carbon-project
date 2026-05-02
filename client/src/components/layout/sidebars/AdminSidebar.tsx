@@ -8,6 +8,9 @@ import {
   BarChart3,
   Settings,
   LogOut,
+  Users2,
+  UserSquare2,
+  UserStarIcon,
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
@@ -29,9 +32,9 @@ const AdminSidebar = () => {
       icon: <Users size="20px" />,
     },
     {
-      href: '/admin/dashboard/projects',
-      text: 'Projects',
-      icon: <FileCheck size="20px" />,
+      href: '/admin/dashboard/validators',
+      text: 'Validators',
+      icon: <UserStarIcon size="20px" />,
     },
     {
       href: '/admin/dashboard/tokens',

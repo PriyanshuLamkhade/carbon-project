@@ -55,4 +55,98 @@ adminRouter.post(
 );
 adminRouter.get("/stats", adminMiddleware, getAdminStats);
 adminRouter.get("/tokens", adminMiddleware, getAllTokens);
+// GET /admin/validators?status=APPROVED | PENDING
+
+adminRouter.get("/validators", adminMiddleware,async (req, res) => {
+  try {
+    const { status } = req.query;
+
+    const validators = await db.validator.findMany({
+      where: status ? { status: status as any } : {},
+      include: {
+        user: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    const formatted = validators.map((v) => ({
+      validatorId: v.validatorId,
+      name: v.user.name + " " + (v.user.surname || ""),
+      email: v.user.email,
+      role: v.user.role,
+      status: v.status,
+    }));
+
+    res.json(formatted);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch validators" });
+  }
+});
+// PATCH /admin/validators/:id/approve
+
+adminRouter.patch("/validators/:id/approve", adminMiddleware, async (req, res) => {
+  const id = Number(req.params.id);
+
+  try {
+    await db.validator.update({
+      where: { validatorId: id },
+      data: {
+        status: "APPROVED",
+        user: {
+          update: {
+            role: "VALIDATOR",
+          },
+        },
+      },
+    });
+
+    res.json({ message: "Validator approved" });
+  } catch (err) {
+    res.status(500).json({ error: "Error approving validator" });
+  }
+});
+// PATCH /admin/validators/:id/reject
+
+adminRouter.patch("/validators/:id/reject", adminMiddleware, async (req, res) => {
+  const id = Number(req.params.id);
+
+  try {
+    await db.validator.update({
+      where: { validatorId: id },
+      data: {
+        status: "REJECTED",
+      },
+    });
+
+    res.json({ message: "Validator rejected" });
+  } catch (err) {
+    res.status(500).json({ error: "Error rejecting validator" });
+  }
+});
+// PATCH /admin/validators/:id/remove
+
+adminRouter.patch("/validators/:id/remove", adminMiddleware, async (req, res) => {
+  const id = Number(req.params.id);
+
+  try {
+    const validator = await db.validator.update({
+      where: { validatorId: id },
+      data: {
+        status: "REJECTED",
+        user: {
+          update: {
+            role: "USER",
+          },
+        },
+      },
+    });
+
+    res.json({ message: "Validator removed (role downgraded)" });
+  } catch (err) {
+    res.status(500).json({ error: "Error removing validator" });
+  }
+});
 export default adminRouter;
