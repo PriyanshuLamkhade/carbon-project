@@ -15,11 +15,28 @@ export default function VerificationForm3({
   const formA = verificationData.form;
   const formB = sectionBData.sectionB;
 
+  
   // 🌳 Tree count
   const treeCount =
     (submission.species1_count || 0) +
     (submission.species2_count || 0) +
     (submission.species3_count || 0);
+
+  const speciesFactorMap: any = {
+  Rhizophora: 1.3,
+  Avicennia: 1.2,
+  Sonneratia: 1.1,
+  Casuarina: 1.0,
+};
+
+const getFactor = (name: string) => speciesFactorMap[name] || 1;
+
+const speciesFactor =
+  (
+    (submission.species1_count || 0) * getFactor(submission.species1) +
+    (submission.species2_count || 0) * getFactor(submission.species2 || "") +
+    (submission.species3_count || 0) * getFactor(submission.species3 || "")
+  ) / (treeCount || 1);
 
   const survival = Number(formB.survivalRate || 0) / 100;
 
@@ -41,12 +58,20 @@ export default function VerificationForm3({
     formB.soilQuality === "MEDIUM" ? 1 : 0.6;
 
   // 🌿 Calculations
-  const AGB = treeCount * survival * heightFactor * 0.1;
-  const BGB = AGB * 0.3;
-  const soilCarbon = (submission.areaclaim || 1) * soilFactor * waterFactor * 50;
+  const AGB = treeCount * survival * heightFactor * healthFactor  * speciesFactor * 0.08;
+  const BGB = AGB * 0.25;
+  const soilCarbon = (submission.actualArea || 1) * soilFactor * waterFactor * 25;
 
   const totalCarbon = AGB + BGB + soilCarbon;
-  const annualCO2 = totalCarbon * 0.1;
+  let annualCO2 = totalCarbon * 0.05;
+
+  const MAX_CO2_PER_HA = 60;
+  const area = submission.actualArea  || 1;
+
+if (annualCO2 / area > MAX_CO2_PER_HA) {
+  annualCO2 = MAX_CO2_PER_HA * area;
+}
+
 
   const handleImageUpload = (e: any) => {
     const files = Array.from(e.target.files);

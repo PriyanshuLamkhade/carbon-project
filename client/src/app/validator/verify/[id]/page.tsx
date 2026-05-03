@@ -65,6 +65,7 @@ export default function Page() {
         soilCarbon: round(data.soilCarbon),
         totalCarbon: round(data.totalCarbon),
         annualCO2: round(data.annualCO2),
+         
       },
     };
 

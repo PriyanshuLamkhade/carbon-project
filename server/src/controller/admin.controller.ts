@@ -158,7 +158,7 @@ export const mintTokens = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Already minted" });
     }
     // 🔥 Calculate tokens
-    const tokens = Math.floor(verification.totalCarbon);
+    const tokens =  Number(verification.annualCO2.toFixed(2));
     if (submission.history.carbon) {
       return res.status(400).json({ message: "Already minted" });
     }
