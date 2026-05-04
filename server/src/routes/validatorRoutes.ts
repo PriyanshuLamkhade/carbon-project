@@ -15,29 +15,28 @@ const upload = multer({ storage });
 const validatorRouter: Router = express.Router();
 
 validatorRouter.post("/registerValidator", registerValidator);
-validatorRouter.get("/submission/:id",userMiddleware,async (req, res) => {
-    try {
-      const submissionId = Number(req.params.id);
+validatorRouter.get("/submission/:id", userMiddleware, async (req, res) => {
+  try {
+    const submissionId = Number(req.params.id);
 
-      const submission = await db.submission.findUnique({
-        where: { submissionId },
-        include: {
-          history: true,
-          assignments: true,
-        },
-      });
+    const submission = await db.submission.findUnique({
+      where: { submissionId },
+      include: {
+        history: true,
+        assignments: true,
+      },
+    });
 
-      if (!submission) {
-        return res.status(404).json({ message: "Submission not found" });
-      }
-
-      res.json(submission);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Failed to fetch submission" });
+    if (!submission) {
+      return res.status(404).json({ message: "Submission not found" });
     }
+
+    res.json(submission);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch submission" });
   }
-);
+});
 validatorRouter.get("/dashboard/home", userMiddleware, async (req, res) => {
   try {
     if (!req.userId) {
@@ -64,7 +63,12 @@ validatorRouter.get("/dashboard/home", userMiddleware, async (req, res) => {
       include: {
         submission: {
           include: {
-            history: true,
+            history: {
+              include: {
+                verification: true,
+                user:true // ✅ ADD THIS
+              },
+            },
           },
         },
       },
@@ -90,7 +94,8 @@ validatorRouter.get("/dashboard/home", userMiddleware, async (req, res) => {
     const usersData = assignments.map((a: any) => ({
       HistoryId: a.submission.history.historyId,
       SubmissionID: a.submission.submissionId,
-      SubmittedBy: null, // optional (you can include user if needed)
+      SubmittedBy:  a.submission.history.user
+    && `${a.submission.history.user.name} ${a.submission.history.user.surname || ""}`, 
       AreaClaimed: a.submission.areaclaim,
       DateSubmitted: a.submission.submissionDate,
       Location: a.submission.location,
@@ -114,10 +119,40 @@ validatorRouter.get("/dashboard/home", userMiddleware, async (req, res) => {
       APPROVED: statusCounts.COMPLETED,
       REJECTED: statusCounts.REJECTED,
     };
+    const monitoringDue: any[] = [];
+
+    const today = new Date();
+
+    assignments.forEach((a: any) => {
+      const verification = a.submission.history?.verification;
+
+      // only consider verified & completed ones
+      if (!verification || verification.decision !== "APPROVED") return;
+
+      const lastDate =
+        verification.lastMonitoringDate || verification.verificationDate;
+
+      if (!lastDate) return;
+
+      const nextDue = new Date(lastDate);
+      nextDue.setFullYear(nextDue.getFullYear() + 1);
+
+      // check if monitoring is due
+      if (today >= nextDue) {
+        monitoringDue.push({
+          submissionId: a.submission.submissionId,
+          historyId: a.submission.history.historyId,
+          location: a.submission.location,
+          lastVerified: lastDate,
+          dueDate: nextDue,
+        });
+      }
+    });
 
     res.json({
       counts,
       recent_entries: usersData,
+      monitoringDue,
     });
   } catch (err) {
     console.error(err);
@@ -157,7 +192,11 @@ validatorRouter.get("/mapData", userMiddleware, async (req, res) => {
   }
 });
 
-validatorRouter.post("/submitVerification",userMiddleware,upload.array("images"),async (req, res) => {
+validatorRouter.post(
+  "/submitVerification",
+  userMiddleware,
+  upload.array("images"),
+  async (req, res) => {
     try {
       if (!req.userId) {
         return res.status(401).json({ message: "Invalid token" });
@@ -351,7 +390,7 @@ validatorRouter.get("/assignments/active", userMiddleware, async (req, res) => {
     res.status(500).json({ error: "Failed to fetch active assignments" });
   }
 });
-validatorRouter.get( 
+validatorRouter.get(
   "/assignments/history",
   userMiddleware,
   async (req, res) => {
@@ -496,5 +535,195 @@ validatorRouter.post(
     }
   },
 );
+validatorRouter.post(
+  "/yearlyReport",
+  userMiddleware,
+  upload.array("images"),
+  async (req, res) => {
+    try {
+      if (!req.userId) {
+        return res.status(401).json({ message: "Invalid token" });
+      }
 
+      // 🔹 Get validator
+      const validator = await db.validator.findUnique({
+        where: { userId: req.userId },
+      });
+
+      if (!validator) {
+        return res.status(403).json({ message: "Validator not found" });
+      }
+
+      // 🔹 Parse data
+      const rawData = req.body.data;
+      const { historyId, carbonInput } = JSON.parse(req.body.data);
+
+      // 🔹 Fetch submission + verification
+      const history = await db.history.findUnique({
+        where: { historyId },
+        include: {
+          submission: true,
+          verification: true,
+        },
+      });
+
+      if (!history || !history.submission) {
+        return res.status(404).json({ message: "Submission not found" });
+      }
+
+      const submission = history.submission;
+
+      // 🔴 Prevent duplicate monitoring for same year
+      const currentYear = new Date().getFullYear();
+
+      const existing = await db.monitoring.findFirst({
+        where: {
+          historyId,
+          year: currentYear,
+        },
+      });
+
+      if (existing) {
+        return res.status(400).json({
+          message: "Monitoring already submitted for this year",
+        });
+      }
+
+      // ===============================
+      // 🧠 CARBON CALCULATION (REAL LOGIC)
+      // ===============================
+
+      const treeCount =
+        (submission.species1_count || 0) +
+        (submission.species2_count || 0) +
+        (submission.species3_count || 0);
+
+      const survival = Number(carbonInput.survivalRate || 0) / 100;
+
+      const heightFactor =
+        carbonInput.avgHeight === "SMALL"
+          ? 0.5
+          : carbonInput.avgHeight === "MEDIUM"
+            ? 1
+            : 1.5;
+
+      const healthFactor =
+        carbonInput.plantationHealth === "GOOD"
+          ? 1
+          : carbonInput.plantationHealth === "AVERAGE"
+            ? 0.7
+            : 0.4;
+
+      const waterFactor =
+        carbonInput.waterCondition === "TIDAL"
+          ? 1.3
+          : carbonInput.waterCondition === "SEASONAL"
+            ? 1
+            : 0.7;
+
+      const soilFactor =
+        carbonInput.soilQuality === "HIGH"
+          ? 1.4
+          : carbonInput.soilQuality === "MEDIUM"
+            ? 1
+            : 0.6;
+
+      const area =
+        Number(history.verification?.actualArea) || submission.areaclaim || 1;
+
+      const AGB = treeCount * survival * heightFactor * healthFactor * 0.08;
+      const BGB = AGB * 0.25;
+      const soilCarbon = area * soilFactor * waterFactor * 25;
+
+      const totalCarbon = AGB + BGB + soilCarbon;
+
+      let annualCO2 = totalCarbon * 0.05;
+
+      // 🔴 CAP (VERY IMPORTANT)
+      const MAX_CO2_PER_HA = 60;
+
+      if (annualCO2 / area > MAX_CO2_PER_HA) {
+        annualCO2 = MAX_CO2_PER_HA * area;
+      }
+
+      // ===============================
+      // 📸 IMAGE UPLOAD
+      // ===============================
+
+      let uploadedImages: any[] = [];
+
+      const files = req.files as Express.Multer.File[];
+
+      if (files && files.length > 0) {
+        uploadedImages = await uploadImagesToCloudinary(files, "monitoring");
+      }
+
+      // ===============================
+      // 💾 SAVE MONITORING
+      // ===============================
+
+      const monitoring = await db.monitoring.create({
+        data: {
+          historyId,
+          validatorId: validator.validatorId,
+
+          // inputs
+          survivalRate: Number(carbonInput.survivalRate),
+          avgHeight: carbonInput.avgHeight,
+          plantationHealth: carbonInput.plantationHealth,
+          waterCondition: carbonInput.waterCondition,
+          soilQuality: carbonInput.soilQuality,
+          remarks: carbonInput.remarks,
+
+          // calculated
+          AGB,
+          BGB,
+          soilCarbon,
+          totalCarbon,
+          annualCO2,
+
+          images: uploadedImages,
+
+          year: currentYear,
+        },
+      });
+
+      // ===============================
+      // 💰 STORE CARBON (TOKENS)
+      // ===============================
+
+      await db.carbon.create({
+        data: {
+          carbonCleaned: totalCarbon,
+          tokensIssued: Number(annualCO2.toFixed(2)),
+          historyId,
+        },
+      });
+
+      // ===============================
+      // 🔥 UPDATE LAST MONITORING DATE
+      // ===============================
+
+      await db.verification.update({
+        where: { historyId },
+        data: {
+          lastMonitoringDate: new Date(),
+        },
+      });
+
+      return res.json({
+        success: true,
+        message: "Yearly monitoring completed",
+        monitoring,
+        annualCO2: Number(annualCO2.toFixed(2)),
+      });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to submit yearly report",
+      });
+    }
+  },
+);
 export default validatorRouter;

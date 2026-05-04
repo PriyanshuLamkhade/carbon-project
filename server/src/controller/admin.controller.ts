@@ -294,3 +294,75 @@ export const getAllTokens = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching tokens" });
   }
 };
+
+export const mintMonitoringTokens = async (req: Request, res: Response) => {
+  try {
+    const monitoringId = Number(req.params.id);
+
+    // 🔹 Get monitoring
+    const monitoring = await db.monitoring.findUnique({
+      where: { monitoringId },
+      include: {
+        history: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+
+    if (!monitoring) {
+      return res.status(404).json({ message: "Monitoring not found" });
+    }
+
+    const user = monitoring.history.user;
+
+    if (!user?.pubkey) {
+      return res.status(400).json({ message: "User wallet not found" });
+    }
+
+    // ❌ Already minted
+    if (monitoring.txHash) {
+      return res.status(400).json({ message: "Already minted for this year" });
+    }
+
+    // 🔥 Tokens from monitoring
+    const tokens = Math.floor(monitoring.annualCO2);
+
+    if (tokens <= 0) {
+      return res.status(400).json({ message: "Invalid token amount" });
+    }
+
+    // 🔗 Convert to wei
+    const amount = ethers.parseUnits(tokens.toString(), 18);
+
+    // 🚀 Blockchain call
+    const tx = await (token as any).mintToLandowner(user.pubkey, amount);
+    const receipt = await tx.wait();
+
+    const txHash = receipt.hash;
+
+    // 💾 Save in Monitoring table
+    await db.monitoring.update({
+      where: { monitoringId },
+      data: {
+        tokensIssued: tokens,
+        txHash: txHash,
+        mintedAt: new Date(),
+      },
+    });
+
+    return res.json({
+      message: "Monitoring tokens minted successfully",
+      tokens,
+      txHash,
+    });
+  } catch (error:any) {
+    console.error("Monitoring Mint Error:", error);
+
+    return res.status(500).json({
+      message: "Minting failed",
+      error: error.message ,
+    });
+  }
+};

@@ -1,6 +1,6 @@
 import express from "express";
 import { adminMiddleware } from "../middleware/admin.js";
-import { getAdminStats, getAllTokens, getAllUsers, getSubmissionById, getUserById, mintTokens } from "../controller/admin.controller.js";
+import { getAdminStats, getAllTokens, getAllUsers, getSubmissionById, getUserById, mintMonitoringTokens, mintTokens } from "../controller/admin.controller.js";
 import { db } from "../index.js";
 import jwt from "jsonwebtoken";
 
@@ -49,6 +49,7 @@ adminRouter.get("/users", adminMiddleware, getAllUsers);
 adminRouter.get("/users/:id", adminMiddleware, getUserById);
 adminRouter.get("/submissions/:id", adminMiddleware, getSubmissionById);
 adminRouter.post("/submissions/:id/mint",adminMiddleware,mintTokens);
+adminRouter.post("/monitoring/:id/mint",adminMiddleware,mintMonitoringTokens);
 adminRouter.get("/stats", adminMiddleware, getAdminStats);
 adminRouter.get("/tokens", adminMiddleware, getAllTokens);
 // GET /admin/validators?status=APPROVED | PENDING
@@ -180,5 +181,74 @@ adminRouter.patch("/industries/:id/reject", adminMiddleware, async (req, res) =>
   });
 
   res.json({ message: "Rejected" });
+});
+
+adminRouter.get("/monitoring/:id", adminMiddleware, async (req, res) => {
+  try {
+    const monitoringId = Number(req.params.id);
+
+    if (!monitoringId) {
+      return res.status(400).json({ message: "Invalid monitoring id" });
+    }
+
+    // 🔹 Fetch monitoring with relations
+    const monitoring = await db.monitoring.findUnique({
+      where: { monitoringId },
+      include: {
+        history: {
+          include: {
+            submission: true,
+            user: true,
+          },
+        },
+      },
+    });
+
+    if (!monitoring) {
+      return res.status(404).json({ message: "Monitoring not found" });
+    }
+
+    const submission = monitoring.history.submission;
+    const user = monitoring.history.user;
+
+    // 🔴 Check if tokens already minted for this year
+    const alreadyMinted = await db.carbon.findFirst({
+      where: {
+        historyId: monitoring.historyId,
+        createdAt: {
+          gte: new Date(`${monitoring.year}-01-01`),
+          lt: new Date(`${monitoring.year + 1}-01-01`),
+        },
+      },
+    });
+
+    return res.json({
+      monitoring,
+      submission,
+      user,
+      tokensMinted: !!alreadyMinted,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch monitoring data" });
+  }
+});
+adminRouter.get("/monitorings", adminMiddleware, async (req, res) => {
+  const monitorings = await db.monitoring.findMany({
+    include: {
+      history: {
+        include: {
+          submission: true,
+          user: true,
+        },
+      },
+    },
+    orderBy: {
+      monitoredAt: "desc",
+    },
+  });
+
+  res.json({ monitorings });
 });
 export default adminRouter;

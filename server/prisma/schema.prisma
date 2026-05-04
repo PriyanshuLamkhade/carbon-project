@@ -50,7 +50,7 @@ model Validator {
   rating Float @default(0)
 
   status ValidatorStatus @default(PENDING)
-
+  monitorings Monitoring[]
   assignments   Assignment[]
   verifications Verification[]
 
@@ -80,6 +80,7 @@ model History {
   submission   Submission?
   verification Verification?
   status       Status
+  monitorings Monitoring[]
   timestamp    DateTime      @default(now())
 }
 
@@ -91,6 +92,8 @@ model Carbon {
 
   history   History @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
   historyId Int     @unique
+
+  createdAt DateTime @default(now())
 }
 
 model Submission {
@@ -164,7 +167,8 @@ model Verification {
 
   validatorId Int?
   validator   Validator? @relation(fields: [validatorId], references: [validatorId])
-
+  
+  lastMonitoringDate DateTime?
   verificationDate DateTime @default(now())
 }
 model Certificate {
@@ -194,6 +198,42 @@ model Industry {
   status IndustryStatus @default(PENDING)
   certificates Certificate[]
   createdAt DateTime @default(now())
+}
+
+model Monitoring {
+  monitoringId Int @id @default(autoincrement())
+
+  history   History @relation(fields: [historyId], references: [historyId])
+  historyId Int
+
+  validator   Validator @relation(fields: [validatorId], references: [validatorId])
+  validatorId Int
+
+  // 🟦 Yearly Inputs
+  survivalRate Float
+  avgHeight String
+  plantationHealth String
+  waterCondition String
+  soilQuality String
+  remarks String?
+
+  // 🟩 Calculated
+  AGB Float
+  BGB Float
+  soilCarbon Float
+  totalCarbon Float
+  annualCO2 Float
+
+  // 📸 Evidence
+  images Json?
+
+  monitoredAt DateTime @default(now())
+
+  year Int
+
+  tokensIssued Float?
+  txHash String?
+  mintedAt DateTime?
 }
 
 enum IndustryStatus {
