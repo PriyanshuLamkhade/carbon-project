@@ -200,7 +200,7 @@ const Footer = () => {
           {/* Solana badge */}
           <div className="flex items-center gap-2 bg-white/5 border border-white/8 rounded-full px-4 py-1.5">
             <span className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-400 to-green-400" />
-            <span className="text-white/40 text-[11px] font-medium">Powered by Solana</span>
+            <span className="text-white/40 text-[11px] font-medium">Powered by Ethereum</span>
           </div>
 
           <p>Built for a greener planet 🌍</p>

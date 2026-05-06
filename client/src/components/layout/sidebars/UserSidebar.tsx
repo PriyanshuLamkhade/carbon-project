@@ -19,13 +19,14 @@ const router = useRouter()
   const links = [
     { href: '/user/dashboard', text: 'Home', icon: <HomeIcon size="20px" /> },
     { href: '/user/dashboard/submissions', text: 'My Submissions', icon: <User size="20px" /> },
-    { href: '/user/dashboard/areas', text: 'Advisor', icon: <VerifiedIcon size="20px" /> },
+    { href: '/user/dashboard/mangroveadvisor', text: 'MangroveAdvisor', icon: <VerifiedIcon size="20px" /> },
     { href: '/user/dashboard/carbonTokens', text: 'Carbon Tokens', icon: <CoinsIcon size="20px" /> },
     { href: '/user/dashboard/settings', text: 'Settings', icon: <Settings size="20px"  /> },
   ]
 
   return (
-    <div className="hidden w-[17vmax] min-h-screen bg-violet-500/70 border-r pt-6 border-green-200  md:flex flex-col font-semibold">
+    // <div className="hidden w-[17vmax] min-h-screen bg-violet-500/70 border-r pt-6 border-green-200  md:flex flex-col font-semibold">
+      <div className="hidden fixed left-0 top-0 z-50 w-[17vmax] h-screen bg-violet-500/70 border-r pt-6 border-green-200 md:flex flex-col font-semibold backdrop-blur-xl">
       <h1 className="text-white ml-2 text-lg lg:text-2xl font-extrabold flex-shrink-0 md:ml-8 sm:mb-3">
         User <br /> Dashboard
         </h1>

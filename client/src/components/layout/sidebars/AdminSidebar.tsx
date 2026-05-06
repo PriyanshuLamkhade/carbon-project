@@ -55,7 +55,7 @@ const AdminSidebar = () => {
   ]
 
   return (
-    <div className="hidden w-[17vmax] min-h-screen bg-black/80 border-r pt-6 border-black md:flex flex-col font-semibold">
+    <div className="hidden fixed left-0 top-0 z-50 w-[17vmax] h-screen bg-black/80 border-r pt-6 border-black md:flex flex-col font-semibold backdrop-blur-xl">
 
       {/* HEADER */}
       <h1 className="text-white/90 ml-2 text-lg lg:text-2xl font-extrabold flex-shrink-0 md:ml-8 sm:mb-3">

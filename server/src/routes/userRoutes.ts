@@ -21,7 +21,7 @@ import {
 } from "../controller/auth.js";
 import { previewData } from "../controller/submission.js";
 import { assignValidator } from "../services/assignmentService.js";
-import { getSubmissionDetails, getUserDashboard } from "../controller/user.controller.js";
+import { getSubmissionDetails, getUserDashboard, updateUserProfile } from "../controller/user.controller.js";
 
 // import { ed25519 } from "@noble/curves/ed25519.js";
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
@@ -219,5 +219,10 @@ userRouter.get(
   "/submission/:historyId",
   userMiddleware,
   getSubmissionDetails
+);
+userRouter.put(
+  "/me/update",
+  userMiddleware,
+  updateUserProfile
 );
 export default userRouter;

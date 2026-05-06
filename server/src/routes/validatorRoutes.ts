@@ -7,6 +7,7 @@ import { registerValidator } from "../controller/auth.js";
 import multer from "multer";
 import uploadImagesToCloudinary from "../utils/cloudinaryUpload.js";
 import { assignValidator } from "../services/assignmentService.js";
+import { getValidatorProfile } from "../controller/validator.controller.js";
 const router = express.Router();
 
 const storage = multer.memoryStorage();
@@ -362,34 +363,119 @@ validatorRouter.get(
     }
   },
 );
-validatorRouter.get("/assignments/active", userMiddleware, async (req, res) => {
-  try {
-    const userId = req.userId;
-    if (!userId) {
-      return;
-    }
-    const validator = await db.validator.findUnique({
-      where: { userId },
-    });
-    if (!validator?.validatorId) {
-      return;
-    }
-    const assignments = await db.assignment.findMany({
-      where: {
-        validatorId: validator?.validatorId,
-        status: "ACCEPTED",
-        isActive: true,
-      },
-      include: {
-        submission: true,
-      },
-    });
+validatorRouter.get(
+  "/assignments/active",
+  userMiddleware,
+  async (req, res) => {
 
-    res.json(assignments);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch active assignments" });
+    try {
+
+      const userId = req.userId;
+
+      if (!userId) {
+        return res
+          .status(401)
+          .json({
+            message: "Unauthorized",
+          });
+      }
+
+      const validator =
+        await db.validator.findUnique({
+          where: { userId },
+        });
+
+      if (!validator?.validatorId) {
+        return res
+          .status(404)
+          .json({
+            message: "Validator not found",
+          });
+      }
+
+      const assignments =
+        await db.assignment.findMany({
+
+          where: {
+            validatorId:
+              validator.validatorId,
+
+            status: {
+              in: [
+                "ACCEPTED",
+                "COMPLETED",
+              ],
+            },
+
+            isActive: true,
+          },
+
+          include: {
+            submission: {
+              include: {
+                history: {
+                  include: {
+                    verification: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+      const formatted =
+        assignments.map((a) => {
+
+          const verification =
+            a.submission.history
+              ?.verification;
+
+          // 🧠 IMPORTANT
+          const isMonitoring =
+            !!verification;
+
+          return {
+
+            assignmentId:
+              a.assignmentId,
+
+            SubmissionID:
+              a.submission.submissionId,
+
+            HistoryId:
+              a.submission.history
+                ?.historyId,
+
+            status: a.status,
+
+            isMonitoring,
+
+            submission: {
+              submissionId:
+                a.submission.submissionId,
+
+              location:
+                a.submission.location,
+
+              area:
+                a.submission.areaclaim,
+            },
+          };
+        });
+
+      res.json(formatted);
+
+    } catch (err) {
+
+      console.error(err);
+
+      res.status(500).json({
+        error:
+          "Failed to fetch active assignments",
+      });
+    }
   }
-});
+);
 validatorRouter.get(
   "/assignments/history",
   userMiddleware,
@@ -725,5 +811,10 @@ validatorRouter.post(
       });
     }
   },
+);
+validatorRouter.get(
+  "/me/profile",
+  userMiddleware,
+  getValidatorProfile
 );
 export default validatorRouter;

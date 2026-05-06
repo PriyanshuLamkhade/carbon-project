@@ -11,7 +11,9 @@ export default function DashboardLayout({
       
         <UserSidebar />
       
-      <main className="flex-1 p-5">{children}</main>
+      {/* <main className="flex-1 p-5"> */}
+        <main className="flex-1 p-5 ml-[17vmax] text-white/90">
+        {children}</main>
     </div>
   );
 }

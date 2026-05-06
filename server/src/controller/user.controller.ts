@@ -179,3 +179,41 @@ export const getSubmissionDetails = async (req: Request, res: Response) => {
     });
   }
 };
+export const updateUserProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId;
+
+    const {
+      name,
+      email,
+      phonenumber,
+      organisation,
+    } = req.body;
+    if(!userId){
+      return res.json("UserId not defined")
+    }
+    const updatedUser = await db.user.update({
+      where: {
+        userId,
+      },
+
+      data: {
+        name,
+        email,
+        phonenumber,
+        organisation,
+      },
+    });
+
+    res.json({
+      message: "Profile updated",
+      user: updatedUser,
+    });
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      message: "Failed to update profile",
+    });
+  }
+};

@@ -11,7 +11,7 @@ export default function DashboardLayout({
       
         <ValidatorSidebar />
       
-      <main className="flex-1 p-5 text-white/90">{children}</main>
+      <main className="flex-1 p-5 ml-[17vmax] text-white/90">{children}</main>
     </div>
   );
 }
