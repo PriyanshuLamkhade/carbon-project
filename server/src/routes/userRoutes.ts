@@ -21,6 +21,7 @@ import {
 } from "../controller/auth.js";
 import { previewData } from "../controller/submission.js";
 import { assignValidator } from "../services/assignmentService.js";
+import { getSubmissionDetails, getUserDashboard } from "../controller/user.controller.js";
 
 // import { ed25519 } from "@noble/curves/ed25519.js";
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
@@ -209,5 +210,14 @@ userRouter.delete("/deleteSubmission", userMiddleware, async (req, res) => {
     return res.status(500).json({ message: "Failed to delete record", error });
   }
 });
-
+userRouter.get(
+  "/dashboard/home",
+  userMiddleware,
+  getUserDashboard
+);
+userRouter.get(
+  "/submission/:historyId",
+  userMiddleware,
+  getSubmissionDetails
+);
 export default userRouter;

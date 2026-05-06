@@ -6,12 +6,13 @@ import { authService } from "@/app/page";
 import toast from "react-hot-toast";
 import MultiMarkerMap from "@/features/map/MultiMarkerMapProps";
 
-
 const SubmissionPreviewPage = () => {
+  const searchParams = useSearchParams();
+  const mode = searchParams.get("mode");
+  const isMonitoring = mode === "monitor";
   const params = useParams();
   const router = useRouter();
   const id = params?.id;
-  const searchParams = useSearchParams();
   const historyId = searchParams.get("historyId");
 
   const [data, setData] = useState<any>(null);
@@ -65,9 +66,7 @@ const SubmissionPreviewPage = () => {
     <div className="p-6 space-y-6">
       {/* 🔹 Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">
-          Submission Preview
-        </h1>
+        <h1>{isMonitoring ? "Yearly Monitoring Report" : "Verification"}</h1>
         <p className="text-gray-500 text-sm">
           Review details before verification
         </p>
@@ -85,13 +84,27 @@ const SubmissionPreviewPage = () => {
         <h2 className="text-2xl font-semibold mb-4">Basic Information</h2>
 
         <div className="grid grid-cols-2 gap-4 text-sm">
-          <p><strong>Location:</strong> {submission.location}</p>
-          <p><strong>Latitude:</strong> {submission.latitude}</p>
-          <p><strong>Longitude:</strong> {submission.longitude}</p>
-          <p><strong>Area Claimed:</strong> {submission.areaclaim}</p>
-          <p><strong>Calculated Area:</strong> {submission.area}</p>
-          <p><strong>Plantation Date:</strong> {submission.plantationDate}</p>
-          <p><strong>MGNREGA Days:</strong> {submission.MGNREGAPersonDays}</p>
+          <p>
+            <strong>Location:</strong> {submission.location}
+          </p>
+          <p>
+            <strong>Latitude:</strong> {submission.latitude}
+          </p>
+          <p>
+            <strong>Longitude:</strong> {submission.longitude}
+          </p>
+          <p>
+            <strong>Area Claimed:</strong> {submission.areaclaim}
+          </p>
+          <p>
+            <strong>Calculated Area:</strong> {submission.area}
+          </p>
+          <p>
+            <strong>Plantation Date:</strong> {submission.plantationDate}
+          </p>
+          <p>
+            <strong>MGNREGA Days:</strong> {submission.MGNREGAPersonDays}
+          </p>
           <p>
             <strong>Community Level:</strong>{" "}
             {submission.CommunityInvolvementLevel}
@@ -105,21 +118,23 @@ const SubmissionPreviewPage = () => {
 
         <div className="grid grid-cols-2 gap-4 text-sm">
           <p>
-            <strong>Species 1:</strong>{" "}
-            {submission.species1} ({submission.species1_count})
+            <strong>Species 1:</strong> {submission.species1} (
+            {submission.species1_count})
           </p>
           <p>
-            <strong>Species 2:</strong>{" "}
-            {submission.species2 || "-"} ({submission.species2_count || 0})
+            <strong>Species 2:</strong> {submission.species2 || "-"} (
+            {submission.species2_count || 0})
           </p>
           <p>
-            <strong>Species 3:</strong>{" "}
-            {submission.species3 || "-"} ({submission.species3_count || 0})
+            <strong>Species 3:</strong> {submission.species3 || "-"} (
+            {submission.species3_count || 0})
           </p>
         </div>
 
         <div className="mt-4">
-          <p><strong>Description:</strong></p>
+          <p>
+            <strong>Description:</strong>
+          </p>
           <p className="text-gray-600 mt-1">
             {submission.description || "No description"}
           </p>
@@ -139,7 +154,13 @@ const SubmissionPreviewPage = () => {
       {/* 🔹 Next Button */}
       <div className="flex justify-end">
         <button
-          onClick={() => router.push(`/validator/verify/${id}?historyId=${historyId}`)}
+          onClick={() =>
+            router.push(
+              `/validator/verify/${id}?historyId=${historyId}${
+                isMonitoring ? "&mode=monitor" : ""
+              }`,
+            )
+          }
           className="px-6 py-3 bg-green-500 text-white rounded-2xl font-semibold cursor-pointer hover:bg-green-600"
         >
           Proceed to Verification →

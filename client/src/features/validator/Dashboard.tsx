@@ -18,6 +18,7 @@ interface Submission {
 }
 
 const ValidatorDashboard = () => {
+  const [monitoringDue, setMonitoringDue] = useState([]);
   const [recentEntries, setRecentEntries] = useState<Submission[]>([]);
   const [counts, setCounts] = useState({
     PENDING: 0,
@@ -38,6 +39,7 @@ const ValidatorDashboard = () => {
 
       if (response.ok) {
         const data = await response.json();
+        setMonitoringDue(data.monitoringDue || []);
         setRecentEntries(data.recent_entries);
         setCounts(data.counts);
       } else {
@@ -130,6 +132,38 @@ const ValidatorDashboard = () => {
           }}
         />
       </div>
+      {monitoringDue.length > 0 && (
+  <div className="bg-slate-800 p-6 rounded-xl shadow mt-6">
+    <h2 className="text-xl font-bold mb-4 text-red-600">
+      ⚠️ Monitoring Due
+    </h2>
+
+    {monitoringDue.map((item: any) => (
+      <div
+        key={item.submissionId}
+        className="flex justify-between items-center border-b py-3"
+      >
+        <div>
+          <p className="font-semibold">{item.location}</p>
+          <p className="text-sm text-gray-500">
+            Due: {new Date(item.dueDate).toDateString()}
+          </p>
+        </div>
+
+        <button
+          onClick={() =>
+            router.push(
+              `/validator/review/${item.submissionId}?historyId=${item.historyId}&mode=monitor`
+            )
+          }
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Submit Report
+        </button>
+      </div>
+    ))}
+  </div>
+)}
     </div>
   );
 };

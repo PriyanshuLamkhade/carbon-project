@@ -8,11 +8,12 @@ import VerificationForm2 from "@/features/validator/VerificationForms/Verificati
 import VerificationForm3 from "@/features/validator/VerificationForms/VerificationForm3";
 import toast from "react-hot-toast";
 export default function Page() {
-  const router = useRouter()
+  const searchParams = useSearchParams();
+  const isMonitoring = searchParams.get("mode") === "monitor";
+  const router = useRouter();
   const { id } = useParams();
   const [submission, setSubmission] = useState<any>(null);
-  const searchParams = useSearchParams();
-    const historyId = searchParams.get("historyId");
+  const historyId = searchParams.get("historyId");
 
   const [step, setStep] = useState(1);
   const [verificationData, setVerificationData] = useState<any>(null);
@@ -65,7 +66,6 @@ export default function Page() {
         soilCarbon: round(data.soilCarbon),
         totalCarbon: round(data.totalCarbon),
         annualCO2: round(data.annualCO2),
-         
       },
     };
 
@@ -82,18 +82,20 @@ export default function Page() {
       console.log(pair[0], pair[1]);
     }
 
-    
-   const res = await fetch(`${authService}/validator/submitVerification`, {
+    const url = isMonitoring
+      ? `${authService}/validator/yearlyReport`
+      : `${authService}/validator/submitVerification`;
+
+    const res = await fetch(url, {
       method: "POST",
       body: formData,
       credentials: "include",
     });
-    if(res.ok){
-      toast.success("Verification Completed")
-      router.push("/validator/dashboard")
-    }
-    else{
-      toast.error("Failed")
+    if (res.ok) {
+      toast.success("Verification Completed");
+      router.push("/validator/dashboard");
+    } else {
+      toast.error("Failed");
     }
   };
   if (!submission) {

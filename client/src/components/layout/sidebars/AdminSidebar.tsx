@@ -42,11 +42,11 @@ const AdminSidebar = () => {
       text: 'Carbon Tokens',
       icon: <Coins size="20px" />,
     },
-    {
-      href: '/admin/dashboard/transactions',
-      text: 'Transactions',
-      icon: <BarChart3 size="20px" />,
-    },
+    // {
+    //   href: '/admin/dashboard/transactions',
+    //   text: 'Transactions',
+    //   icon: <BarChart3 size="20px" />,
+    // },
     {
       href: '/admin/dashboard/industries',
       text: 'Industry',

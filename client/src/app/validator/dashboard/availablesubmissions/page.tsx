@@ -32,7 +32,7 @@ export default function AvailableSubmissions() {
   }, []);
 
   const handleAccept = async (id: number) => {
-    await fetch(`${authService}/assignment/${id}/accept`, {
+    await fetch(`${authService}/validator/assignment/${id}/accept`, {
       method: "POST",
       credentials: "include",
     });
@@ -41,7 +41,7 @@ export default function AvailableSubmissions() {
   };
 
   const handleReject = async (id: number) => {
-    await fetch(`${authService}/assignment/${id}/reject`, {
+    await fetch(`${authService}/validator/assignment/${id}/reject`, {
       method: "POST",
       credentials: "include",
     });

@@ -58,12 +58,12 @@ const speciesFactor =
     formB.soilQuality === "MEDIUM" ? 1 : 0.6;
 
   // 🌿 Calculations
-  const AGB = treeCount * survival * heightFactor * healthFactor  * speciesFactor * 0.08;
+  const AGB = treeCount * survival * heightFactor * healthFactor  * speciesFactor * 0.12;
   const BGB = AGB * 0.25;
-  const soilCarbon = (submission.actualArea || 1) * soilFactor * waterFactor * 25;
+  const soilCarbon = (submission.actualArea || 1) * soilFactor * waterFactor * 40;
 
   const totalCarbon = AGB + BGB + soilCarbon;
-  let annualCO2 = totalCarbon * 0.05;
+  let annualCO2 = totalCarbon * 0.12;
 
   const MAX_CO2_PER_HA = 60;
   const area = submission.actualArea  || 1;

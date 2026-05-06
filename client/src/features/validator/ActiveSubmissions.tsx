@@ -32,7 +32,7 @@ export default function ActiveSubmissions() {
 
           <button
             onClick={() =>
-              router.push(`/validator/verification/${a.submission.submissionId}`)
+              router.push(`/validator/review/${a.SubmissionID}?historyId=${a.HistoryId}`)
             }
             className="mt-3 bg-blue-600 px-4 py-2 rounded"
           >

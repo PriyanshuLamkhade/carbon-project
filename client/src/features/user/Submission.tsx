@@ -1,7 +1,7 @@
 "use client";
 
 import { authService } from "@/app/page";
-import PreviewPopup from "@/components/PreviewPopup";
+
 import TableWithActions from "@/components/tables/TableWithActionsProps";
 import Button from "@/components/ui/Button";
 import InputBox from "@/components/ui/InputBox";
@@ -14,8 +14,7 @@ interface Submission {
 }
 const UserSubmission = () => {
   let [data, setData] = useState<Submission[]>([]);
-  const [previewData, setPreviewData] = useState(null);
-  const [visible, setVisible] = useState(false);
+
   useEffect(() => {
     async function getUserSubmission() {
       const response = await fetch(`${authService}/users/allhistory`, {
@@ -70,13 +69,9 @@ const UserSubmission = () => {
       <div id="main" className="">
         <TableWithActions
           rows={data}
-          setPreviewData={setPreviewData}
-          setVisible={setVisible}
-        />
-        <PreviewPopup
-          visible={visible}
-          onClose={() => setVisible(false)}
-          data={previewData}
+          onPreview={(row: any) =>
+            router.push(`/user/submission/${row.historyId}`)
+          }
         />
       </div>
     </div>

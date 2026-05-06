@@ -123,6 +123,12 @@ const AdminDashboard = () => {
             text="Submissions"
             onClick={() => router.push("/admin/dashboard/submissions")}
           />
+          <Button
+            size="md"
+            variant="secondary"
+            text="Monitoring"
+            onClick={() => router.push("/admin/dashboard/monitoring")}
+          />
         </div>
       </div>
 

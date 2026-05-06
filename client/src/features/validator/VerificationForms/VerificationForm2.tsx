@@ -133,32 +133,28 @@ export default function VerificationForm2({
           <option value="UNKNOWN">Unknown</option>
         </select>
 
-        <select name="avgHeight" onChange={handleChange} className="input">
+        <select name="avgHeight" value={form.avgHeight} onChange={handleChange}>
           <option value="">Average Height</option>
           <option value="SMALL">Small (&lt;1m)</option>
           <option value="MEDIUM">Medium (1–3m)</option>
           <option value="LARGE">Large (3m+)</option>
         </select>
 
-        <select
-          name="plantationHealth"
-          onChange={handleChange}
-          className="input"
-        >
+        <select name="plantationHealth" value={form.plantationHealth} onChange={handleChange}>
           <option value="">Plantation Health</option>
           <option value="GOOD">Good</option>
           <option value="AVERAGE">Average</option>
           <option value="POOR">Poor</option>
         </select>
 
-        <select name="waterCondition" onChange={handleChange} className="input">
+        <select name="waterCondition" value={form.waterCondition} onChange={handleChange}>
           <option value="">Water / Tidal Condition</option>
           <option value="TIDAL">Regular Tidal</option>
           <option value="SEASONAL">Seasonal</option>
           <option value="DRY">Dry</option>
         </select>
 
-        <select name="soilQuality" onChange={handleChange} className="input">
+        <select name="soilQuality" value={form.soilQuality} onChange={handleChange}>
           <option value="">Soil Quality</option>
           <option value="HIGH">High Organic</option>
           <option value="MEDIUM">Medium</option>
