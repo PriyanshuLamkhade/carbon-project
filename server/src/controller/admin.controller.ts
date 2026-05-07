@@ -4,6 +4,7 @@ import { db } from "../index.js";
 import { ethers } from "ethers";
 
 import tokenAbi from "../constant/C2Token.js";
+import { monitoringContract } from "../constant/monitoringContract.js";
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -158,7 +159,7 @@ export const mintTokens = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Already minted" });
     }
     // 🔥 Calculate tokens
-    const tokens =  Number(verification.annualCO2.toFixed(2));
+    const tokens = Number(verification.annualCO2.toFixed(2));
     if (submission.history.carbon) {
       return res.status(400).json({ message: "Already minted" });
     }
@@ -186,9 +187,9 @@ export const mintTokens = async (req: Request, res: Response) => {
       },
     });
     const updateStatus = await db.history.update({
-      where:{historyId : submission.historyId},
-      data:{status:"APPROVED"}
-    })
+      where: { historyId: submission.historyId },
+      data: { status: "APPROVED" },
+    });
     console.log("Minting to:", user.pubkey);
     console.log("Tokens:", tokens);
     console.log("Submission:", submissionId);
@@ -299,70 +300,249 @@ export const mintMonitoringTokens = async (req: Request, res: Response) => {
   try {
     const monitoringId = Number(req.params.id);
 
-    // 🔹 Get monitoring
+    // 🔥 GET MONITORING
     const monitoring = await db.monitoring.findUnique({
-      where: { monitoringId },
+      where: {
+        monitoringId,
+      },
+
       include: {
         history: {
           include: {
             user: true,
+
+            submission: true,
           },
         },
       },
     });
 
     if (!monitoring) {
-      return res.status(404).json({ message: "Monitoring not found" });
+      return res.status(404).json({
+        message: "Monitoring not found",
+      });
     }
 
-    const user = monitoring.history.user;
-
-    if (!user?.pubkey) {
-      return res.status(400).json({ message: "User wallet not found" });
-    }
-
-    // ❌ Already minted
+    // ❌ ALREADY MINTED
     if (monitoring.txHash) {
-      return res.status(400).json({ message: "Already minted for this year" });
+      return res.status(400).json({
+        message: "Already minted",
+      });
     }
 
-    // 🔥 Tokens from monitoring
+    // 🔥 TOKEN CALC
     const tokens = Math.floor(monitoring.annualCO2);
 
     if (tokens <= 0) {
-      return res.status(400).json({ message: "Invalid token amount" });
+      return res.status(400).json({
+        message: "Invalid token amount",
+      });
     }
+    if (!monitoring.history.submission) {
+      return res.json("monitoring.history.submission is null");
+    }
+    // 🔥 METADATA JSON
+    const metadata = {
+      monitoringId: monitoring.monitoringId,
 
-    // 🔗 Convert to wei
-    const amount = ethers.parseUnits(tokens.toString(), 18);
+      historyId: monitoring.historyId,
 
-    // 🚀 Blockchain call
-    const tx = await (token as any).mintToLandowner(user.pubkey, amount);
+      siteName: monitoring.history.submission.location,
+
+      year: monitoring.year,
+
+      annualCO2: monitoring.annualCO2,
+
+      tokensIssued: tokens,
+
+      survivalRate: monitoring.survivalRate,
+
+      plantationHealth: monitoring.plantationHealth,
+
+      waterCondition: monitoring.waterCondition,
+
+      validatorRemarks: monitoring.remarks,
+
+      timestamp: new Date(),
+    };
+
+    // 🔥 STRINGIFY
+    const metadataString = JSON.stringify(metadata);
+
+    // 🔥 HASH
+    const metadataHash = ethers.keccak256(ethers.toUtf8Bytes(metadataString));
+
+    // 🚀 STORE ON BLOCKCHAIN
+    const tx = await (monitoringContract as any).storeMonitoringRecord(
+      monitoring.monitoringId,
+
+      monitoring.historyId,
+
+      monitoring.history.submission.location,
+
+      monitoring.year,
+
+      tokens,
+
+      Math.floor(monitoring.annualCO2),
+
+      metadataHash,
+    );
+
     const receipt = await tx.wait();
 
-    const txHash = receipt.hash;
-
-    // 💾 Save in Monitoring table
+    // 💾 SAVE DB
     await db.monitoring.update({
-      where: { monitoringId },
+      where: {
+        monitoringId,
+      },
+
       data: {
         tokensIssued: tokens,
-        txHash: txHash,
+
+        txHash: receipt.hash,
+
         mintedAt: new Date(),
+
+        metadataHash,
+
+        blockchainTx: receipt.hash,
+
+        metadataJson: metadata,
       },
     });
 
     return res.json({
-      message: "Monitoring tokens minted successfully",
-      tokens,
-      txHash,
+      success: true,
+
+      message: "Monitoring minted successfully",
+
+      txHash: receipt.hash,
+
+      metadataHash,
+
+      metadata,
     });
-  } catch (error:any) {
+  } catch (error: any) {
     console.error("Monitoring Mint Error:", error);
 
     return res.status(500).json({
-      message: "Minting failed",
-      error: error.message ,
+      message: "Mint failed",
+
+      error: error.message,
+    });
+  }
+};
+export const getCertificates = async (req: Request, res: Response) => {
+  try {
+    const certificates = await db.certificate.findMany({
+      include: {
+        industry: true,
+      },
+
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    const formatted = certificates.map((c) => ({
+      certificateId: c.certificateId,
+
+      companyName: c.industry.companyName,
+
+      email: c.industry.email,
+
+      walletAddress: c.walletAddress,
+
+      tokensRetired: c.tokensRetired,
+
+      carbonOffset: c.carbonOffset,
+
+      txHash: c.txHash,
+
+      reason: c.reason,
+
+      createdAt: c.createdAt,
+      location: c.industry.address,
+    }));
+
+    res.json(formatted);
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      message: "Failed to fetch certificates",
+    });
+  }
+};
+export const getPublicBlockchainRecords = async (req: Request, res: Response) => {
+  try {
+    const monitorings = await db.monitoring.findMany({
+      where: {
+        txHash: {
+          not: null,
+        },
+      },
+
+      include: {
+        history: {
+          include: {
+            submission: true,
+          },
+        },
+      },
+
+      orderBy: {
+        mintedAt: "desc",
+      },
+    });
+
+    const formatted = monitorings.map((m) => ({
+      monitoringId: m.monitoringId,
+
+      historyId: m.historyId,
+
+      location:
+        m.history?.submission?.location ||
+        "Unknown Location",
+
+      year: m.year,
+
+      annualCO2: m.annualCO2,
+
+      survivalRate: m.survivalRate,
+
+      plantationHealth: m.plantationHealth,
+
+      waterCondition: m.waterCondition,
+
+      soilQuality: m.soilQuality,
+
+      remarks: m.remarks,
+
+      tokensIssued: m.tokensIssued || 0,
+
+      txHash: m.txHash,
+
+      metadataHash: m.metadataHash,
+
+      metadataJson: m.metadataJson,
+
+      mintedAt: m.mintedAt,
+    }));
+
+    return res.json(formatted);
+
+  } catch (err) {
+
+    console.error(
+      "Blockchain Records Error:",
+      err
+    );
+
+    return res.status(500).json({
+      message:
+        "Failed to fetch blockchain records",
     });
   }
 };

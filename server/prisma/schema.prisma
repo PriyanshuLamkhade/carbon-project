@@ -49,8 +49,8 @@ model Validator {
 
   rating Float @default(0)
 
-  status ValidatorStatus @default(PENDING)
-  monitorings Monitoring[]
+  status        ValidatorStatus @default(PENDING)
+  monitorings   Monitoring[]
   assignments   Assignment[]
   verifications Verification[]
 
@@ -64,7 +64,7 @@ model Assignment {
   validatorId Int
 
   submission   Submission @relation(fields: [submissionId], references: [submissionId])
-  submissionId Int       
+  submissionId Int
 
   status     AssignmentStatus @default(PENDING)
   isActive   Boolean          @default(true)
@@ -80,15 +80,15 @@ model History {
   submission   Submission?
   verification Verification?
   status       Status
-  monitorings Monitoring[]
+  monitorings  Monitoring[]
   timestamp    DateTime      @default(now())
 }
 
 model Carbon {
-  carbonId      Int  @id @default(autoincrement())
+  carbonId      Int     @id @default(autoincrement())
   carbonCleaned Int?
   tokensIssued  Int?
-  txHash String?
+  txHash        String?
 
   history   History @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
   historyId Int     @unique
@@ -98,7 +98,7 @@ model Carbon {
 
 model Submission {
   submissionId              Int          @id @default(autoincrement())
-  formUserapturedImage         String?
+  formUserapturedImage      String?
   location                  String
   longitude                 Float?
   latitude                  Float?
@@ -119,7 +119,7 @@ model Submission {
   history                   History      @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
   historyId                 Int          @unique
   submissionDate            DateTime     @default(now())
-  assignments                Assignment[]
+  assignments               Assignment[]
 }
 
 model Verification {
@@ -162,15 +162,16 @@ model Verification {
   images Json? @db.Json
 
   // 🔗 Relations
-  history     History    @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
-  historyId   Int        @unique
+  history   History @relation(fields: [historyId], references: [historyId], onDelete: Cascade)
+  historyId Int     @unique
 
   validatorId Int?
   validator   Validator? @relation(fields: [validatorId], references: [validatorId])
-  
+
   lastMonitoringDate DateTime?
-  verificationDate DateTime @default(now())
+  verificationDate   DateTime  @default(now())
 }
+
 model Certificate {
   certificateId String @id
 
@@ -180,11 +181,12 @@ model Certificate {
   walletAddress String
   tokensRetired Float
   carbonOffset  Float
-  txHash String
-  reason String?
+  txHash        String
+  reason        String?
 
   createdAt DateTime @default(now())
 }
+
 model Industry {
   industryId Int @id @default(autoincrement())
 
@@ -195,9 +197,9 @@ model Industry {
   phone   String?
   address String?
 
-  status IndustryStatus @default(PENDING)
+  status       IndustryStatus @default(PENDING)
   certificates Certificate[]
-  createdAt DateTime @default(now())
+  createdAt    DateTime       @default(now())
 }
 
 model Monitoring {
@@ -210,30 +212,32 @@ model Monitoring {
   validatorId Int
 
   // 🟦 Yearly Inputs
-  survivalRate Float
-  avgHeight String
+  survivalRate     Float
+  avgHeight        String
   plantationHealth String
-  waterCondition String
-  soilQuality String
-  remarks String?
+  waterCondition   String
+  soilQuality      String
+  remarks          String?
 
   // 🟩 Calculated
-  AGB Float
-  BGB Float
-  soilCarbon Float
+  AGB         Float
+  BGB         Float
+  soilCarbon  Float
   totalCarbon Float
-  annualCO2 Float
+  annualCO2   Float
 
   // 📸 Evidence
-  images Json?
-
-  monitoredAt DateTime @default(now())
+  images       Json?
+  metadataHash String?
+  blockchainTx String?
+  metadataJson Json?
+  monitoredAt  DateTime @default(now())
 
   year Int
 
   tokensIssued Float?
-  txHash String?
-  mintedAt DateTime?
+  txHash       String?
+  mintedAt     DateTime?
 }
 
 enum IndustryStatus {

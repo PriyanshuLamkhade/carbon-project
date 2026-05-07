@@ -1,6 +1,16 @@
 import express from "express";
 import { adminMiddleware } from "../middleware/admin.js";
-import { getAdminStats, getAllTokens, getAllUsers, getSubmissionById, getUserById, mintMonitoringTokens, mintTokens } from "../controller/admin.controller.js";
+import {
+  getAdminStats,
+  getAllTokens,
+  getAllUsers,
+  getCertificates,
+  getPublicBlockchainRecords,
+  getSubmissionById,
+  getUserById,
+  mintMonitoringTokens,
+  mintTokens,
+} from "../controller/admin.controller.js";
 import { db } from "../index.js";
 import jwt from "jsonwebtoken";
 
@@ -48,13 +58,16 @@ adminRouter.post("/auth/signin", async (req, res) => {
 adminRouter.get("/users", adminMiddleware, getAllUsers);
 adminRouter.get("/users/:id", adminMiddleware, getUserById);
 adminRouter.get("/submissions/:id", adminMiddleware, getSubmissionById);
-adminRouter.post("/submissions/:id/mint",adminMiddleware,mintTokens);
-adminRouter.post("/monitoring/:id/mint",adminMiddleware,mintMonitoringTokens);
+adminRouter.post("/submissions/:id/mint", adminMiddleware, mintTokens);
+adminRouter.post("/monitoring/:id/mint", adminMiddleware, mintMonitoringTokens);
 adminRouter.get("/stats", adminMiddleware, getAdminStats);
 adminRouter.get("/tokens", adminMiddleware, getAllTokens);
 // GET /admin/validators?status=APPROVED | PENDING
-
-adminRouter.get("/validators", adminMiddleware,async (req, res) => {
+adminRouter.get(
+  "/public/blockchain-records",
+  getPublicBlockchainRecords
+);
+adminRouter.get("/validators", adminMiddleware, async (req, res) => {
   try {
     const { status } = req.query;
 
@@ -84,68 +97,80 @@ adminRouter.get("/validators", adminMiddleware,async (req, res) => {
 });
 // PATCH /admin/validators/:id/approve
 
-adminRouter.patch("/validators/:id/approve", adminMiddleware, async (req, res) => {
-  const id = Number(req.params.id);
+adminRouter.patch(
+  "/validators/:id/approve",
+  adminMiddleware,
+  async (req, res) => {
+    const id = Number(req.params.id);
 
-  try {
-    await db.validator.update({
-      where: { validatorId: id },
-      data: {
-        status: "APPROVED",
-        user: {
-          update: {
-            role: "VALIDATOR",
+    try {
+      await db.validator.update({
+        where: { validatorId: id },
+        data: {
+          status: "APPROVED",
+          user: {
+            update: {
+              role: "VALIDATOR",
+            },
           },
         },
-      },
-    });
+      });
 
-    res.json({ message: "Validator approved" });
-  } catch (err) {
-    res.status(500).json({ error: "Error approving validator" });
-  }
-});
+      res.json({ message: "Validator approved" });
+    } catch (err) {
+      res.status(500).json({ error: "Error approving validator" });
+    }
+  },
+);
 // PATCH /admin/validators/:id/reject
 
-adminRouter.patch("/validators/:id/reject", adminMiddleware, async (req, res) => {
-  const id = Number(req.params.id);
+adminRouter.patch(
+  "/validators/:id/reject",
+  adminMiddleware,
+  async (req, res) => {
+    const id = Number(req.params.id);
 
-  try {
-    await db.validator.update({
-      where: { validatorId: id },
-      data: {
-        status: "REJECTED",
-      },
-    });
+    try {
+      await db.validator.update({
+        where: { validatorId: id },
+        data: {
+          status: "REJECTED",
+        },
+      });
 
-    res.json({ message: "Validator rejected" });
-  } catch (err) {
-    res.status(500).json({ error: "Error rejecting validator" });
-  }
-});
+      res.json({ message: "Validator rejected" });
+    } catch (err) {
+      res.status(500).json({ error: "Error rejecting validator" });
+    }
+  },
+);
 // PATCH /admin/validators/:id/remove
 
-adminRouter.patch("/validators/:id/remove", adminMiddleware, async (req, res) => {
-  const id = Number(req.params.id);
+adminRouter.patch(
+  "/validators/:id/remove",
+  adminMiddleware,
+  async (req, res) => {
+    const id = Number(req.params.id);
 
-  try {
-    const validator = await db.validator.update({
-      where: { validatorId: id },
-      data: {
-        status: "REJECTED",
-        user: {
-          update: {
-            role: "USER",
+    try {
+      const validator = await db.validator.update({
+        where: { validatorId: id },
+        data: {
+          status: "REJECTED",
+          user: {
+            update: {
+              role: "USER",
+            },
           },
         },
-      },
-    });
+      });
 
-    res.json({ message: "Validator removed (role downgraded)" });
-  } catch (err) {
-    res.status(500).json({ error: "Error removing validator" });
-  }
-});
+      res.json({ message: "Validator removed (role downgraded)" });
+    } catch (err) {
+      res.status(500).json({ error: "Error removing validator" });
+    }
+  },
+);
 
 // GET industries
 adminRouter.get("/industries", adminMiddleware, async (req, res) => {
@@ -160,28 +185,36 @@ adminRouter.get("/industries", adminMiddleware, async (req, res) => {
 });
 
 // APPROVE
-adminRouter.patch("/industries/:id/approve", adminMiddleware, async (req, res) => {
-  const id = Number(req.params.id);
+adminRouter.patch(
+  "/industries/:id/approve",
+  adminMiddleware,
+  async (req, res) => {
+    const id = Number(req.params.id);
 
-  await db.industry.update({
-    where: { industryId: id },
-    data: { status: "APPROVED" },
-  });
+    await db.industry.update({
+      where: { industryId: id },
+      data: { status: "APPROVED" },
+    });
 
-  res.json({ message: "Approved" });
-});
+    res.json({ message: "Approved" });
+  },
+);
 
 // REJECT
-adminRouter.patch("/industries/:id/reject", adminMiddleware, async (req, res) => {
-  const id = Number(req.params.id);
+adminRouter.patch(
+  "/industries/:id/reject",
+  adminMiddleware,
+  async (req, res) => {
+    const id = Number(req.params.id);
 
-  await db.industry.update({
-    where: { industryId: id },
-    data: { status: "REJECTED" },
-  });
+    await db.industry.update({
+      where: { industryId: id },
+      data: { status: "REJECTED" },
+    });
 
-  res.json({ message: "Rejected" });
-});
+    res.json({ message: "Rejected" });
+  },
+);
 
 adminRouter.get("/monitoring/:id", adminMiddleware, async (req, res) => {
   try {
@@ -228,7 +261,6 @@ adminRouter.get("/monitoring/:id", adminMiddleware, async (req, res) => {
       user,
       tokensMinted: !!alreadyMinted,
     });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to fetch monitoring data" });
@@ -251,4 +283,5 @@ adminRouter.get("/monitorings", adminMiddleware, async (req, res) => {
 
   res.json({ monitorings });
 });
+adminRouter.get("/certificates", getCertificates);
 export default adminRouter;
