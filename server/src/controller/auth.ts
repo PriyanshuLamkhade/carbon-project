@@ -31,7 +31,7 @@ export const loginUser = TryCatch(async (req, res) => {
   if (!user) {
     let tempUserData = { email, name, picture };
     newUser = true;
-    res.json({ message: "Continue Profile", newUser, tempUserData });
+    return res.json({ message: "Continue Profile", newUser, tempUserData });
   }
 
   const token = jwt.sign(
@@ -53,11 +53,14 @@ export const loginUser = TryCatch(async (req, res) => {
 });
 
 export const registerUser = TryCatch(async (req, res) => {
-  const { userData, phone, organisation, role,walletAddress } = req.body;
-  const { name, email, picture } = userData;
   if (!req.body) {
-    res.json({ message: "body missing" });
+    return res.status(400).json({ message: "body missing" });
   }
+  const { userData, phone, organisation, role,walletAddress } = req.body;
+  if (!userData) {
+    return res.status(400).json({ message: "userData missing" });
+  }
+  const { name, email, picture } = userData;
   let user = await db.user.create({
     data: {
       name,
@@ -88,12 +91,15 @@ export const registerUser = TryCatch(async (req, res) => {
 });
 
 export const registerValidator = TryCatch(async (req, res) => {
+  if (!req.body) {
+    return res.status(400).json({ message: "body missing" });
+  }
   const { userData, phone, organisation, role, validatorDetails } = req.body;
+  if (!userData || !validatorDetails) {
+    return res.status(400).json({ message: "userData or validatorDetails missing" });
+  }
   const { name, email, picture } = userData;
   const { address, latitude, longitude } = validatorDetails;
-  if (!req.body) {
-    res.json({ message: "body missing" });
-  }
   let user = await db.user.create({
     data: {
       name,

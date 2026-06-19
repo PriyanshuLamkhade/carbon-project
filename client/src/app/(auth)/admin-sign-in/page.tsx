@@ -47,7 +47,7 @@ export default function AdminSignin() {
       }
 
       // ✅ Success → redirect
-      router.push("/admin/dashboard/users");
+      router.push("/admin/dashboard/");
 
     } catch (err) {
       setError("Something went wrong");

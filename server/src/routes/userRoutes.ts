@@ -1,18 +1,9 @@
-import { fileURLToPath } from "url";
-import path from "path";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 import express, { Router } from "express";
-import fs from "fs";
-
-
+import uploadImagesToCloudinary from "../utils/cloudinaryUpload.js";
 import { db } from "../index.js";
 import { z } from "zod";
 import "dotenv/config";
 import { userMiddleware } from "../middleware/users.js";
-
 import {
   addUserRole,
   loginUser,
@@ -21,16 +12,21 @@ import {
 } from "../controller/auth.js";
 import { previewData } from "../controller/submission.js";
 import { assignValidator } from "../services/assignmentService.js";
-import { getSubmissionDetails, getUserDashboard, updateUserProfile } from "../controller/user.controller.js";
-
-// import { ed25519 } from "@noble/curves/ed25519.js";
+import {
+  getSubmissionDetails,
+  getUserDashboard,
+  updateUserProfile,
+} from "../controller/user.controller.js";
+import multer from "multer";
+import cloudinary from "cloudinary";
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 if (!JWT_USER_SECRET) {
   throw new Error(
     "JWT_USER_SECRET is not defined in the environment variables",
   );
 }
-
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 const userRouter: Router = express.Router();
 const phoneSchema = z.string().regex(/^[0-9]{10}$/, "Phone must be 10 digits");
 
@@ -56,12 +52,11 @@ userRouter.get("/userDetails", userMiddleware, async (req, res) => {
   res.json({ userDetails: user });
 });
 
-
 userRouter.post("/login", loginUser);
 userRouter.put("/add/role", userMiddleware, addUserRole);
 userRouter.get("/me", userMiddleware, myProfile);
 userRouter.post("/registerUser", registerUser);
-userRouter.post("/reviewData",userMiddleware,previewData)
+userRouter.post("/reviewData", userMiddleware, previewData);
 userRouter.post("/userForm", userMiddleware, async (req, res) => {
   try {
     const {
@@ -95,19 +90,21 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
         .status(400)
         .json({ message: "Location and area claim are required" });
 
-    // ✅ Save image locally if present
-    let profileImageFileName = null;
+    // ✅ Upload base64 image to Cloudinary
+    let profileImageUrl = null;
+
     if (formUserapturedImage) {
-      const buffer = Buffer.from(formUserapturedImage, "base64");
-      const fileName = `profile_${userId}_${Date.now()}.jpg`;
-      const filePath = path.join(__dirname, "../uploads", fileName);
+      const uploadResult = await cloudinary.v2.uploader.upload(
+        formUserapturedImage.startsWith("data:image")
+          ? formUserapturedImage
+          : `data:image/jpeg;base64,${formUserapturedImage}`,
+        {
+          folder: "submission",
+          public_id: `submission_${userId}_${Date.now()}`,
+        },
+      );
 
-      // Ensure uploads folder exists
-      fs.mkdirSync(path.dirname(filePath), { recursive: true });
-      fs.writeFileSync(filePath, buffer);
-
-      profileImageFileName = fileName;
-      
+      profileImageUrl = uploadResult.secure_url;
     }
 
     // ✅ Create history record
@@ -136,14 +133,14 @@ userRouter.post("/userForm", userMiddleware, async (req, res) => {
         MGNREGAPersonDays,
         trained,
         history: { connect: { historyId: history.historyId } },
-        formUserapturedImage: profileImageFileName
+        formUserapturedImage: profileImageUrl,
       },
     });
     await assignValidator(submission.submissionId);
     res.json({
       message: "Submission Completed",
       submissionId: submission.submissionId,
-      profileImage: profileImageFileName,
+      profileImage: profileImageUrl,
     });
   } catch (error) {
     console.error(error);
@@ -174,7 +171,6 @@ userRouter.get("/allhistory", userMiddleware, async (req, res) => {
     return res.status(500).json({ message: "Failed to fetch history", error });
   }
 });
-
 
 userRouter.delete("/deleteSubmission", userMiddleware, async (req, res) => {
   try {
@@ -210,19 +206,7 @@ userRouter.delete("/deleteSubmission", userMiddleware, async (req, res) => {
     return res.status(500).json({ message: "Failed to delete record", error });
   }
 });
-userRouter.get(
-  "/dashboard/home",
-  userMiddleware,
-  getUserDashboard
-);
-userRouter.get(
-  "/submission/:historyId",
-  userMiddleware,
-  getSubmissionDetails
-);
-userRouter.put(
-  "/me/update",
-  userMiddleware,
-  updateUserProfile
-);
+userRouter.get("/dashboard/home", userMiddleware, getUserDashboard);
+userRouter.get("/submission/:historyId", userMiddleware, getSubmissionDetails);
+userRouter.put("/me/update", userMiddleware, updateUserProfile);
 export default userRouter;

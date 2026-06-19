@@ -110,7 +110,7 @@ const Homepage = () => {
   const heroPanelRef   = useRef(null);
   const heroLineRef    = useRef(null);
   const heroTagRef     = useRef(null);
-  const heroHeadingRef = useRef(null);
+  const heroHeadingRef = useRef<HTMLHeadingElement | null>(null);
   const heroSubRef     = useRef(null);
   const heroBtnRef     = useRef(null);
   const heroBadgeRef   = useRef(null);
@@ -169,36 +169,38 @@ const Homepage = () => {
 
     /* ══════════════════════════════════
        HERO — page-load timeline (no ST)
-    ══════════════════════════════════ */
-    gsap.timeline({ delay: 0.15 })
-      .fromTo(heroPanelRef.current,
-        { x: "-100%", opacity: 0 },
-        { x: "0%",    opacity: 1, duration: 1.1, ease: "expo.out" })
-      .fromTo(heroLineRef.current,
-        { scaleX: 0, transformOrigin: "left center" },
-        { scaleX: 1, duration: 0.5,  ease: "power2.out" }, "-=0.5")
-      .fromTo(heroTagRef.current,
-        { y: 20, opacity: 0 },
-        { y: 0,  opacity: 1, duration: 0.45 }, "-=0.1")
-      .fromTo(heroHeadingRef.current.querySelectorAll(".hw"),
-        { y: 70, opacity: 0, rotateX: -15 },
-        { y: 0,  opacity: 1, rotateX: 0, duration: 0.65, ease: "back.out(1.5)", stagger: 0.07 }, "-=0.1")
-      .fromTo(heroSubRef.current,
-        { y: 20, opacity: 0 },
-        { y: 0,  opacity: 1, duration: 0.5 }, "-=0.2")
-      .fromTo(heroBtnRef.current,
-        { y: 25, opacity: 0, scale: 0.88 },
-        { y: 0,  opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.8)" }, "-=0.15")
-      .fromTo(heroBadgeRef.current,
-        { x: 50, opacity: 0 },
-        { x: 0,  opacity: 1, duration: 0.6, ease: "back.out(1.4)" }, "-=0.35")
-      .fromTo(heroScrollRef.current,
-        { opacity: 0 }, { opacity: 1, duration: 0.5 }, "-=0.2");
+     ══════════════════════════════════ */
+    if (heroPanelRef.current && heroHeadingRef.current) {
+      gsap.timeline({ delay: 0.15 })
+        .fromTo(heroPanelRef.current,
+          { x: "-100%", opacity: 0 },
+          { x: "0%",    opacity: 1, duration: 1.1, ease: "expo.out" })
+        .fromTo(heroLineRef.current,
+          { scaleX: 0, transformOrigin: "left center" },
+          { scaleX: 1, duration: 0.5,  ease: "power2.out" }, "-=0.5")
+        .fromTo(heroTagRef.current,
+          { y: 20, opacity: 0 },
+          { y: 0,  opacity: 1, duration: 0.45 }, "-=0.1")
+        .fromTo(heroHeadingRef.current.querySelectorAll(".hw"),
+          { y: 70, opacity: 0, rotateX: -15 },
+          { y: 0,  opacity: 1, rotateX: 0, duration: 0.65, ease: "back.out(1.5)", stagger: 0.07 }, "-=0.1")
+        .fromTo(heroSubRef.current,
+          { y: 20, opacity: 0 },
+          { y: 0,  opacity: 1, duration: 0.5 }, "-=0.2")
+        .fromTo(heroBtnRef.current,
+          { y: 25, opacity: 0, scale: 0.88 },
+          { y: 0,  opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.8)" }, "-=0.15")
+        .fromTo(heroBadgeRef.current,
+          { x: 50, opacity: 0 },
+          { x: 0,  opacity: 1, duration: 0.6, ease: "back.out(1.4)" }, "-=0.35")
+        .fromTo(heroScrollRef.current,
+          { opacity: 0 }, { opacity: 1, duration: 0.5 }, "-=0.2");
 
-    /* floating badge idle bob */
-    gsap.to(heroBadgeRef.current, {
-      y: -10, duration: 2.4, ease: "sine.inOut", yoyo: true, repeat: -1,
-    });
+      /* floating badge idle bob */
+      gsap.to(heroBadgeRef.current, {
+        y: -10, duration: 2.4, ease: "sine.inOut", yoyo: true, repeat: -1,
+      });
+    }
 
     /* ══════════════════════════════════
        HELPER — bidirectional ScrollTrigger fromTo
@@ -206,7 +208,14 @@ const Homepage = () => {
        means: play on enter, reverse on leave-back,
               play again on re-enter, reverse again on leave-back
     ══════════════════════════════════ */
-    const bist = (target, from, to, trigger, start = "top 82%", end = "bottom 15%") =>
+    const bist = (
+      target: any,
+      from: any,
+      to: any,
+      trigger: any,
+      start: string = "top 82%",
+      end: string = "bottom 15%"
+    ) =>
       gsap.fromTo(target, from, {
         ...to,
         scrollTrigger: {

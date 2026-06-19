@@ -155,13 +155,8 @@ const UserSettings = () => {
               <input
                 type="text"
                 value={form.name}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    name: e.target.value,
-                  })
-                }
-                className="w-full px-4 py-3 border rounded-xl"
+                
+                className="w-full px-4 py-3 border rounded-xl cursor-not-allowed"
               />
             </div>
 
@@ -172,13 +167,8 @@ const UserSettings = () => {
               <input
                 type="email"
                 value={form.email}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    email: e.target.value,
-                  })
-                }
-                className="w-full px-4 py-3 border rounded-xl"
+                
+                className="w-full px-4 py-3 border rounded-xl cursor-not-allowed "
               />
             </div>
 

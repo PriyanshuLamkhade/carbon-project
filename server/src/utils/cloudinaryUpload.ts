@@ -25,8 +25,9 @@ const uploadImagesToCloudinary = async (files: any[], folder = "uploads") => {
 
 export default uploadImagesToCloudinary;
 
-// product images
+// user profile images
 //await uploadImagesToCloudinary(req.files, "submission");
 
-// user profile images
+
+// product images
 //await uploadImagesToCloudinary(req.files, "verified");

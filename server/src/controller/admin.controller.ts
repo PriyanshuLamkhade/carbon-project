@@ -102,17 +102,43 @@ export const getSubmissionById = async (req: Request, res: Response) => {
 };
 
 // 🔐 ENV
-const provider = new ethers.JsonRpcProvider(process.env.RPC_URL);
-const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
+let tokenInstance: ethers.Contract | null = null;
+
+function getTokenContract() {
+  if (tokenInstance) return tokenInstance;
+
+  const rpcUrl = process.env.RPC_URL;
+  const privateKey = process.env.PRIVATE_KEY;
+  const address = process.env.TOKEN_ADDRESS;
+
+  if (!rpcUrl || !privateKey || !address) {
+    throw new Error("Blockchain token configuration missing (RPC_URL, PRIVATE_KEY, or TOKEN_ADDRESS)");
+  }
+
+  const provider = new ethers.JsonRpcProvider(rpcUrl);
+  const wallet = new ethers.Wallet(privateKey, provider);
+  tokenInstance = new ethers.Contract(address, tokenAbi as any, wallet);
+  return tokenInstance;
+}
+
+const token = new Proxy({} as any, {
+  get(target, prop, receiver) {
+    const instance = getTokenContract();
+    const value = Reflect.get(instance, prop);
+    if (typeof value === "function") {
+      return value.bind(instance);
+    }
+    return value;
+  },
+  set(target, prop, value) {
+    const instance = getTokenContract();
+    return Reflect.set(instance, prop, value);
+  }
+});
+
 type User = {
   walletAddress: string;
 };
-
-const token = new ethers.Contract(
-  process.env.TOKEN_ADDRESS!,
-  tokenAbi as any,
-  wallet,
-);
 
 export const mintTokens = async (req: Request, res: Response) => {
   const submissionId = Number(req.params.id);
@@ -147,7 +173,7 @@ export const mintTokens = async (req: Request, res: Response) => {
     }
 
     // ❌ Prevent double mint
-    if (submission.history.carbon?.tokensIssued) {
+    if (submission.history.carbon) {
       return res.status(400).json({ message: "Already minted" });
     }
     const user = submission.history.user;
@@ -155,14 +181,8 @@ export const mintTokens = async (req: Request, res: Response) => {
     if (!user.pubkey) {
       return res.status(400).json({ message: "User wallet not found" });
     }
-    if (submission.history.carbon) {
-      return res.status(400).json({ message: "Already minted" });
-    }
     // 🔥 Calculate tokens
     const tokens = Number(verification.annualCO2.toFixed(2));
-    if (submission.history.carbon) {
-      return res.status(400).json({ message: "Already minted" });
-    }
     if (tokens <= 0) {
       return res.status(400).json({ message: "Invalid token amount" });
     }

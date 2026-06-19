@@ -134,7 +134,7 @@ export default function MangroveAdvisorPage() {
   }, [form]);
 
   return (
-    <div className="min-h-screen bg-[#f4f7fb] p-6 text-gray-800">
+    <div className="min-h-screen bg-[#f4f7fb] p-6 text-gray-800 -m-5">
 
       {/* 🔥 HERO */}
       <div className="mb-10">

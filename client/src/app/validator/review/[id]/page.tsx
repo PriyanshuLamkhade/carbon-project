@@ -82,7 +82,13 @@ const SubmissionPreviewPage = () => {
       {/* 🔹 Basic Info */}
       <div className="bg-white p-6 rounded-xl shadow">
         <h2 className="text-2xl font-semibold mb-4">Basic Information</h2>
-
+        <span className="flex items-center mb-3 gap-3 font-bold">
+          <h2>Photo while submitting form:</h2>
+          <img
+            src={submission.formUserapturedImage}
+            className="w-30 h-30 rounded-full object-cover border-4 border-white"
+          />
+        </span>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <p>
             <strong>Location:</strong> {submission.location}

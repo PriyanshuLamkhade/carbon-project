@@ -54,7 +54,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
 export const useAppData = (): AppContextType => {
   const context = useContext(AppContext);
   if (!context) {
-    throw new Error("useAppData must be usedwithin appProvider");
+    throw new Error("useAppData must be used within appProvider");
   }
   return context;
 };

@@ -65,8 +65,14 @@ export default function SubmissionDetailPage() {
       {/* 🔹 SUBMISSION INFO */}
       <div className="bg-[#1e293b] p-6 rounded-xl">
         <h1 className="text-xl font-bold mb-4">Submission Info</h1>
-
-        <p>
+        <span className="flex items-center mb-3 gap-3 font-semibold text-gray-400">
+          <h2>Photo while submitting form:</h2>
+          <img
+            src={data.formUserapturedImage}
+            className="w-30 h-30 rounded-full object-cover border-2 border-white"
+          />
+        </span>
+        <p> 
           <span className="text-gray-400">Location:</span> {data.location}
         </p>
         <p>

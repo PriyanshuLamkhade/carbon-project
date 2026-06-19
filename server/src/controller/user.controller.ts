@@ -4,7 +4,7 @@ export const getUserDashboard = async (req: Request, res: Response) => {
   try {
     const userId = req.userId;
     if(!userId){
-        return res.json("Userid not found")
+        return res.status(401).json({ message: "User ID not found" })
     }
     // 🟢 Get all histories
     const histories = await db.history.findMany({
@@ -190,7 +190,7 @@ export const updateUserProfile = async (req: Request, res: Response) => {
       organisation,
     } = req.body;
     if(!userId){
-      return res.json("UserId not defined")
+      return res.status(401).json({ message: "User ID not defined" })
     }
     const updatedUser = await db.user.update({
       where: {

@@ -21,15 +21,11 @@ const app = express();
 const adapter = new PrismaPg({connectionString: process.env.DATABASE_URL})
 const JWT_USER_SECRET = process.env.JWT_USER_SECRET;
 if (!JWT_USER_SECRET) {
-  throw new Error(
-    "JWT_USER_SECRET is not defined in the environment variables"
-  );
+  console.warn("⚠️ Warning: JWT_USER_SECRET is not defined in the environment variables");
 }
 const JWT_ADMIN_SECRET = process.env.JWT_ADMIN_SECRET;
 if (!JWT_ADMIN_SECRET) {
-  throw new Error(
-    "JWT_ADMIN_SECRET is not defined in the environment variables"
-  );
+  console.warn("⚠️ Warning: JWT_ADMIN_SECRET is not defined in the environment variables");
 }
 export const db = new PrismaClient({adapter:adapter});
 app.use(express.json({limit:"50mb"}))
@@ -45,17 +41,17 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 
-const{CLOUD_NAME,CLOUD_API_KEY,CLOUD_SECRET_KEY} = process.env;
+const { CLOUD_NAME, CLOUD_API_KEY, CLOUD_SECRET_KEY } = process.env;
 
-if(!CLOUD_NAME||!CLOUD_API_KEY||!CLOUD_SECRET_KEY){
-  throw new Error("Missing Cloudinary environment variables")
+if (CLOUD_NAME && CLOUD_API_KEY && CLOUD_SECRET_KEY) {
+  cloudinary.v2.config({
+    cloud_name: CLOUD_NAME,
+    api_key: CLOUD_API_KEY,
+    api_secret: CLOUD_SECRET_KEY,
+  });
+} else {
+  console.warn("⚠️ Warning: Missing Cloudinary environment variables. File upload features will not function.");
 }
-
-cloudinary.v2.config({
-  cloud_name:CLOUD_NAME,
-  api_key:CLOUD_API_KEY,
-  api_secret:CLOUD_SECRET_KEY
-})
 
 app.use("/users", userRoutes);
 app.use("/validator", validatorRoutes);

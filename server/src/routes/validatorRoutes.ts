@@ -193,11 +193,7 @@ validatorRouter.get("/mapData", userMiddleware, async (req, res) => {
   }
 });
 
-validatorRouter.post(
-  "/submitVerification",
-  userMiddleware,
-  upload.array("images"),
-  async (req, res) => {
+validatorRouter.post("/submitVerification",userMiddleware,upload.array("images"),async (req, res) => {
     try {
       if (!req.userId) {
         return res.status(401).json({ message: "Invalid token" });
@@ -328,10 +324,7 @@ validatorRouter.post(
     }
   },
 );
-validatorRouter.get(
-  "/assignments/available",
-  userMiddleware,
-  async (req, res) => {
+validatorRouter.get("/assignments/available",userMiddleware,async (req, res) => {
     try {
       if (!req.userId) {
         return res.status(401).json({ message: "Invalid token" });

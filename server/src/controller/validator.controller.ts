@@ -5,7 +5,7 @@ export const getValidatorProfile = async (req: Request, res: Response) => {
   try {
     const userId = req.userId;
     if(!userId){
-        return res.json("Validator's userId not found")
+        return res.status(401).json({ message: "Validator's userId not found" })
     }
     const validator = await db.validator.findUnique({
       where: {

@@ -5,6 +5,7 @@ import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import Button from "../ui/Button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -61,19 +62,19 @@ export const Navbar = () => {
       document.getElementById(id.toLowerCase())?.scrollIntoView({ behavior: "smooth" });
     }
   };
-
-  const navItems = ["Home", "About", "Features", "FAQ", "Contact"];
+  const route = useRouter()
+  const navItems = ["Home", "About", "Features", "Contact"];
 
   return (
     <div className="px-4 pt-4">
       {/* ── Desktop nav ── */}
       <div
         ref={navRef}
-        className={`hidden sm:flex items-center justify-between py-3.5 px-6 rounded-2xl
+        className={`hidden sm:flex items-center justify-between py-3.5 px-6 rounded-2xl 
                     transition-all duration-500 ease-in-out
                     ${scrolled
                       ? "bg-black/40 backdrop-blur-2xl border border-white/10 shadow-lg shadow-black/20"
-                      : "bg-transparent border border-transparent"
+                      : "bg-transparent border border-transparent "
                     }`}
       >
         {/* Logo */}
@@ -106,6 +107,30 @@ export const Navbar = () => {
                                transition-transform duration-300 origin-left" />
             </button>
           ))}
+          <button  
+              onClick={() => route.push("/blockchain")}
+              type="button"
+              className="relative px-4 py-2 text-white/70 hover:text-white text-sm font-medium
+                         transition-colors duration-200 rounded-lg hover:bg-white/5 group"
+            >
+              OnChain
+              {/* underline */}
+              <span className="absolute bottom-1 left-4 right-4 h-[1.5px] rounded-full
+                               bg-emerald-400 scale-x-0 group-hover:scale-x-100
+                               transition-transform duration-300 origin-left" />
+            </button>
+            <button
+              onClick={() => route.push("/marketplace")}
+              type="button"
+              className="relative px-4 py-2 text-white/70 hover:text-white text-sm font-medium
+                         transition-colors duration-200 rounded-lg hover:bg-white/5 group"
+            >
+              Marketplace
+              {/* underline */}
+              <span className="absolute bottom-1 left-4 right-4 h-[1.5px] rounded-full
+                               bg-emerald-400 scale-x-0 group-hover:scale-x-100
+                               transition-transform duration-300 origin-left" />
+            </button>
         </div>
 
         {/* CTA */}

@@ -63,7 +63,7 @@ export default function MonitoringDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white p-6 space-y-6">
+    <div className="min-h-screen bg-[#0f172a] text-white p-6 space-y-6 -m-5">
 
       {/* 🔹 PROJECT INFO */}
       <div className="bg-[#1e293b] p-6 rounded-xl">
@@ -136,7 +136,7 @@ export default function MonitoringDetailPage() {
       )}
 
       {/* 🔹 MINT SECTION */}
-      {monitoring.tokensMinted ? (
+      {monitoring.txHash  ? (
         <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded">
           Tokens Minted
         </span>
