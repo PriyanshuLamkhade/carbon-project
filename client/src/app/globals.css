@@ -30,3 +30,11 @@ body {
 button {
   cursor: pointer;
 }
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #8b5cf6;
+  border-radius: 999px;
+}

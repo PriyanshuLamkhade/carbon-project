@@ -62,6 +62,9 @@ importers:
       googleapis:
         specifier: ^171.4.0
         version: 171.4.0
+      groq-sdk:
+        specifier: ^1.2.1
+        version: 1.2.1
       handlebars:
         specifier: ^4.7.9
         version: 4.7.9
@@ -865,6 +868,10 @@ packages:
 
   graphmatch@1.1.0:
     resolution: {integrity: sha512-0E62MaTW5rPZVRLyIJZG/YejmdA/Xr1QydHEw3Vt+qOKkMIOE8WDLc9ZX2bmAjtJFZcId4lEdrdmASsEy7D1QA==}
+
+  groq-sdk@1.2.1:
+    resolution: {integrity: sha512-dsDSWJRJf+n2dPiCv7zU3IsJbrh7jfSPqi6vc1q0TTK1oUF6bn+wv4P2VFdynkHpuJ0TTJ57vlpT87judPgVPA==}
+    hasBin: true
 
   handlebars@4.7.9:
     resolution: {integrity: sha512-4E71E0rpOaQuJR2A3xDZ+GM1HyWYv1clR58tC8emQNeQe3RH7MAzSbat+V0wG78LQBo6m6bzSG/L4pBuCsgnUQ==}
@@ -2505,6 +2512,8 @@ snapshots:
   grammex@3.1.12: {}
 
   graphmatch@1.1.0: {}
+
+  groq-sdk@1.2.1: {}
 
   handlebars@4.7.9:
     dependencies:

@@ -31,6 +31,7 @@
     "ethers": "^6.16.0",
     "express": "^5.1.0",
     "googleapis": "^171.4.0",
+    "groq-sdk": "^1.2.1",
     "handlebars": "^4.7.9",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",

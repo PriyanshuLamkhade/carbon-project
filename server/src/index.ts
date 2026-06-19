@@ -1,6 +1,6 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import jwt, { type JwtPayload } from "jsonwebtoken";
+
 import cors from "cors";
 import userRoutes from "./routes/userRoutes.js";
 import validatorRoutes from "./routes/validatorRoutes.js";
@@ -12,6 +12,7 @@ import cloudinary from 'cloudinary'
 
 import {PrismaPg} from "@prisma/adapter-pg"
 import { PrismaClient } from "@prisma/client";
+import chatRouter from "./routes/chat.js";
 import adminRouter from "./routes/adminRoutes.js";
 import industryRouter from "./routes/industry.Routes.js";
 import certificateRouter from "./routes/certificateRoutes.js";
@@ -58,7 +59,7 @@ app.use("/validator", validatorRoutes);
 app.use("/admin",adminRouter)
 app.use("/industry", industryRouter);
 app.use("/certificate", certificateRouter );
-
+app.use("/chat", chatRouter);
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
