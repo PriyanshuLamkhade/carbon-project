@@ -19,7 +19,7 @@ const router = useRouter()
   const links = [
     { href: '/user/dashboard', text: 'Home', icon: <HomeIcon size="20px" /> },
     { href: '/user/dashboard/submissions', text: 'My Submissions', icon: <User size="20px" /> },
-    { href: '/user/dashboard/mangroveadvisor', text: 'MangroveAdvisor', icon: <VerifiedIcon size="20px" /> },
+    { href: '/user/dashboard/mangroveadvisor', text: 'AI Advisor', icon: <VerifiedIcon size="20px" /> },
     { href: '/user/dashboard/carbonTokens', text: 'Carbon Tokens', icon: <CoinsIcon size="20px" /> },
     { href: '/user/dashboard/settings', text: 'Settings', icon: <Settings size="20px"  /> },
   ]

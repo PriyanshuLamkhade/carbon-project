@@ -11,9 +11,9 @@ interface Message {
 
 const quickQuestions = [
   "What is Blue Carbon?",
-  "How do I submit a plantation?",
-  "How are carbon credits generated?",
-  "What is the verification process?",
+  "How many submissions do I have?",
+  "Show my latest submission",
+  "What is my verification status?",
 ];
 
 export default function ChatPage() {
@@ -79,6 +79,7 @@ Your AI assistant for:
         body: JSON.stringify({
           messages: chatHistory,
         }),
+        credentials: "include",
       });
 
       const data = await res.json();
@@ -126,7 +127,7 @@ rounded-full
 bg-white/80
 backdrop-blur-md
 border border-violet-200
-text-violet-700
+text-slate-700
 font-medium
 hover:bg-violet-500
 hover:text-white
