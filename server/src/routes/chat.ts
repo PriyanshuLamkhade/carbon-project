@@ -2,7 +2,6 @@ import { Router } from "express";
 import { groq } from "../lib/groq.js";
 import { userMiddleware } from "../middleware/users.js";
 import { db } from "../index.js";
-import { detectIntent } from "../lib/chatIntent.js";
 import { detectIntentAI } from "../lib/aiIntent.js";
 
 const chatRouter = Router();

@@ -4,6 +4,7 @@ import { authService } from "@/app/page";
 import TableComponent from "@/components/tables/TableComponent";
 import Button from "@/components/ui/Button";
 import Cards from "@/components/ui/Cards";
+import { useAppData } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
@@ -20,26 +21,7 @@ import {
 const UserDashboard = () => {
   const [tableData, setTableData] = useState([]);
   const [analytics, setAnalytics] = useState<any>(null);
-  const data = [
-    {
-      submissionId: 1,
-      location: "New York",
-      areaClaimed: "100 ha",
-      status: "Approved",
-    },
-    {
-      submissionId: 2,
-      location: "Los Angeles",
-      areaClaimed: "150 ha",
-      status: "Pending",
-    },
-    {
-      submissionId: 3,
-      location: "Los Angeles",
-      areaClaimed: "150 ha",
-      status: "In progress",
-    },
-  ];
+  const { user } = useAppData();
   const [cardsData, setCardsData] = useState({
     totalAreaClaimed: 0,
     totalAreaVerified: 0,
@@ -122,7 +104,7 @@ const UserDashboard = () => {
         className="flex justify-between items-center flex-wrap  py-1 "
       >
         <div>
-          <h1 className="text-3xl font-bold ">Welcome, {"x"}!</h1>
+          <h1 className="text-3xl font-bold ">Welcome, {user?.name}!</h1>
           <h2 className="text-xl">Keep Making Imapact!</h2>
         </div>
         <Button
