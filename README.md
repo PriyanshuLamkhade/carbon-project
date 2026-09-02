@@ -3,7 +3,8 @@
 A full-stack decentralized platform for managing blue carbon credits — enabling landowners to register mangrove/forest projects, get them validated on-chain, earn **C2 tokens** as carbon credits, and trade them in a peer-to-peer marketplace. Industries can purchase and retire these tokens to offset their carbon footprint and receive verifiable certificates.
 
 ---
-# Demo Video (Bad quality due to compressed size)
+# Demo Video  
+(Bad quality due to compressed size)
 
 https://github.com/user-attachments/assets/898e2d6f-cf15-4beb-b759-cc78089d2181
 
